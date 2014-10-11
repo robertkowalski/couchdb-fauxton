@@ -21,29 +21,34 @@ Do not modify any native objects' prototype. eg. `Array.prototype`.
 Avoid using constructors for the built-in object types: Number, String, Boolean, Array, Object.
 
 Number:
-
-    var x = 10; // good
-    var x = new Number(10); // bad
+```javascript
+var x = 10; // good
+var x = new Number(10); // bad
+```
 
 String:
-
-    var greeting = 'Hello'; // good
-    var greeting = new String('Hello'); // bad
+```javascript
+var greeting = 'Hello'; // good
+var greeting = new String('Hello'); // bad
+```
 
 Boolean:
-
-    var yes = true; // good
-    var yes = new Boolean(1); // bad
+```javascript
+var yes = true; // good
+var yes = new Boolean(1); // bad
+```
 
 Array:
-
-    var myList = new Array(1,2,3); // nope
-    var myList = [1,2,3]; // yay!
+```javascript
+var myList = new Array(1, 2, 3); // nope
+var myList = [1, 2, 3]; // yay!
+```
 
 Object:
-
-    var myObj = { size: 10 };
-    var myObj = new Object();
+```javascript
+var myObj = { size: 10 }; // hurrah!
+var myObj = new Object(); // boooo!
+```
 
 #### Associative Arrays
 Use object literal notation for map/hash/associative arrays.
@@ -59,11 +64,12 @@ Once you have create a variable and assigned a value, it is set as a type, stick
 has performance benefits as well as making it easier for someone to understand your code.
 
 Bad:
-
-     var greeting = 'Hello World!';
-     greeting = function() {
-       return 'Goodbye World';
-     };
+```javascript
+var greeting = 'Hello World!';
+greeting = function() {
+  return 'Goodbye World';
+};
+```
 
 Special cases for `null` and `undefined` since they're their own type. It's fine to assign a new value to an undefined
 or null var.
@@ -86,8 +92,9 @@ from function calls.
 - use upper camel case (Pascal) for classes / uninstantiated objects: `MyModel`, `MyView`
 - If a variable holds a jQuery object, prefix it by a dollar sign `$`. For example:
 
-
-    var $ul = $("#myListItem");
+```javascript
+var $ul = $('#myListItem');
+```
 
 #### Selectors
 - Prefix selectors that deal with JavaScript with `js-`. This way it’s clear the separation between class selectors that
@@ -113,65 +120,73 @@ such as an `if` or `for` statement. This makes it easier to add statements witho
 
 #### `if` statements
 
-    if (condition) {
-      statements
-    }
+```javascript
+if (condition) {
+  statements
+}
 
-    if (condition) {
-      statements
-    } else {
-      statements
-    }
+if (condition) {
+  statements
+} else {
+  statements
+}
 
-    if (condition) {
-      statements
-    } else if (condition) {
-      statements
-    } else {
-      statements
-    }
+if (condition) {
+  statements
+} else if (condition) {
+  statements
+} else {
+  statements
+}
+```
 
 ### `for` statements
 
-    for (initialization; condition; update) {
-      statements;
-    }
+```javascript
+for (initialization; condition; update) {
+  statements;
+}
 
-    for (variable in object) {
-      if (condition) {
-        statements
-      }
-    }
+for (variable in object) {
+  if (condition) {
+    statements
+  }
+}
+```
 
 ### `switch` statements
 
-    switch (condition) {
-      case 1:
-        statements
-        break;
+```javascript
+switch (condition) {
+  case 1:
+    statements
+    break;
 
-      case 2:
-        statements
-        break;
+  case 2:
+    statements
+    break;
 
-      default:
-        statements
-    }
+  default:
+    statements
+}
+```
 
 ### Functions
 
-    function myFunction() {
-      // stuff!
-    }
+```javascript
+function myFunction() {
+  // stuff!
+}
 
-    function anotherFunction(firstParam, secondParam, thirdParam) {
-      // stuff!
-    }
+function anotherFunction(firstParam, secondParam, thirdParam) {
+  // stuff!
+}
 
-    var yetAnotherFunction = function(firstParam) {
-      // stuff!
-    }
+var yetAnotherFunction = function(firstParam) {
+  // stuff!
+}
 
-    var anonymousFunction = function () {
-      // more stuff!
-    }
+var anonymousFunction = function () {
+  // more stuff!
+}
+```
