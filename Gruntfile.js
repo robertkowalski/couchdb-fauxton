@@ -289,6 +289,10 @@ module.exports = function(grunt) {
       options: {
         nospawn: true,
         debounceDelay: 500
+      },
+      nightwatch: {
+        files: 'test/nightwatch_tests/nightwatch.json',
+        tasks: ['copyNightwatchJSON']
       }
     },
 
@@ -364,6 +368,11 @@ module.exports = function(grunt) {
           {src: assets.fonts, dest: "dist/debug/fonts/", flatten: true, expand: true},
           {src: assets.img, dest: "dist/debug/img/", flatten: true, expand: true}
         ]
+      },
+      nightwatchJSONfile:{
+        files: [
+          {src:"test/nightwatch_tests/nightwatch.json" , dest: "node_modules/nightwatch/bin/nightwatch.json"}
+        ]
       }
     },
 
@@ -394,8 +403,27 @@ module.exports = function(grunt) {
 
     mocha_phantomjs: {
       all: ['test/runner.html']
-    }
+    },
 
+    chmod: {
+      options: {
+        mode: '755'
+      },
+      yourTarget1: {
+        // Target-specific file/dir lists and/or options go here.
+        src: ['nightwatch']
+      }
+    },
+
+    exec: {
+      start_nightWatch: {
+        command: './test/nightwatch_tests/nightwatch -e chrome'
+      }
+    },
+    
+    selenium_start: {
+        options: { port: 4444 }
+    }
   });
 
   // on watch events configure jshint:all to only run on changed file
@@ -439,6 +467,9 @@ module.exports = function(grunt) {
   // Load CSSMin task
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-mocha-phantomjs');
+
+  //Selenium Server
+  grunt.loadNpmTasks('grunt-selenium-webdriver');
 
   /*
    * Default task
@@ -488,4 +519,14 @@ module.exports = function(grunt) {
   grunt.registerTask('couchapp_install', ['rmcouchdb:fauxton', 'mkcouchdb:fauxton', 'couchapp:fauxton']);
   // setup and install fauxton as couchapp
   grunt.registerTask('couchapp_deploy', ['couchapp_setup', 'couchapp_install']);
+
+  /* 
+   * Nightwatch functional testing
+   */
+  //Copy the settings file from nightwatch_tests folder to node_modules/nightwatch/bin folder
+  grunt.registerTask('copyNightwatchJSON', ['copy:nightwatchJSONfile']);
+  //Start Nightwatch test from terminal, using: $ grunt nightwatch
+  grunt.registerTask('nightwatch', [ 'selenium_start','copyNightwatchJSON','exec:start_nightWatch']);
+
+
 };

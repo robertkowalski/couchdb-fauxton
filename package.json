@@ -29,7 +29,11 @@
     "urls": "~0.0.3",
     "http-proxy": "~1.1.4",
     "send": "~0.1.1",
-    "grunt-mocha-phantomjs": "~0.3.0"
+    "grunt-mocha-phantomjs": "~0.3.0",
+    "nightwatch": "~0.5.32",
+    "nano": "~5.12.0",
+    "grunt-chmod": "~1.0.3",
+    "grunt-selenium-webdriver": "~0.2.431"
   },
   "scripts": {
     "test": "grunt test",
@@ -46,5 +50,9 @@
     "fauxton"
   ],
   "author": "",
-  "license": "Apache V2"
+  "license": "Apache V2",
+  "devDependencies": {
+    "grunt-chmod": "^1.0.3",
+    "grunt-selenium-webdriver": "^0.2.431"
+  }
 }

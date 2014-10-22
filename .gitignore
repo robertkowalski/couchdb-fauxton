@@ -26,3 +26,5 @@ settings.json*
 !assets/js/plugins/zeroclipboard/ZeroClipboard.swf
 test/test.config.js
 app/initialize.js
+test/nightwatch_tests/reports/*
+.DS_Store
