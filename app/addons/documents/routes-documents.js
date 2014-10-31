@@ -28,18 +28,21 @@ define([
 
 function(app, FauxtonAPI, Documents, Changes, Index, DocEditor, Databases, Resources, Components) {
 
+  var lookaheadTrayToggleEvent = "lookaheadTray:toggle";
+
+  // TODO these are the same. Legacy code?
   var crumbs = {
     allDocs: function (database) {
       return [
-        {"name": "", "className": "fonticon-left-open", "link": "/_all_dbs"},
-        {"name": database.id, "link": Databases.databaseUrl(database)}
+        { "name": "", "className": "fonticon-left-open", "link": "/_all_dbs" },
+        { "name": database.id, "link": Databases.databaseUrl(database), className: "lookahead-tray-link", dataEvent: lookaheadTrayToggleEvent }
       ];
     },
 
     changes: function (database) {
       return [
-        {"name": "", "className": "fonticon-left-open", "link": "/_all_dbs"},
-        {"name": database.id, "link": Databases.databaseUrl(database)}
+        { "name": "", "className": "fonticon-left-open", "link": "/_all_dbs" },
+        { "name": database.id, "link": Databases.databaseUrl(database), className: "lookahead-tray-link", dataEvent: lookaheadTrayToggleEvent }
       ];
     }
   };
@@ -93,7 +96,9 @@ function(app, FauxtonAPI, Documents, Changes, Index, DocEditor, Databases, Resou
 
     initialize: function (route, masterLayout, options) {
       this.databaseName = options[0];
-      this.database = new Databases.Model({id:this.databaseName});
+      this.database = new Databases.Model({id: this.databaseName});
+      this.allDatabases = new Databases.List();
+
       this.designDocs = new Documents.AllDocs(null, {
         database: this.database,
         paging: {
@@ -109,13 +114,34 @@ function(app, FauxtonAPI, Documents, Changes, Index, DocEditor, Databases, Resou
 
       this.leftheader = this.setView("#breadcrumbs", new Components.LeftHeader({
         crumbs: crumbs.allDocs(this.database),
-        dropdownMenu: this.setUpDropdown()
+        dropdownMenu: this.setUpDropdown(),
+        lookaheadTray: {
+          data: this.allDatabases, // passed by reference, note!
+          parseData: this.convertCollectionToArray,
+          toggleEventName: lookaheadTrayToggleEvent,
+          onUpdate: this.onSelectDatabase,
+          placeholder: "Enter database name"
+        }
       }));
 
       this.sidebar = this.setView("#sidebar-content", new Documents.Views.Sidebar({
         collection: this.designDocs,
         database: this.database
       }));
+    },
+
+    convertCollectionToArray: function (data) {
+      return _.map(data.models, function(a) {
+        return a.get('name');
+      });
+    },
+
+    // this safely assumes the db name is valid
+    onSelectDatabase: function (dbName) {
+      FauxtonAPI.navigate('/database/' + app.utils.safeURLName(dbName) + '/_all_docs', {
+        trigger: true,
+        reinitialize: true // sneaky
+      });
     },
 
     setUpDropdown: function() {
@@ -190,7 +216,7 @@ function(app, FauxtonAPI, Documents, Changes, Index, DocEditor, Databases, Resou
     },
 
     establish: function () {
-      return this.designDocs.fetch({reset: true});
+      return [this.designDocs.fetch({reset: true}), this.allDatabases.fetchOnce()];
     },
 
     createParams: function (options) {
