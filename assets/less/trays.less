@@ -82,6 +82,11 @@
   height: 0;
 }
 
+.lookahead-tray-link {
+  cursor: pointer;
+  position: relative; /* ensures :after elements are also hidden when overflowed */
+}
+
 .lookahead-tray-link:after {
   content: "\f14a";
   font-family: "fauxtonicon";
@@ -107,7 +112,6 @@
   color: @orange;
   margin: 9px 7px 7px 5px;
 }
-
 
 #breadcrumbs .breadcrumb li.active.lookahead-tray-enabled {
   color: @red;
@@ -175,31 +179,3 @@
     cursor: pointer;
   }
 }
-
-/*
-  .searchbox-container {
-    position: relative;
-    right: inherit;
-    input[type="text"] {
-      .border-radius(5px);
-      font-size: 13px;
-      padding: 8px 35px 8px 10px;
-      width: 275px;
-    }
-    .btn-primary {
-      background: none repeat scroll 0% 0% transparent;
-      border: none;
-      position: absolute;
-      right: 12px;
-      top: 0px;
-      height:60px;
-      z-index: 2;
-      color: #999;
-      .icon-search{
-        position: absolute;
-        top: 20px;
-        right: 15px;
-      }
-    }
-  }
-*/

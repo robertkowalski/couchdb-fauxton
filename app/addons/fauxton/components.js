@@ -1042,4 +1042,3 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
 
   return Components;
 });
-
