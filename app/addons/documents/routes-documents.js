@@ -28,21 +28,19 @@ define([
 
 function(app, FauxtonAPI, Documents, Changes, Index, DocEditor, Databases, Resources, Components) {
 
-  var lookaheadTrayToggleEvent = "lookaheadTray:toggle";
-
   // TODO these are the same. Legacy code?
   var crumbs = {
     allDocs: function (database) {
       return [
         { "name": "", "className": "fonticon-left-open", "link": "/_all_dbs" },
-        { "name": database.id, "link": Databases.databaseUrl(database), className: "lookahead-tray-link", dataEvent: lookaheadTrayToggleEvent }
+        { "name": database.id, "link": Databases.databaseUrl(database), className: "lookahead-tray-link" }
       ];
     },
 
     changes: function (database) {
       return [
         { "name": "", "className": "fonticon-left-open", "link": "/_all_dbs" },
-        { "name": database.id, "link": Databases.databaseUrl(database), className: "lookahead-tray-link", dataEvent: lookaheadTrayToggleEvent }
+        { "name": database.id, "link": Databases.databaseUrl(database), className: "lookahead-tray-link" }
       ];
     }
   };
@@ -115,10 +113,11 @@ function(app, FauxtonAPI, Documents, Changes, Index, DocEditor, Databases, Resou
       this.leftheader = this.setView("#breadcrumbs", new Components.LeftHeader({
         crumbs: crumbs.allDocs(this.database),
         dropdownMenu: this.setUpDropdown(),
+
         lookaheadTray: {
           data: this.allDatabases, // passed by reference, note!
           parseData: this.convertCollectionToArray,
-          toggleEventName: lookaheadTrayToggleEvent,
+          toggleEventName: 'lookaheadTray:toggle',
           onUpdate: this.onSelectDatabase,
           placeholder: "Enter database name"
         }
