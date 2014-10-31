@@ -130,8 +130,8 @@ function(app, FauxtonAPI, Documents, Changes, Index, DocEditor, Databases, Resou
     },
 
     convertCollectionToArray: function (data) {
-      return _.map(data.models, function(a) {
-        return a.get('name');
+      return _.map(data.toArray(), function(model) {
+        return model.get('name');
       });
     },
 
@@ -139,7 +139,7 @@ function(app, FauxtonAPI, Documents, Changes, Index, DocEditor, Databases, Resou
     onSelectDatabase: function (dbName) {
       FauxtonAPI.navigate('/database/' + app.utils.safeURLName(dbName) + '/_all_docs', {
         trigger: true,
-        reinitialize: true // sneaky
+        reinitialize: true
       });
     },
 

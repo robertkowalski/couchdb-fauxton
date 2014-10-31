@@ -47,7 +47,7 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
       this.lookaheadTray = options.lookaheadTray || null;
       this.crumbs = options.crumbs || [];
 
-      // @ben: listen for updates from our breadcrumbs
+      // listen for breadcrumb clicks
       this.listenTo(FauxtonAPI.Events, 'breadcrumb:click', this.toggleTray);
     },
 
@@ -61,9 +61,6 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
       this.dropdown && this.dropdown.update(menuLinks);
     },
 
-    // @ben: this component also handles updates for the dropdown
-    // and updates the breadcrumbs - so it makes sense to control
-    // the tray here, which is also a subcomponent
     toggleTray: function () {
       this.lookaheadTray.toggleTray();
     },
@@ -131,8 +128,6 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
       };
     },
 
-    // @ben: the breadcrumb takes care of it's DOM and publishes
-    // an event via our EeventBus to notify other Components
     toggleLastElement: function (event) {
       this.$(event.currentTarget).toggleClass('js-enabled');
       FauxtonAPI.Events.trigger('breadcrumb:click');
