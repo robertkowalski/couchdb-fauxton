@@ -47,11 +47,4 @@ function(app, FauxtonAPI, LoadAddons) {
       app.router.navigate(href.attr, true);
     }
   });
-
-  // anonymous way to allow publishing of any arbitrary event just by attaching an data-event="X" attr to an element
-  $(document).on('click', '[data-event]', function(e) {
-    var event = $(e.target).data("event");
-    FauxtonAPI.Events.trigger(event, { el: e.target });
-  });
-
 });

@@ -46,6 +46,9 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
       this.dropdownMenuLinks = options.dropdownMenu;
       this.lookaheadTray = options.lookaheadTray || null;
       this.crumbs = options.crumbs || [];
+
+      // @ben: listen for updates from our breadcrumbs
+      this.listenTo(FauxtonAPI.Events, 'breadcrumb:click', this.toggleTray);
     },
 
     updateCrumbs: function(crumbs){
@@ -56,6 +59,13 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
     updateDropdown: function(menuLinks){
       this.dropdownMenuLinks = menuLinks;
       this.dropdown && this.dropdown.update(menuLinks);
+    },
+
+    // @ben: this component also handles updates for the dropdown
+    // and updates the breadcrumbs - so it makes sense to control
+    // the tray here, which is also a subcomponent
+    toggleTray: function () {
+      this.lookaheadTray.toggleTray();
     },
 
     beforeRender: function(){
@@ -101,6 +111,11 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
     className: "breadcrumb pull-left",
     tagName: "ul",
     template: "addons/fauxton/templates/breadcrumbs",
+
+    events:  {
+      "click .js-lastelement": "toggleLastElement"
+    },
+
     serialize: function() {
       var crumbs = _.clone(this.crumbs);
 
@@ -115,10 +130,19 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
         nextCrumbHasLabel: nextCrumbHasLabel
       };
     },
+
+    // @ben: the breadcrumb takes care of it's DOM and publishes
+    // an event via our EeventBus to notify other Components
+    toggleLastElement: function (event) {
+      this.$(event.currentTarget).toggleClass('js-enabled');
+      FauxtonAPI.Events.trigger('breadcrumb:click');
+    },
+
     update: function(crumbs) {
       this.crumbs = crumbs;
       this.render();
     },
+
     initialize: function(options) {
       this.crumbs = options.crumbs;
     }
@@ -893,9 +917,6 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
       this.data = opts.data;
       this.toggleEventName = opts.toggleEventName;
 
-      // listen for the toggle tray event
-      FauxtonAPI.Events.on(this.toggleEventName, this.toggleTray, this);
-
       var trayIsVisible = _.bind(this.trayIsVisible, this);
       var closeTray = _.bind(this.closeTray, this);
       $("body").on("click.lookaheadTray", function (e) {
@@ -918,22 +939,19 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
     },
 
     cleanup: function () {
-      FauxtonAPI.Events.off(this.toggleEventName, this.toggleTray, this);
       $("body").off("click.lookaheadTray");
-    },
-
-    toggleTray: function (eventData) {
-      this.$triggerElement = $(eventData.el);
-      if (this.$triggerElement.hasClass('lookahead-tray-enabled')) {
-        this.closeTray();
-      } else {
-        this.openTray();
-      }
-      this.$triggerElement.toggleClass('lookahead-tray-enabled');
     },
 
     trayIsVisible: function () {
       return this.$el.is(":visible");
+    },
+
+    toggleTray: function () {
+      if (this.trayIsVisible()) {
+        this.closeTray();
+      } else {
+        this.openTray();
+      }
     },
 
     openTray: function () {
