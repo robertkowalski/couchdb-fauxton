@@ -49,11 +49,16 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
 
       // listen for breadcrumb clicks
       this.listenTo(FauxtonAPI.Events, 'breadcrumb:click', this.toggleTray);
+      this.listenTo(FauxtonAPI.Events, 'lookaheadTray:close', this.unselectLastBreadcrumb);
     },
 
     updateCrumbs: function(crumbs){
       this.crumbs = crumbs;
       this.breadcrumbs && this.breadcrumbs.update(crumbs);
+    },
+
+    unselectLastBreadcrumb: function () {
+      this.breadcrumbs.unselectLastBreadcrumb();
     },
 
     updateDropdown: function(menuLinks){
@@ -62,7 +67,9 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
     },
 
     toggleTray: function () {
-      this.lookaheadTray.toggleTray();
+      if (this.lookaheadTray !== null) {
+        this.lookaheadTray.toggleTray();
+      }
     },
 
     beforeRender: function(){
@@ -131,6 +138,10 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
     toggleLastElement: function (event) {
       this.$(event.currentTarget).toggleClass('js-enabled');
       FauxtonAPI.Events.trigger('breadcrumb:click');
+    },
+
+    unselectLastBreadcrumb: function () {
+      this.$('.js-enabled').removeClass('js-enabled');
     },
 
     update: function(crumbs) {
@@ -895,7 +906,6 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
     className: "lookahead-tray tray",
     template: "addons/fauxton/templates/lookahead_tray",
     placeholder: "Enter to search",
-    $triggerElement: null,
 
     events: {
       'click #js-close-tray': 'closeTray',
@@ -958,10 +968,7 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
       $tray.velocity("reverse", FauxtonAPI.constants.TRAY_TOGGLE_SPEED, function () {
         $tray.hide();
       });
-      if (this.$triggerElement !== null) {
-        this.$triggerElement.removeClass('lookahead-tray-enabled');
-      }
-      this.$triggerElement = null;
+      FauxtonAPI.Events.trigger('lookaheadTray:close');
     },
 
     onKeyup: function (e) {
