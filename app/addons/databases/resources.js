@@ -162,6 +162,9 @@ function(app, FauxtonAPI, Documents) {
       return "all_dbs";
     },
 
+    // move the method from the RouteObject to the collection, pattern: small controllers, fat models
+    // -> this also help us getting no wrong bindings for different call stacks
+    // -> additionally testing get's really easy an fun for us now!
     getDatabaseNames: function () {
       return _.map(this.toArray(), function (model) {
         return model.get('name');

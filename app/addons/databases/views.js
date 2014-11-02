@@ -145,6 +145,9 @@ function(app, Components, FauxtonAPI, Databases) {
       return [deferred];
     },
 
+    // overloading arguments of eventhandlers makes refactoring harder, so i had to decouple that now in a later step:
+    // e.g. when i want to programmatically call them and can't pass an event of `null`
+    // (this happens here for example: https://github.com/robertkowalski/couchdb-fauxton/compare/benkeen:2420-new-lookahead-tray...robertkowalski:pr/119-refactor-2#diff-62303136520940e79fc0ba058c2ff20bR496)
     switchDatabase: function (selectedName) {
       var dbname = this.$el.find('[name="search-query"]').val().trim();
 

@@ -116,6 +116,8 @@ function(app, FauxtonAPI, Documents, Changes, Index, DocEditor, Databases, Resou
         lookaheadTrayOptions: {
           dataBaseCollection: this.allDatabases,
           toggleEventName: 'lookaheadTray:toggle',
+          // this.onSelectDatabase.bind(this) is one solution to get the right context
+          // here but i decided to fire an event
           onUpdateEventName: 'lookaheadTray:update',
           placeholder: 'Enter database name'
         }
@@ -131,6 +133,11 @@ function(app, FauxtonAPI, Documents, Changes, Index, DocEditor, Databases, Resou
 
     // this safely assumes the db name is valid
     onSelectDatabase: function (dbName) {
+      // todo: use this.initViews(dbName);
+      // background: I did not want to do this in this diff as it would
+      // create a huge diff where you can not see the changes i made to `initialize`
+      // which would make explaining this diff alot harder
+      // so I left that one for you
       this.initialize(null, null, [dbName]);
       FauxtonAPI.navigate('/database/' + app.utils.safeURLName(dbName) + '/_all_docs', {
         trigger: true

@@ -97,6 +97,10 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
       }
     },
 
+    // rename our options from lookaheadTray to lookaheadTrayOptions as
+    // the view instance is already named lookaheadTray
+    // move the method from the RouteObject to the collection, pattern: small controllers, fat models
+    // -> this also help us getting no wrong bindings for different call stacks
     setUpLookaheadTray: function () {
       var options = this.lookaheadTrayOptions;
       this.lookaheadTray = this.insertView("#header-lookahead", new Components.LookaheadTray({
@@ -952,6 +956,7 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
 
     openTray: function () {
       this.$el.velocity("transition.slideDownIn", FauxtonAPI.constants.TRAY_TOGGLE_SPEED, function () {
+        // we have to do this programatically as we lose the autofoxus after the first hide() forever
         this.$el.find('input').focus();
       }.bind(this));
 
