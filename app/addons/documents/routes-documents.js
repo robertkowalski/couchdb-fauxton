@@ -113,13 +113,11 @@ function(app, FauxtonAPI, Documents, Changes, Index, DocEditor, Databases, Resou
       this.leftheader = this.setView("#breadcrumbs", new Components.LeftHeader({
         crumbs: crumbs.allDocs(this.database),
         dropdownMenu: this.setUpDropdown(),
-
-        lookaheadTray: {
-          data: this.allDatabases, // passed by reference, note!
-          parseData: this.convertCollectionToArray,
+        lookaheadTrayOptions: {
+          dataBaseCollection: this.allDatabases,
           toggleEventName: 'lookaheadTray:toggle',
-          onUpdate: this.onSelectDatabase,
-          placeholder: "Enter database name"
+          onUpdateEventName: 'lookaheadTray:update',
+          placeholder: 'Enter database name'
         }
       }));
 
@@ -127,19 +125,15 @@ function(app, FauxtonAPI, Documents, Changes, Index, DocEditor, Databases, Resou
         collection: this.designDocs,
         database: this.database
       }));
-    },
 
-    convertCollectionToArray: function (data) {
-      return _.map(data.toArray(), function(model) {
-        return model.get('name');
-      });
+      this.listenTo(FauxtonAPI.Events, 'lookaheadTray:update', this.onSelectDatabase);
     },
 
     // this safely assumes the db name is valid
     onSelectDatabase: function (dbName) {
+      this.initialize(null, null, [dbName]);
       FauxtonAPI.navigate('/database/' + app.utils.safeURLName(dbName) + '/_all_docs', {
-        trigger: true,
-        reinitialize: true
+        trigger: true
       });
     },
 

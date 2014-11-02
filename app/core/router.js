@@ -58,7 +58,7 @@ function(FauxtonAPI, Auth, Backbone) {
           authPromise = FauxtonAPI.auth.checkAccess(roles);
 
           authPromise.then(function () {
-            if (!that.activeRouteObject || !that.activeRouteObject.hasRoute(route) || that.activeRouteObject.reinitialize === true) {
+            if (!that.activeRouteObject || !that.activeRouteObject.hasRoute(route)) {
               that.activeRouteObject && that.activeRouteObject.cleanup();
               that.activeRouteObject = new RouteObject(route, masterLayout, args);
             }

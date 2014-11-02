@@ -44,7 +44,7 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
     initialize:function(options){
       this.dropdownEvents = options.dropdownEvents;
       this.dropdownMenuLinks = options.dropdownMenu;
-      this.lookaheadTray = options.lookaheadTray || null;
+      this.lookaheadTrayOptions = options.lookaheadTrayOptions || null;
       this.crumbs = options.crumbs || [];
 
       // listen for breadcrumb clicks
@@ -98,15 +98,12 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
     },
 
     setUpLookaheadTray: function () {
-      var data = this.lookaheadTray.data;
-      if (this.lookaheadTray.parseData) {
-        data = this.lookaheadTray.parseData(this.lookaheadTray.data);
-      }
+      var options = this.lookaheadTrayOptions;
       this.lookaheadTray = this.insertView("#header-lookahead", new Components.LookaheadTray({
-        data: data,
-        toggleEventName: this.lookaheadTray.toggleEventName,
-        onUpdate: this.lookaheadTray.onUpdate,
-        placeholder: this.lookaheadTray.placeholder
+        data: options.dataBaseCollection.getDatabaseNames(),
+        toggleEventName: options.toggleEventName,
+        onUpdateEventName: options.onUpdateEventName,
+        placeholder: options.placeholder
       }));
     }
   });
@@ -479,26 +476,20 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
     }
   });
 
-  //TODO allow more of the typeahead options.
-  //Current this just does what we need but we
-  //need to support the other typeahead options.
   Components.Typeahead = FauxtonAPI.View.extend({
 
     initialize: function (options) {
       this.source = options.source;
-      this.onUpdate = options.onUpdate;
-      _.bindAll(this);
+      this.onUpdateEventName = options.onUpdateEventName;
     },
 
     afterRender: function () {
-      var onUpdate = this.onUpdate;
+      var onUpdateEventName = this.onUpdateEventName;
 
       this.$el.typeahead({
         source: this.source,
         updater: function (item) {
-          if (onUpdate) {
-            onUpdate(item);
-          }
+          FauxtonAPI.Events.trigger(onUpdateEventName, item);
           return item;
         }
       });
@@ -508,7 +499,6 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
   Components.DbSearchTypeahead = Components.Typeahead.extend({
     initialize: function (options) {
       this.dbLimit = options.dbLimit || 30;
-      this.onUpdate = options.onUpdate;
       _.bindAll(this);
     },
     source: function(query, process) {
@@ -921,6 +911,7 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
     initialize: function (opts) {
       this.data = opts.data;
       this.toggleEventName = opts.toggleEventName;
+      this.onUpdateEventName = opts.onUpdateEventName;
 
       var trayIsVisible = _.bind(this.trayIsVisible, this);
       var closeTray = _.bind(this.closeTray, this);
@@ -938,7 +929,7 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
       this.dbSearchTypeahead = new Components.Typeahead({
         el: 'input.search-autocomplete',
         source: that.data,
-        onUpdate: that.onUpdate
+        onUpdateEventName: that.onUpdateEventName
       });
       this.dbSearchTypeahead.render();
     },
@@ -960,7 +951,10 @@ function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
     },
 
     openTray: function () {
-      this.$el.velocity("transition.slideDownIn", FauxtonAPI.constants.TRAY_TOGGLE_SPEED);
+      this.$el.velocity("transition.slideDownIn", FauxtonAPI.constants.TRAY_TOGGLE_SPEED, function () {
+        this.$el.find('input').focus();
+      }.bind(this));
+
     },
 
     closeTray: function () {

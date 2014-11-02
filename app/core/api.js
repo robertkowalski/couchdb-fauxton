@@ -29,13 +29,7 @@ function(FauxtonAPI, Layout, Router, RouteObject, utils) {
   FauxtonAPI.Events = _.extend({}, Backbone.Events);
 
   FauxtonAPI.navigate = function (url, _opts) {
-    var options = _.extend({trigger: true, reinitialize: false}, _opts);
-
-    // in rare cases, you can be on a particular page and need to re-trigger the same route's initialize to execute
-    if (options.reinitialize) {
-      FauxtonAPI.router.activeRouteObject.reinitialize = true;
-    }
-
+    var options = _.extend({trigger: true}, _opts);
     FauxtonAPI.router.navigate(url, options);
   };
 
