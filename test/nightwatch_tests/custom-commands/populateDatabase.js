@@ -1,25 +1,39 @@
-exports.command = function(databaseName) {
-  	
-    var client = this;
-    var nano = client.globals.getNanoInstance();
-    var database = nano.use(databaseName);
+var util = require('util'),
+    events = require('events'),
+    helpers = require('../helpers/helpers.js'),
+    async = require('async');
 
-    for( var i=1 ; i<20 ; i++){
 
-        var document_id = "document_" + i;
+function PopulateDatabase () {
+  events.EventEmitter.call(this);
+}
 
-        database.insert({ number: i }, document_id, function(err, body, header) {
-            
-            if (err) {
-            
-                console.log('Error in nano populateDatabase Function: '+document_id+',in database: '+databaseName, err.message);
-                return client;
-            }
-            
-            console.log('nano is populating '+ databaseName);
-        });
+util.inherits(PopulateDatabase, events.EventEmitter);
+
+PopulateDatabase.prototype.command = function (databaseName) {
+  var self = this,
+      nano = helpers.getNanoInstance(),
+      database = nano.use(databaseName),
+      i = 0;
+
+  async.whilst(
+    function () { return i < 20; },
+    function (cb) {
+        i++;
+        var document_id = 'document_ '+ i;
+        database.insert({ number: i }, document_id, cb);
+    },
+    function (err) {
+      if (err) {
+        console.log('Error in nano populateDatabase Function: ' +
+          document_id + ', in database: ' + databaseName, err.message);
+        throw err;
+      }
+      self.emit('complete');
     }
+  );
 
-    client.pause(1000);
-    return this; 
+  return this;
 };
+
+module.exports = PopulateDatabase;
