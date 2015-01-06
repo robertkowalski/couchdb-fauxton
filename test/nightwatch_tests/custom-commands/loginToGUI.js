@@ -5,6 +5,8 @@ exports.command = function () {
       username = client.globals.test_settings.fauxton_username,
       password = client.globals.test_settings.password;
 
+  console.log("login------>", baseUrl, username);
+
   client
     .url(baseUrl+'/#login')
     .waitForElementPresent('a[href="#login"]', 15000, false)

@@ -15,7 +15,7 @@ module.exports = {
     var waitTime = 10000,
         newDatabaseName = client.globals.testDatabaseName,
         baseUrl = client.globals.test_settings.launch_url;
-
+        console.error("baseUrl===============>", baseUrl);
     client
       .loginToGUI()
       .deleteDatabase(newDatabaseName) //need to delete the automatic database 'fauxton-selenium-tests' that has been set up before each test
