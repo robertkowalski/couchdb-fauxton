@@ -125,15 +125,19 @@ module.exports = function(grunt) {
   }();
 
   var couchserver_config  = function () {
-    var FAUXTON_CI_DB_HOST = process.env.FAUXTON_CI_DB_HOST;
+    var FAUXTON_CI_DB_HOST = process.env.FAUXTON_CI_DB_HOST,
+        USER = process.env.FAUXTON_CI_USER,
+        PW = process.env.FAUXTON_CI_PASSWORD,
+        EXTERNAL_URL = 'https://' + USER + ':' + PW + '@' + FAUXTON_CI_DB_HOST;
     // add a "couchserver" key to settings.json with JSON that matches the
     // keys and values below (plus your customizations) to have Fauxton work
     // against a remote CouchDB-compatible server.
+
     var defaults = {
       dist: './dist/debug/',
       port: 8000,
       proxy: {
-        target: FAUXTON_CI_DB_HOST ? 'https://' + FAUXTON_CI_DB_HOST : 'http://localhost:5984/'
+        target: FAUXTON_CI_DB_HOST ? EXTERNAL_URL : 'http://localhost:5984/'
       }
     };
 
