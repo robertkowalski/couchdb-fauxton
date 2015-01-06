@@ -164,6 +164,10 @@ module.exports = function(grunt) {
       db_host: this.data.settings.nightwatch.db_host,
       db_port: this.data.settings.nightwatch.db_port
     }));
+
+    console.log("-------");
+    console.log("http://" +
+      this.data.settings.nightwatch.fauxton_host + ":" + this.data.settings.nightwatch.fauxton_port);
   });
 
 
