@@ -70,12 +70,12 @@
     },
 
     "nightwatch": {
-      "fauxton_username": "tester",
-      "password": "testerpass",
-      "fauxton_host": "localhost",
-      "fauxton_port": "8000",
-      "db_host": "localhost",
-      "db_port": "5984",
+      "fauxton_username": "${FAUXTON_CI_USER}",
+      "password": "${FAUXTON_CI_PASSWORD}",
+      "fauxton_host": "${FAUXTON_CI_HOST}",
+      "fauxton_port": "${FAUXTON_CI_PORT}",
+      "db_host": "${FAUXTON_CI_DB_HOST}",
+      "db_port": "${FAUXTON_CI_DB_PORT}",
       "custom_commands_path": "test/nightwatch_tests/custom-commands",
       "globals_path": "test/nightwatch_tests/helpers/helpers.js"
     }
