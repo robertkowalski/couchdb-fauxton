@@ -75,7 +75,7 @@
       "fauxton_host": "${FAUXTON_CI_HOST}",
       "fauxton_port": "${FAUXTON_CI_PORT}",
       "db_host": "${FAUXTON_CI_DB_HOST}",
-      "db_port": "${FAUXTON_CI_DB_PORT}",
+      "db_port": "80",
       "custom_commands_path": "test/nightwatch_tests/custom-commands",
       "globals_path": "test/nightwatch_tests/helpers/helpers.js"
     }
