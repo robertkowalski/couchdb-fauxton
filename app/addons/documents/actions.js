@@ -39,6 +39,15 @@ function (app, FauxtonAPI, Documents, ActionTypes) {
   return {
     //helpers are added here for use in testing actions
     helpers: ActionHelpers,
+
+
+    toggleHeaderControls: function () {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.TOGGLE_HEADER_CONTROLS
+      });
+    },
+
+
     toggleEditor: function () {
       FauxtonAPI.dispatch({
         type: ActionTypes.TOGGLE_EDITOR
@@ -98,7 +107,7 @@ function (app, FauxtonAPI, Documents, ActionTypes) {
       var result = designDoc.setDdocView(viewInfo.viewName,
                             viewInfo.map,
                             viewInfo.reduce);
-      
+
       if (result) {
         FauxtonAPI.dispatch({
          type: ActionTypes.SAVE_VIEW
@@ -120,9 +129,9 @@ function (app, FauxtonAPI, Documents, ActionTypes) {
           });
 
           if (_.any([viewInfo.designDocChanged, viewInfo.newDesignDoc, viewInfo.newView])) {
-            var fragment = '/database/' + 
+            var fragment = '/database/' +
               viewInfo.database.safeID() +
-              '/' + designDoc.safeID() + 
+              '/' + designDoc.safeID() +
               '/_view/' +
               app.utils.safeURLName(viewInfo.viewName);
 

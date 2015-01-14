@@ -18,6 +18,29 @@ define([
 function(FauxtonAPI, ActionTypes) {
   var Stores = {};
 
+  Stores.HeaderBarStore = FauxtonAPI.Store.extend({
+
+    init: function (options) {
+      this._isEnabled = options.isEnabled || false;
+    },
+
+    setClass: function (isEnabled) {
+      this._isEnabled = isEnabled;
+    },
+
+    dispatch: function (action) {
+      switch(action.type) {
+        case ActionTypes.TOGGLE_HEADER_CONTROLS:
+          //this.setClass(action.options);
+          this.triggerChange();
+        break;
+
+        default:
+          return;
+      }
+    }
+  });
+
   Stores.IndexEditorStore = FauxtonAPI.Store.extend({
 
     defaultMap: 'function(doc) {\n  emit(doc._id, 1);\n}',
@@ -177,12 +200,12 @@ function(FauxtonAPI, ActionTypes) {
         break;
 
         case ActionTypes.DESIGN_DOC_CHANGE:
-          this.setDesignDocId(action.designDocId, action.newDesignDoc); 
+          this.setDesignDocId(action.designDocId, action.newDesignDoc);
           this.triggerChange();
         break;
 
         case ActionTypes.NEW_DESIGN_DOC:
-          this.setDesignDocId('', true); 
+          this.setDesignDocId('', true);
           this.triggerChange();
         break;
 

@@ -39,6 +39,44 @@ define([
     });
   };
 
+  describe('Header Togglebutton', function () {
+    var container, toggleEl, toggleCallback;
+    beforeEach(function () {
+      container = document.createElement('div');
+      toggleCallback = sinon.spy();
+      toggleEl = TestUtils.renderIntoDocument(<Views.ToggleHeaderButton fonticon={'foo'}
+        classString={'bar'} toggleCallback={toggleCallback} />, container);
+    });
+
+    afterEach(function () {
+      React.unmountComponentAtNode(container);
+    });
+
+    it('should call the passed callback', function () {
+      TestUtils.Simulate.click(toggleEl.getDOMNode());
+      assert.ok(toggleCallback.calledOnce);
+    });
+  });
+
+  describe('Controller', function () {
+    var container, toggleEl;
+    beforeEach(function () {
+      container = document.createElement('div');
+
+    });
+
+    afterEach(function () {
+      React.unmountComponentAtNode(container);
+    });
+
+     it('should use the passed classname', function () {
+      toggleEl = TestUtils.renderIntoDocument(<Views.HeaderBarController classString={'myFancyClass'} />, container);
+
+      assert.equal(1, $(toggleEl.getDOMNode()).find('.myFancyClass').length);
+    });
+  });
+
+
   describe('View editor', function () {
 
     describe('Toggle button', function () {
@@ -171,7 +209,7 @@ define([
           value: 'new-doc-entered'
         }
       });
-      
+
       assert.ok(spy.calledWith('_design/new-doc-entered', true));
     });
 

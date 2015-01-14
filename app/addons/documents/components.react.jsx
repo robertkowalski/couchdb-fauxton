@@ -11,6 +11,32 @@ define([
 function(app, FauxtonAPI, React, Stores, Actions, Components, VelocityTransitionGroup) {
   var indexEditorStore = Stores.indexEditorStore;
   var getDocUrl = app.helpers.getDocUrl;
+  var HeaderBarStore = Stores.HeaderBarStore;
+
+  // where to move, this will be a global component
+  var ToggleHeaderButton = React.createClass({
+    render: function () {
+      var classes = 'icon ' + this.props.fonticon + ' ' + this.props.classString;
+      return (
+        <div onClick={this.props.toggleCallback} className="button">
+          <span className={classes}>Select</span>
+        </div>
+      );
+    }
+  });
+
+  var HeaderBarController = React.createClass({
+
+    render: function () {
+      console.log("-------------------------------------");
+      console.log(this.props);
+      return (
+        <div>
+          <ToggleHeaderButton classString={this.props.classString} />
+        </div>
+      );
+    }
+  });
 
   var ToggleButton = React.createClass({
 
@@ -18,7 +44,7 @@ function(app, FauxtonAPI, React, Stores, Actions, Components, VelocityTransition
       return (
         <div className="dashboard-upper-menu">
           <ul className="nav nav-tabs" id="db-views-tabs-nav">
-            <li className="active"> 
+            <li className="active">
               <a ref="toggle" data-bypass="true" id="index-nav" data-toggle="tab" href="#index" onClick={this.props.toggleEditor}>
                 <i className="fonticon-wrench fonticon"></i>
                 {this.props.title}
@@ -78,7 +104,7 @@ function(app, FauxtonAPI, React, Stores, Actions, Components, VelocityTransition
       return (
         <div className="control-group design-doc-group">
           <div className="span3">
-            <label htmlFor="ddoc">Save to Design Document 
+            <label htmlFor="ddoc">Save to Design Document
               <a className="help-link" data-bypass="true" href={getDocUrl('DESIGN_DOCS')} target="_blank">
                 <i className="icon-question-sign">
                 </i>
@@ -154,7 +180,7 @@ function(app, FauxtonAPI, React, Stores, Actions, Components, VelocityTransition
       });
       this.mapEditor.render();
     }
-  }); 
+  });
 
   var ReduceEditor = React.createClass({
 
@@ -282,7 +308,7 @@ function(app, FauxtonAPI, React, Stores, Actions, Components, VelocityTransition
 
       return (
         <button onClick={this.deleteView} className="btn btn-danger delete">
-          <i className="icon fonticon-cancel-circled"></i> 
+          <i className="icon fonticon-cancel-circled"></i>
           Delete
         </button>
       );
@@ -295,8 +321,8 @@ function(app, FauxtonAPI, React, Stores, Actions, Components, VelocityTransition
 
       Actions.deleteView({
         designDocs: this.state.designDocs,
-        viewName: this.state.viewName, 
-        designDocId: this.state.designDocId, 
+        viewName: this.state.viewName,
+        designDocId: this.state.designDocId,
         database: this.state.database
       });
     }
@@ -462,6 +488,8 @@ function(app, FauxtonAPI, React, Stores, Actions, Components, VelocityTransition
       React.unmountComponentAtNode(el);
     },
     ToggleButton: ToggleButton,
+    HeaderBarController: HeaderBarController,
+    ToggleHeaderButton: ToggleHeaderButton,
     ReduceEditor: ReduceEditor,
     Editor: Editor,
     DesignDocSelector: DesignDocSelector
