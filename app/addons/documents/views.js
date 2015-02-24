@@ -200,17 +200,16 @@ function (app, FauxtonAPI, Components, Documents,
         return;
       }
 
+      this.database.url = FauxtonAPI.urls('databaseBaseURL', 'server', this.database.id, '');
+
       this.hideModal();
       var databaseName = this.database.id;
       FauxtonAPI.addNotification({
-        msg: "Deleting your database...",
+        msg: "Deleting your database..." + this.database.url,
         type: "error",
         clear: true
       });
 
-      this.database.url = FauxtonAPI.urls('databaseBaseURL', 'server', this.database.id, '');
-
-      alert(this.database.url);
 
       this.database.destroy().then(function () {
         FauxtonAPI.navigate(FauxtonAPI.urls('allDBs', 'app'));
