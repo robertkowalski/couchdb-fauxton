@@ -219,7 +219,7 @@ function (app, FauxtonAPI, Components, Documents,
         });
       }).fail(function (rsp, error, msg) {
         FauxtonAPI.addNotification({
-          msg: 'Could not delete the database, reason ' + msg + '.' + JSON.stringify(rsp),
+          msg: this.database.url + 'Could not delete the database, reason ' + msg + '.' + JSON.stringify(rsp),
           type: 'error',
           clear: true
         });
