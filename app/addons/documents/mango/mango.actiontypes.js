@@ -10,26 +10,11 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-/*
- * ::WARNING::
- * THIS IS A GENERATED FILE. DO NOT EDIT.
- */
-
-
-define([],
-function () {
-  // Provide a global location to place configuration settings and module
-  // creation.
-  var app = {
-    // The root path to run the application.
-    root: "<%= root %>",
-    version: "<%= version %>",
-    // Host is used as prefix for urls
-    host: "<%= host %>",
-    zeroClipboardPath: "<%= zeroClipboardPath %>",
-    i18n: <%= i18n %>
+define([], function () {
+  return {
+    MANGO_SHOW_INDEXLIST: 'MANGO_SHOW_INDEXLIST',
+    MANGO_SAVE_QUERY: 'MANGO_SAVE_QUERY',
+    MANGO_SET_DB: 'MANGO_SET_DB',
+    MANGO_RESET_INDEX_LIST: 'MANGO_RESET_INDEX_LIST'
   };
-
-  return app;
 });
-

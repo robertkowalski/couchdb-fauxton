@@ -72,6 +72,17 @@ function (app, FauxtonAPI, Components, Documents, Databases) {
           databaseName = database.id,
           newUrlPrefix = '#' + FauxtonAPI.urls('databaseBaseURL', 'app', databaseName);
 
+
+      //var showMango = (/\?beta=showquery/).test(window.location.hash.toLowerCase());
+      var mango = [];
+      if (true) {
+        mango.push({
+          title: 'New Query Index',
+          url: FauxtonAPI.urls('mango', 'index-app', databaseName),
+          icon: 'fonticon-plus-circled'
+        });
+      }
+
       return _.reduce(addLinks, function (menuLinks, link) {
 
         menuLinks.push({
@@ -80,16 +91,18 @@ function (app, FauxtonAPI, Components, Documents, Databases) {
           icon: 'fonticon-plus-circled'
         });
 
+
+
         return menuLinks;
       }, [{
-        title: 'New Doc',
-        url: newUrlPrefix + '/new',
-        icon: 'fonticon-plus-circled'
-      }, {
-        title: 'New View',
-        url: newUrlPrefix + '/new_view',
-        icon: 'fonticon-plus-circled'
-      }]);
+          title: 'New Doc',
+          url: newUrlPrefix + '/new',
+          icon: 'fonticon-plus-circled'
+        }, {
+          title: 'New View',
+          url: newUrlPrefix + '/new_view',
+          icon: 'fonticon-plus-circled'
+        }].concat(mango));
     },
 
     beforeRender: function (manage) {
@@ -118,6 +131,11 @@ function (app, FauxtonAPI, Components, Documents, Databases) {
       this.designDocList = [];
 
       this.collection.each(function (design) {
+
+        if (design.get('doc').language === 'query') {
+          return;
+        }
+
         if (design.has('doc')) {
           design.collection = this.collection;
           var view = this.insertView(new Views.DdocSidenav({
