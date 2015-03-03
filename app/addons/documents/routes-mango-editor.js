@@ -15,7 +15,7 @@ define([
   'api',
 
   // Modules
-  "addons/documents/helpers",
+  'addons/documents/helpers',
   'addons/documents/shared-routes',
   'addons/documents/views',
   'addons/documents/views-index',
@@ -30,7 +30,9 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Documents, Index, Databases, Comp
   var MangoEditorAndResults = BaseRoute.extend({
     layout: 'two_pane',
     routes: {
-      'database/:database/_find': 'find'
+      'database/:database/_find': 'find',
+      'database/:database/_index': 'createIndex',
+      'database/:database/_list': 'listIndex',
     },
 
     events: {
@@ -46,13 +48,7 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Documents, Index, Databases, Comp
       this.createDesignDocsCollection();
     },
 
-    establish: function () {
-      return [
-
-      ];
-    },
-
-    findWithMango: function (databaseName) {
+    find: function (databaseName) {
 
       this.rightHeader = this.setView('#right-header', new Documents.Views.RightAllDocsHeader({
         database: this.database
@@ -68,22 +64,14 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Documents, Index, Databases, Comp
 
       this.footer = this.setView('#footer', new Documents.Views.Footer());
 
-      this.viewEditor = this.setView('#left-content', new Index.ViewEditorReact({
-        viewName: viewName,
-        newView: false,
-        database: this.database,
-        designDocs: this.designDocs,
-        designDocId: '_design/' + decodeDdoc
-      }));
-
       this.apiUrl = function () {
-        return ["foo", "bar"];
+        return ['foo', 'bar'];
       };
 
       //this.showQueryOptions(urlParams, ddoc, viewName);
     },
 
-    newViewEditor: function (database, _designDoc) {
+    createIndex: function (database, _designDoc) {
       this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
         toggleDisabled: true,
         crumbs: [
@@ -92,18 +80,21 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Documents, Index, Databases, Comp
         ]
       }));
 
-      this.viewEditor = this.setView('#left-content', new Index.ViewEditorReact({
-        viewName: 'new-view',
-        newView: true,
-        database: this.database,
-        designDocs: this.designDocs,
-        designDocId: designDoc,
-        newDesignDoc: newDesignDoc
-      }));
-
       this.resultList = this.setView('#dashboard-lower-content', new Index.ViewResultListReact({
         documents: null
       }));
+
+      this.apiUrl = function () {
+        return ['foo', 'bar'];
+      };
+    },
+
+    listIndex: function () {
+
+
+      this.apiUrl = function () {
+        return ['foo', 'bar'];
+      };
     }
 
   });
