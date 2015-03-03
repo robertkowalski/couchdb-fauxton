@@ -18,13 +18,13 @@ define([
   'addons/documents/helpers',
   'addons/documents/shared-routes',
   'addons/documents/views',
-  'addons/documents/views-index',
+  'addons/documents/views-mango',
   'addons/databases/base',
   'addons/fauxton/components'
 
 ],
 
-function (app, FauxtonAPI, Helpers, BaseRoute, Documents, Index, Databases, Components) {
+function (app, FauxtonAPI, Helpers, BaseRoute, Documents, Mango, Databases, Components) {
 
 
   var MangoEditorAndResults = BaseRoute.extend({
@@ -44,8 +44,6 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Documents, Index, Databases, Comp
 
       this.databaseName = databaseName;
       this.database = new Databases.Model({id: databaseName});
-      this.allDatabases = new Databases.List();
-      this.createDesignDocsCollection();
     },
 
     find: function (databaseName) {
@@ -82,6 +80,10 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Documents, Index, Databases, Comp
 
       this.resultList = this.setView('#dashboard-lower-content', new Index.ViewResultListReact({
         documents: null
+      }));
+
+      this.mangoEditor = this.setView('#left-content', new Mango.MangoIndexEditorReact({
+        database: this.database
       }));
 
       this.apiUrl = function () {
