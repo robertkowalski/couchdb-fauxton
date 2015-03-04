@@ -17,7 +17,7 @@ define([
 
 ],
 
-function (FauxtonAPI, Mango, ActionsMango, Resources) {
+function (FauxtonAPI, Mango, MangoActions, Resources) {
 
   var Views = {};
 
@@ -33,12 +33,29 @@ function (FauxtonAPI, Mango, ActionsMango, Resources) {
     },
 
     afterRender: function () {
-      ActionsMango.setIndexes({indexes: this.collection});
-      Mango.renderIndexList(this.el);
+      MangoActions.setIndexes({
+        indexes: this.collection.toJSON()
+      });
+
+      Mango.renderMangoIndexList(this.el);
     },
 
     cleanup: function () {
-      Mango.renderIndexList(this.el);
+      Mango.removeMangoIndexList(this.el);
+    }
+  });
+
+  Views.MangoIndexEditorReact = FauxtonAPI.View.extend({
+    initialize: function (options) {
+
+    },
+
+    afterRender: function () {
+      Mango.renderMangoIndexEditor(this.el);
+    },
+
+    cleanup: function () {
+      Mango.removeMangoIndexEditor(this.el);
     }
   });
 

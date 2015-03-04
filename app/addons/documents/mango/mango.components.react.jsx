@@ -25,8 +25,9 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
   var mangoStore = Stores.mangoStore;
 
   var Document = ReactComponents.Document;
+  var PaddedBorderedBox = ReactComponents.PaddedBorderedBox;
 
-  var IndexListController = React.createClass({
+  var MangoIndexListController = React.createClass({
     getInitialState: function () {
       return this.getStoreState();
     },
@@ -70,14 +71,32 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
 
   });
 
+  var MangoIndexEditorController = React.createClass({
+    render: function () {
+      return (
+        <PaddedBorderedBox>
+          <div>foo</div>
+        </PaddedBorderedBox>
+
+      );
+    }
+  });
+
   var Views = {
-    renderIndexList: function (el) {
-      React.render(<IndexListController />, el);
+    renderMangoIndexList: function (el) {
+      React.render(<MangoIndexListController />, el);
     },
-    removeIndexList: function (el) {
+    removeMangoIndexList: function (el) {
       React.unmountComponentAtNode(el);
     },
-    IndexListController: IndexListController
+    renderMangoIndexEditor: function (el) {
+      React.render(<MangoIndexEditorController />, el);
+    },
+    removeMangoIndexEditor: function (el) {
+      React.unmountComponentAtNode(el);
+    },
+    MangoIndexListController: MangoIndexListController,
+    MangoIndexEditorController: MangoIndexEditorController
   };
 
   return Views;

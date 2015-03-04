@@ -48,7 +48,11 @@ function (app, FauxtonAPI, Helpers,
       this.database = new Databases.Model({id: databaseName});
     },
 
-    createIndex: function (database, _designDoc) {
+    createIndex: function (database) {
+      var params = this.createParams(),
+        urlParams = params.urlParams,
+        mangoIndexCollection = new Resources.MangoIndexCollection({database: this.database});
+
       this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
         toggleDisabled: true,
         crumbs: [
@@ -58,15 +62,15 @@ function (app, FauxtonAPI, Helpers,
       }));
 
       this.resultList = this.setView('#dashboard-lower-content', new Mango.MangoIndexListReact({
-        collection: new Resources.MangoIndexCollection({database: this.database})
+        collection: mangoIndexCollection
       }));
 
-      //this.mangoEditor = this.setView('#left-content', new Mango.MangoIndexEditorReact({
-      //  database: this.database
-      //}));
+      this.mangoEditor = this.setView('#left-content', new Mango.MangoIndexEditorReact({
+        database: this.database
+      }));
 
       this.apiUrl = function () {
-        return ['foo', 'bar'];
+        return [mangoIndexCollection.urlRef(urlParams), FauxtonAPI.constants.DOC_URLS.GENERAL];
       };
     }
 

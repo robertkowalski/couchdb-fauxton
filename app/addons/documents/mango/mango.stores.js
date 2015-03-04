@@ -21,7 +21,7 @@ function (FauxtonAPI, ActionTypes) {
   Stores.MangoStore = FauxtonAPI.Store.extend({
 
     setIndexes: function (options) {
-      this._indexes = options.indexes.toJSON();
+      this._indexes = options.indexes;
     },
 
     getIndexes: function () {

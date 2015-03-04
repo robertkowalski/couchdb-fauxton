@@ -89,8 +89,8 @@ function(app, FauxtonAPI, Documents, PagingCollection) {
     },
 
     urlRef: function (params) {
-      var query = '',
-          database = this.database.safeID();
+      var database = this.database.safeID(),
+          query = '';
 
       if (params) {
         if (!_.isEmpty(params)) {
