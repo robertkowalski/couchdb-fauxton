@@ -249,7 +249,7 @@ function (app, FauxtonAPI, React, Components, beautifyHelper) {
     StyledSelect: StyledSelect,
     CodeEditor: CodeEditor,
     Beautify: Beautify,
-    PaddedBorderedBox: PaddedBorderedBox
+    PaddedBorderedBox: PaddedBorderedBox,
     Document: Document
   };
 
