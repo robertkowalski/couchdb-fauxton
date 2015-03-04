@@ -188,12 +188,69 @@ function (app, FauxtonAPI, React, Components, beautifyHelper) {
     }
   });
 
+  var Document = React.createClass({
+
+    getUrlFragment: function () {
+      if (!this.props.urlFragment) {
+        return '';
+      }
+
+      return (
+        <div className="doc-edit-symbol pull-right">
+          {this.props.urlFragment}
+        </div>
+      );
+    },
+
+    getCheckbox: function () {
+      return (
+        <div className="checkbox inline">
+          <input
+            id={'checkbox-' + this.props.docIdentifier}
+            checked={this.props.checked ? 'checked="checked"': null}
+            type="checkbox"
+            className="js-row-select" />
+          <label
+            className="label-checkbox-doclist"
+            htmlFor={'checkbox-' + this.props.docIdentifier} />
+        </div>
+      );
+    },
+
+    render: function () {
+      return (
+        <div className="doc-row">
+          <div className="custom-inputs">
+            {this.getCheckbox()}
+          </div>
+          <div className="doc-item">
+            <header>
+              <span className="header-keylabel">
+                {this.props.keylabel}
+              </span>
+              <span className="header-doc-id">
+                "{this.props.docIdentifier}"
+              </span>
+              {this.getUrlFragment()}
+            </header>
+            <div className="doc-data">
+              <pre className="prettyprint">{this.props.docContent}</pre>
+            </div>
+          </div>
+          <div className="clearfix"></div>
+
+        </div>
+      );
+    }
+  });
+
   var ReactComponents = {
     ToggleHeaderButton: ToggleHeaderButton,
     StyledSelect: StyledSelect,
     CodeEditor: CodeEditor,
     Beautify: Beautify,
     PaddedBorderedBox: PaddedBorderedBox
+    Document: Document
   };
 
   return ReactComponents;

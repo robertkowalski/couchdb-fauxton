@@ -10,8 +10,8 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-@import "../../../../../assets/less/variables.less";
-
-@import "header-togglebutton.less";
-@import "styled-select.less";
-@import "docs.less";
+define([], function () {
+  return {
+    MANGO_SHOW_INDEXLIST: 'MANGO_SHOW_INDEXLIST'
+  };
+});

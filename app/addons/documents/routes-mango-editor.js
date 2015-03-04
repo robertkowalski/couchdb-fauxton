@@ -21,20 +21,20 @@ define([
   'addons/documents/views-mango',
   'addons/databases/base',
   'addons/fauxton/components',
-  'addons/documents/shared-views'
+  'addons/documents/shared-views',
+  'addons/documents/resources',
+
 
 ],
 
 function (app, FauxtonAPI, Helpers,
-  BaseRoute, Documents, Mango, Databases, Components, SharedViews) {
+  BaseRoute, Documents, Mango, Databases, Components, SharedViews, Resources) {
 
 
   var MangoEditorAndResults = BaseRoute.extend({
     layout: 'two_pane',
     routes: {
-      'database/:database/_find': 'find',
-      'database/:database/_index': 'createIndex',
-      'database/:database/_list': 'listIndex',
+      'database/:database/_index': 'createIndex'
     },
 
     events: {
@@ -48,29 +48,6 @@ function (app, FauxtonAPI, Helpers,
       this.database = new Databases.Model({id: databaseName});
     },
 
-    find: function (databaseName) {
-
-      this.rightHeader = this.setView('#right-header', new Documents.Views.RightAllDocsHeader({
-        database: this.database
-      }));
-
-      this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
-        toggleDisabled: true,
-        crumbs: [
-          {'type': 'back', 'link': Helpers.getPreviousPage(this.database)},
-          {'name': this.database.id, 'link': Databases.databaseUrl(this.database) }
-        ]
-      }));
-
-      this.footer = this.setView('#footer', new Documents.Views.Footer());
-
-      this.apiUrl = function () {
-        return ['foo', 'bar'];
-      };
-
-      //this.showQueryOptions(urlParams, ddoc, viewName);
-    },
-
     createIndex: function (database, _designDoc) {
       this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
         toggleDisabled: true,
@@ -80,21 +57,13 @@ function (app, FauxtonAPI, Helpers,
         ]
       }));
 
-      this.resultList = this.setView('#dashboard-lower-content', new SharedViews.ViewResultListReact({
-        documents: null
+      this.resultList = this.setView('#dashboard-lower-content', new Mango.MangoIndexListReact({
+        collection: new Resources.MangoIndexCollection({database: this.database})
       }));
 
-      this.mangoEditor = this.setView('#left-content', new Mango.MangoIndexEditorReact({
-        database: this.database
-      }));
-
-      this.apiUrl = function () {
-        return ['foo', 'bar'];
-      };
-    },
-
-    listIndex: function () {
-
+      //this.mangoEditor = this.setView('#left-content', new Mango.MangoIndexEditorReact({
+      //  database: this.database
+      //}));
 
       this.apiUrl = function () {
         return ['foo', 'bar'];

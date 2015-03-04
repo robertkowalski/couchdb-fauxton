@@ -72,6 +72,41 @@ function(app, FauxtonAPI, Documents, PagingCollection) {
     }
   });
 
+  Documents.MangoIndex = Documents.Doc.extend({});
+  Documents.MangoIndexCollection = FauxtonAPI.Collection.extend({
+    model: Documents.MangoIndex,
+    initialize: function(options) {
+      this.database = options.database;
+      this.params = _.extend({limit: 20}, options.params);
+    },
+
+    url: function () {
+      return this.urlRef.apply(this, arguments);
+    },
+
+    parse: function (res) {
+      return res.indexes;
+    },
+
+    urlRef: function (params) {
+      var query = '',
+          database = this.database.safeID();
+
+      if (params) {
+        if (!_.isEmpty(params)) {
+          query = '?' + $.param(params);
+        } else {
+          query = '';
+        }
+      } else if (this.params) {
+        var parsedParam = Documents.QueryParams.stringify(this.params);
+        query = '?' + $.param(parsedParam);
+      }
+
+      return FauxtonAPI.urls('mango', 'index-apiurl', database, query);
+    }
+  });
+
   Documents.NewDoc = Documents.Doc.extend({
     fetch: function() {
       var uuid = new FauxtonAPI.UUID();

@@ -110,5 +110,16 @@ function(app, FauxtonAPI, Documents) {
       return '/database/' + database + '/' ;
     },
   });
+
+  FauxtonAPI.registerUrls('mango', {
+    'index-apiurl': function (id, query) {
+      return window.location.origin + '/' + id + '/_index' + query;
+    },
+
+    'index-new-app': function (id, query) {
+      return 'database/' + id + '/_index' + (query ? query : '');
+    }
+  });
+
   return Documents;
 });

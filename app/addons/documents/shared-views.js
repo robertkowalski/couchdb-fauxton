@@ -72,6 +72,17 @@ function(app, FauxtonAPI, Components, Documents, Databases) {
           databaseName = database.id,
           newUrlPrefix = '#' + FauxtonAPI.urls('databaseBaseURL','app', databaseName);
 
+
+      //var showMango = (/\?beta=showquery/).test(window.location.hash.toLowerCase());
+      var mango = [];
+      if (true) {
+        mango.push({
+          title: 'New Query Index',
+          url: FauxtonAPI.urls('mango', 'index-new-app', databaseName),
+          icon: 'fonticon-plus-circled'
+        });
+      }
+
       return _.reduce(addLinks, function (menuLinks, link) {
 
         menuLinks.push({
@@ -79,6 +90,8 @@ function(app, FauxtonAPI, Components, Documents, Databases) {
           url: newUrlPrefix + '/' + link.url,
           icon: 'fonticon-plus-circled'
         });
+
+
 
         return menuLinks;
      }, [{
@@ -89,7 +102,7 @@ function(app, FauxtonAPI, Components, Documents, Databases) {
           title: 'New View',
           url: newUrlPrefix + '/new_view',
           icon: 'fonticon-plus-circled'
-        }]);
+        }].concat(mango));
     },
 
     beforeRender: function(manage) {

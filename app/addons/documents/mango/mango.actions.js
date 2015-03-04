@@ -10,8 +10,19 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-@import "../../../../../assets/less/variables.less";
-
-@import "header-togglebutton.less";
-@import "styled-select.less";
-@import "docs.less";
+define([
+  'app',
+  'api',
+  'addons/documents/resources',
+  'addons/documents/mango/mango.actiontypes'
+],
+function (app, FauxtonAPI, Documents, ActionTypes) {
+  return {
+    setIndexes: function (options) {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.MANGO_SHOW_INDEXLIST,
+        options: options
+      });
+    }
+  };
+});
