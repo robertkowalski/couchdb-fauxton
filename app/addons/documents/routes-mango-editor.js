@@ -20,11 +20,13 @@ define([
   'addons/documents/views',
   'addons/documents/views-mango',
   'addons/databases/base',
-  'addons/fauxton/components'
+  'addons/fauxton/components',
+  'addons/documents/shared-views'
 
 ],
 
-function (app, FauxtonAPI, Helpers, BaseRoute, Documents, Mango, Databases, Components) {
+function (app, FauxtonAPI, Helpers,
+  BaseRoute, Documents, Mango, Databases, Components, SharedViews) {
 
 
   var MangoEditorAndResults = BaseRoute.extend({
@@ -78,7 +80,7 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Documents, Mango, Databases, Comp
         ]
       }));
 
-      this.resultList = this.setView('#dashboard-lower-content', new Index.ViewResultListReact({
+      this.resultList = this.setView('#dashboard-lower-content', new SharedViews.ViewResultListReact({
         documents: null
       }));
 
