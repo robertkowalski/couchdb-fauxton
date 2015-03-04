@@ -42,10 +42,6 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
     },
 
     getIndexList: function () {
-      if (!this.state || !this.state.indexes) {
-        return;
-      }
-
       return this.state.indexes.reduce(function (acc, key) {
         var content = JSON.stringify({
           def: key.def
