@@ -26,6 +26,7 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
 
   var Document = ReactComponents.Document;
   var PaddedBorderedBox = ReactComponents.PaddedBorderedBox;
+  var CodeEditor = ReactComponents.CodeEditor;
 
   var MangoIndexListController = React.createClass({
     getInitialState: function () {
@@ -72,12 +73,33 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
   });
 
   var MangoIndexEditorController = React.createClass({
+    getInitialState: function () {
+      return this.getStoreState();
+    },
+
+    getStoreState: function () {
+      return {
+        queryCode: mangoStore.getQueryCode()
+      };
+    },
+
     render: function () {
       return (
-        <PaddedBorderedBox>
-          <div>foo</div>
-        </PaddedBorderedBox>
-
+        <div className="editor-wrapper span5 scrollable">
+          <PaddedBorderedBox>
+            CouchDB Query is an easy way to find documents on predefined indexes.
+          </PaddedBorderedBox>
+          <PaddedBorderedBox>
+            <strong>Database</strong>
+            <div className="db-title">Test-DB</div>
+          </PaddedBorderedBox>
+          <CodeEditor
+            id={'query-function'}
+            ref="indexQueryEditor"
+            title={'Index'}
+            docs={false}
+            code={this.state.queryCode} />
+        </div>
       );
     }
   });
