@@ -93,12 +93,14 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
             <strong>Database</strong>
             <div className="db-title">Test-DB</div>
           </PaddedBorderedBox>
-          <CodeEditor
-            id={'query-function'}
-            ref="indexQueryEditor"
-            title={'Index'}
-            docs={false}
-            code={this.state.queryCode} />
+          <PaddedBorderedBox>
+            <CodeEditor
+              id={'query-function'}
+              ref="indexQueryEditor"
+              title={'Index'}
+              docs={false}
+              code={this.state.queryCode} />
+          </PaddedBorderedBox>
         </div>
       );
     }
