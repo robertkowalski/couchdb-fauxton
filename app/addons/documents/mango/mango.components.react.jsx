@@ -45,15 +45,12 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
     },
 
     componentDidMount: function () {
+      prettyPrint();
       mangoStore.on('change', this.onChange, this);
     },
 
     componentWillUnmount: function() {
       mangoStore.off('change', this.onChange);
-    },
-
-    componentDidMount: function() {
-      prettyPrint();
     },
 
     getIndexList: function () {

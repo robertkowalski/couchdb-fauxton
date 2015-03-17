@@ -54,7 +54,7 @@ define([
     beforeEach(function () {
       container = document.createElement('div');
       indexCollection = new Resources.MangoIndexCollection(fakeData);
-      Actions.setIndexes({indexes: indexCollection});
+      Actions.setIndexesCollection({indexes: indexCollection});
     });
 
     afterEach(function () {
