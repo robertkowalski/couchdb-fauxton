@@ -72,10 +72,23 @@ function(app, FauxtonAPI, Documents, PagingCollection) {
     }
   });
 
-  Documents.MangoIndex = Documents.Doc.extend({});
+  Documents.MangoIndex = FauxtonAPI.Model.extend({
+    idAttribute: 'name',
+
+    initialize: function (_model, options) {
+      this.database = options.database;
+    },
+
+    url: function () {
+      var database = this.database.safeID();
+
+      return FauxtonAPI.urls('mango', 'index-apiurl', database);
+    }
+  });
+
   Documents.MangoIndexCollection = FauxtonAPI.Collection.extend({
     model: Documents.MangoIndex,
-    initialize: function(options) {
+    initialize: function (options) {
       this.database = options.database;
       this.params = _.extend({limit: 20}, options.params);
     },

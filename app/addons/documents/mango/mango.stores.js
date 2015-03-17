@@ -41,12 +41,31 @@ var defaultQuery = '{\n' +
       return defaultQuery;
     },
 
+    setDatabase: function (options) {
+      this._database = options.database;
+    },
+
+    getDatabase: function () {
+      return this._database;
+    },
+
     dispatch: function (action) {
       switch (action.type) {
         case ActionTypes.MANGO_SHOW_INDEXLIST:
           this.setIndexes(action.options);
           this.triggerChange();
         break;
+
+        case ActionTypes.MANGO_SET_DB:
+          this.setDatabase(action.options);
+          this.triggerChange();
+        break;
+
+        case ActionTypes.MANGO_SAVE_QUERY:
+          t//his.setIndexes(action.options);
+          this.triggerChange();
+        break;
+
       }
     }
 

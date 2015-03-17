@@ -27,6 +27,7 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
   var Document = ReactComponents.Document;
   var PaddedBorderedBox = ReactComponents.PaddedBorderedBox;
   var CodeEditor = ReactComponents.CodeEditor;
+  var ConfirmButton = ReactComponents.ConfirmButton;
 
   var MangoIndexListController = React.createClass({
     getInitialState: function () {
@@ -79,8 +80,21 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
 
     getStoreState: function () {
       return {
-        queryCode: mangoStore.getQueryCode()
+        queryCode: mangoStore.getQueryCode(),
+        database: mangoStore.getDatabase(),
       };
+    },
+
+    onChange: function () {
+      this.setState(this.getStoreState());
+    },
+
+    componentDidMount: function () {
+      mangoStore.on('change', this.onChange, this);
+    },
+
+    componentWillUnmount: function() {
+      mangoStore.off('change', this.onChange);
     },
 
     render: function () {
@@ -93,16 +107,57 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
             <strong>Database</strong>
             <div className="db-title">Test-DB</div>
           </PaddedBorderedBox>
-          <PaddedBorderedBox>
-            <CodeEditor
-              id={'query-function'}
-              ref="indexQueryEditor"
-              title={'Index'}
-              docs={false}
-              code={this.state.queryCode} />
-          </PaddedBorderedBox>
+          <form className="form-horizontal" onSubmit={this.saveQuery}>
+            <PaddedBorderedBox>
+              <CodeEditor
+                id={'query-function'}
+                ref="indexQueryEditor"
+                title={'Index'}
+                docs={false}
+                code={this.state.queryCode} />
+            </PaddedBorderedBox>
+            <div className="padded-box">
+              <div className="control-group">
+                <ConfirmButton text="Create Index" />
+              </div>
+            </div>
+          </form>
         </div>
       );
+    },
+
+    getEditor: function () {
+      return this.refs.indexQueryEditor.getEditor();
+    },
+
+    hasValidCode: function() {
+      var editor = this.getEditor();
+      return editor.hadValidCode();
+    },
+
+    clearNotifications: function () {
+      var editor = this.getEditor();
+      editor.editSaved();
+    },
+
+    saveQuery: function (event) {
+      event.preventDefault();
+
+      if (!this.hasValidCode()) {
+        FauxtonAPI.addNotification({
+          msg:  'Please fix the Javascript errors and try again.',
+          type: 'error',
+          clear: true
+        });
+        return;
+      }
+
+      this.clearNotifications();
+
+      Actions.saveQuery({
+        database: this.state.database,
+        queryCode: this.refs.indexQueryEditor.getValue()
+      });
     }
   });
 

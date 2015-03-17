@@ -47,10 +47,14 @@ function (FauxtonAPI, Mango, MangoActions, Resources) {
 
   Views.MangoIndexEditorReact = FauxtonAPI.View.extend({
     initialize: function (options) {
-
+      this.database = options.database;
     },
 
     afterRender: function () {
+      MangoActions.setDatabase({
+        database: this.database
+      });
+
       Mango.renderMangoIndexEditor(this.el);
     },
 

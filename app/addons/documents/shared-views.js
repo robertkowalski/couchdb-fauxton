@@ -78,7 +78,7 @@ function(app, FauxtonAPI, Components, Documents, Databases) {
       if (true) {
         mango.push({
           title: 'New Query Index',
-          url: FauxtonAPI.urls('mango', 'index-new-app', databaseName),
+          url: FauxtonAPI.urls('mango', 'index-app', databaseName),
           icon: 'fonticon-plus-circled'
         });
       }

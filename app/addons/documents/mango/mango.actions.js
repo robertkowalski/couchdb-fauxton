@@ -23,6 +23,37 @@ function (app, FauxtonAPI, Documents, ActionTypes) {
         type: ActionTypes.MANGO_SHOW_INDEXLIST,
         options: options
       });
+    },
+
+    setDatabase: function (options) {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.MANGO_SET_DB,
+        options: options
+      });
+    },
+
+    saveQuery: function (options) {
+      var mangoIndex = new Documents.MangoIndex(JSON.parse(options.queryCode), {database: options.database});
+
+      FauxtonAPI.addNotification({
+        msg:  'Saving Index for Query...',
+        type: 'info',
+        clear: true
+      });
+
+      mangoIndex.save().then(function (res) {
+        var msg = res.result === 'created' ? 'Index created' : 'Index already exits',
+            url = FauxtonAPI.urls('mango', 'index-app', options.database.safeID());
+
+        FauxtonAPI.addNotification({
+          msg:  msg,
+          type: 'success',
+          clear: true
+        });
+
+        this.designDocs.fetch({reset: true});
+      });
+
     }
   };
 });

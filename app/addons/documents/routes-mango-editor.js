@@ -19,7 +19,7 @@ define([
   'addons/documents/shared-routes',
   'addons/documents/views',
   'addons/documents/views-mango',
-  'addons/databases/base',
+  'addons/databases/resources',
   'addons/fauxton/components',
   'addons/documents/shared-views',
   'addons/documents/resources',
@@ -37,10 +37,6 @@ function (app, FauxtonAPI, Helpers,
       'database/:database/_index': 'createIndex'
     },
 
-    events: {
-
-    },
-
     initialize: function (route, masterLayout, options) {
       var databaseName = options[0];
 
@@ -50,8 +46,8 @@ function (app, FauxtonAPI, Helpers,
 
     createIndex: function (database) {
       var params = this.createParams(),
-        urlParams = params.urlParams,
-        mangoIndexCollection = new Resources.MangoIndexCollection({database: this.database});
+          urlParams = params.urlParams,
+          mangoIndexCollection = new Resources.MangoIndexCollection({database: this.database});
 
       this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
         toggleDisabled: true,
