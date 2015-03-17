@@ -36,8 +36,20 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
 
     getStoreState: function () {
       return {
-        indexes: mangoStore.getIndexes()
+        indexes: mangoStore.getIndexesResults()
       };
+    },
+
+    onChange: function () {
+      this.setState(this.getStoreState());
+    },
+
+    componentDidMount: function () {
+      mangoStore.on('change', this.onChange, this);
+    },
+
+    componentWillUnmount: function() {
+      mangoStore.off('change', this.onChange);
     },
 
     componentDidMount: function() {

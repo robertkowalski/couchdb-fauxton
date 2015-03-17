@@ -33,8 +33,8 @@ function (FauxtonAPI, Mango, MangoActions, Resources) {
     },
 
     afterRender: function () {
-      MangoActions.setIndexes({
-        indexes: this.collection.toJSON()
+      MangoActions.setIndexesCollection({
+        indexes: this.collection
       });
 
       Mango.renderMangoIndexList(this.el);

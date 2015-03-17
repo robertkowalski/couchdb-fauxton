@@ -29,12 +29,16 @@ var defaultQuery = '{\n' +
 
   Stores.MangoStore = FauxtonAPI.Store.extend({
 
-    setIndexes: function (options) {
+    setIndexesCollection: function (options) {
       this._indexes = options.indexes;
     },
 
-    getIndexes: function () {
+    getIndexesCollection: function () {
       return this._indexes;
+    },
+
+    getIndexesResults: function () {
+      return this._indexes.toJSON();
     },
 
     getQueryCode: function () {
@@ -52,7 +56,7 @@ var defaultQuery = '{\n' +
     dispatch: function (action) {
       switch (action.type) {
         case ActionTypes.MANGO_SHOW_INDEXLIST:
-          this.setIndexes(action.options);
+          this.setIndexesCollection(action.options);
           this.triggerChange();
         break;
 
@@ -62,10 +66,13 @@ var defaultQuery = '{\n' +
         break;
 
         case ActionTypes.MANGO_SAVE_QUERY:
-          t//his.setIndexes(action.options);
+          this.setIndexesCollection(action.options);
           this.triggerChange();
         break;
 
+        case ActionTypes.MANGO_RESET_INDEX_LIST:
+          this.triggerChange();
+        break;
       }
     }
 
