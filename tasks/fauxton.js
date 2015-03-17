@@ -97,7 +97,6 @@ module.exports = function(grunt) {
         dest = "app/initialize.js"
         tmpl = _.template(grunt.file.read(template)),
         app = {};
-      
 
     _.defaults(app, settings.app, {
       root: '/',

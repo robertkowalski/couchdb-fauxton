@@ -110,7 +110,7 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
       return (
         <div className="editor-wrapper span5 scrollable">
           <PaddedBorderedBox>
-            CouchDB Query is an easy way to find documents on predefined indexes.
+            <div className="editor-description">{this.props.description}</div>
           </PaddedBorderedBox>
           <PaddedBorderedBox>
             <strong>Database</strong>
@@ -177,8 +177,11 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
     removeMangoIndexList: function (el) {
       React.unmountComponentAtNode(el);
     },
-    renderMangoIndexEditor: function (el) {
-      React.render(<MangoIndexEditorController />, el);
+    renderMangoIndexEditor: function (el, description) {
+      React.render(
+        <MangoIndexEditorController description={app.i18n.en_US['mango-descripton']} />,
+        el
+      );
     },
     removeMangoIndexEditor: function (el) {
       React.unmountComponentAtNode(el);

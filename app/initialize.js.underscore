@@ -26,7 +26,8 @@ function() {
     version: "<%= version %>",
     // Host is used as prefix for urls
     host: "<%= host %>",
-    zeroClipboardPath: "<%= zeroClipboardPath %>"
+    zeroClipboardPath: "<%= zeroClipboardPath %>",
+    i18n: <%= i18n %>
   };
 
   return app; 
