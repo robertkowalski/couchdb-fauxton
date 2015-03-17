@@ -17,15 +17,16 @@ define([
   'addons/documents/mango/mango.actions',
 
   'addons/documents/resources',
+  'addons/databases/resources',
+
   'testUtils',
   'react'
-], function (FauxtonAPI, Views, Stores, Actions, Resources, utils, React) {
+], function (FauxtonAPI, Views, Stores, MangoActions, Resources, Databases, utils, React) {
 
   var assert = utils.assert;
   var TestUtils = React.addons.TestUtils;
 
-  var fakeData = {
-    indexes: [
+  var fakeData = [
       {
         ddoc: '_design/e4d338e5d6f047749f5399ab998b4fa04ba0c816',
         def: {
@@ -46,32 +47,71 @@ define([
         name: '_all_docs',
         type: 'special'
       }
-    ]
-  };
+    ];
 
   describe('Mango ListController', function () {
-    var container, toggleEl, indexCollection;
+    var container, list, indexCollection;
     beforeEach(function () {
       container = document.createElement('div');
       indexCollection = new Resources.MangoIndexCollection(fakeData);
-      Actions.setIndexesCollection({indexes: indexCollection});
+      MangoActions.setIndexesCollection({indexes: indexCollection});
     });
 
     afterEach(function () {
       React.unmountComponentAtNode(container);
     });
 
-    it('render the elements', function () {
-      toggleEl = TestUtils.renderIntoDocument(<Views.MangoIndexListController />, container);
-      var $el = $(toggleEl.getDOMNode());
+    it('renders the elements', function () {
+      list = TestUtils.renderIntoDocument(<Views.MangoIndexListController />, container);
+      var $el = $(list.getDOMNode());
       var texts = [];
-      $el.find('header-doc-id').each(function () {
+      $el.find('.header-doc-id').each(function () {
         texts.push($(this).text());
       });
-      assert.ok(texts.indexOf !== -1, 'e4d338e5d6f047749f5399ab998b4fa04ba0c816', 'name present');
-      assert.ok(texts.indexOf !== -1, '_all_docs', 'name present');
+
+      assert.ok(texts.indexOf('"e4d338e5d6f047749f5399ab998b4fa04ba0c816"') !== -1, 'name present (id)');
+      assert.ok(texts.indexOf('"_all_docs"') !== -1, 'name present (all docs)');
+    });
+  });
+
+  describe('Mango IndexEditor', function () {
+    var database = new Databases.Model({id: 'testdb'}),
+        container,
+        editor;
+
+    beforeEach(function () {
+      container = document.createElement('div');
+      MangoActions.setDatabase({
+        database: database
+      });
+      $('body').append('<div id="query-field"></div>');
     });
 
+    afterEach(function () {
+      React.unmountComponentAtNode(container);
+      $('#query-field').remove();
+    });
+
+    it('renders a default index definition', function () {
+      editor = TestUtils.renderIntoDocument(<Views.MangoIndexEditorController description="foo" />, container);
+      var $el = $(editor.getDOMNode());
+      var payload = JSON.parse($el.find('.js-editor').text());
+      assert.equal(payload.index.fields[0], '_id');
+    });
+
+    it('renders the current database', function () {
+      editor = TestUtils.renderIntoDocument(<Views.MangoIndexEditorController description="foo" />, container);
+      var $el = $(editor.getDOMNode());
+
+      assert.equal($el.find('.db-title').text(), 'testdb');
+    });
+
+    it('renders a description', function () {
+      editor = TestUtils.renderIntoDocument(<Views.MangoIndexEditorController description="CouchDB Query is great!" />, container);
+      var $el = $(editor.getDOMNode());
+
+      assert.equal($el.find('.editor-description').text(), 'CouchDB Query is great!');
+    });
   });
 
 });

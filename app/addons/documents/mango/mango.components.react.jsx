@@ -114,12 +114,12 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
           </PaddedBorderedBox>
           <PaddedBorderedBox>
             <strong>Database</strong>
-            <div className="db-title">Test-DB</div>
+            <div className="db-title">{this.state.database.id}</div>
           </PaddedBorderedBox>
           <form className="form-horizontal" onSubmit={this.saveQuery}>
             <PaddedBorderedBox>
               <CodeEditor
-                id={'query-function'}
+                id="query-field"
                 ref="indexQueryEditor"
                 title={'Index'}
                 docs={false}
