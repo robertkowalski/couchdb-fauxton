@@ -89,8 +89,10 @@ function(app, FauxtonAPI, Documents, PagingCollection) {
   Documents.MangoIndexCollection = FauxtonAPI.Collection.extend({
     model: Documents.MangoIndex,
     initialize: function (options) {
+      var defaultLimit = FauxtonAPI.constants.MISC.DEFAULT_PAGE_SIZE;
+
       this.database = options.database;
-      this.params = _.extend({limit: 20}, options.params);
+      this.params = _.extend({limit: defaultLimit}, options.params);
     },
 
     url: function () {
