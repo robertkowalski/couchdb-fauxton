@@ -79,6 +79,11 @@ function(app, FauxtonAPI, Documents, PagingCollection) {
       this.database = options.database;
     },
 
+    isNew: function () {
+      // never use put
+      return true;
+    },
+
     url: function () {
       var database = this.database.safeID();
 

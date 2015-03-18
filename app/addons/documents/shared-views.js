@@ -130,7 +130,10 @@ function(app, FauxtonAPI, Components, Documents, Databases) {
       _.each(this.designDocList, function (view) { view.remove(); view = undefined;});
       this.designDocList = [];
 
-      this.collection.each(function(design) {
+      this.collection.each(function (design) {
+        if (design.get('doc').language === 'query') {
+          return;
+        }
         if (design.has('doc')){
           design.collection = this.collection;
           var view = this.insertView(new Views.DdocSidenav({

@@ -29,6 +29,7 @@ module.exports = {
           "index": {\
             "fields": ["ente_ente_mango"]\
           },\
+          "name": "rocko-artischocko",\
           "type" : "json"\
         }\';\
         var editor = ace.edit("query-field");\
