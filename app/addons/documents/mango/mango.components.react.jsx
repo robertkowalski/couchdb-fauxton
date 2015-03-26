@@ -49,7 +49,7 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
       mangoStore.on('change', this.onChange, this);
     },
 
-    componentWillUnmount: function() {
+    componentWillUnmount: function () {
       mangoStore.off('change', this.onChange);
     },
 
@@ -102,7 +102,7 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
       mangoStore.on('change', this.onChange, this);
     },
 
-    componentWillUnmount: function() {
+    componentWillUnmount: function () {
       mangoStore.off('change', this.onChange);
     },
 
@@ -139,7 +139,7 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
       return this.refs.indexQueryEditor.getEditor();
     },
 
-    hasValidCode: function() {
+    hasValidCode: function () {
       var editor = this.getEditor();
       return editor.hadValidCode();
     },

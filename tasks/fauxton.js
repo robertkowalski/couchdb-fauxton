@@ -94,7 +94,7 @@ module.exports = function (grunt) {
     var _ = grunt.util._,
         settings = this.data,
         template = "app/initialize.js.underscore",
-        dest = "app/initialize.js"
+        dest = "app/initialize.js",
         tmpl = _.template(grunt.file.read(template)),
         app = {};
 

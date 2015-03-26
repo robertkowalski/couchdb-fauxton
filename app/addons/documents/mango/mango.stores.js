@@ -18,12 +18,12 @@ define([
 function (FauxtonAPI, ActionTypes) {
 
 
-var defaultQuery = '{\n' +
-    '  "index": {\n' +
-    '    "fields": ["_id"]\n' +
-    '  },\n' +
-    '  "type" : "json"\n' +
-    '}';
+  var defaultQuery = '{\n' +
+      '  "index": {\n' +
+      '    "fields": ["_id"]\n' +
+      '  },\n' +
+      '  "type" : "json"\n' +
+      '}';
 
   var Stores = {};
 
