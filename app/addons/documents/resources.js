@@ -72,16 +72,20 @@ function (app, FauxtonAPI, Documents, PagingCollection) {
     }
   });
 
-  Documents.MangoIndex = FauxtonAPI.Model.extend({
+  Documents.MangoIndex = Documents.Doc.extend({
     idAttribute: 'name',
-
-    initialize: function (_model, options) {
-      this.database = options.database;
-    },
 
     isNew: function () {
       // never use put
       return true;
+    },
+
+    isEditable: function () {
+      return false;
+    },
+
+    isFromView: function () {
+      return false;
     },
 
     url: function () {

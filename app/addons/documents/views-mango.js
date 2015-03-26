@@ -13,35 +13,22 @@
 define([
   'api',
   'addons/documents/mango/mango.components.react',
-  'addons/documents/mango/mango.actions'
-
+  'addons/documents/mango/mango.actions',
+  'addons/documents/index-results/index-results.components.react'
 ],
 
-function (FauxtonAPI, Mango, MangoActions, Resources) {
+function (FauxtonAPI, Mango, MangoActions, ViewResultList) {
 
   var Views = {};
 
   Views.MangoIndexListReact = FauxtonAPI.View.extend({
-    initialize: function (options) {
-      this.collection = options.collection;
-    },
-
-    establish: function () {
-      return this.collection.fetch({
-        reset: true
-      });
-    },
 
     afterRender: function () {
-      MangoActions.setIndexesCollection({
-        indexes: this.collection
-      });
-
-      Mango.renderMangoIndexList(this.el);
+      ViewResultList.renderViewResultList(this.el);
     },
 
     cleanup: function () {
-      Mango.removeMangoIndexList(this.el);
+      ViewResultList.removeViewResultList(this.el);
     }
   });
 

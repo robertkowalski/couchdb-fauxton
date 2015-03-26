@@ -15,9 +15,11 @@ define([
   'api',
   'addons/documents/resources',
   'addons/documents/mango/mango.actiontypes',
-  'addons/documents/mango/mango.stores'
+  'addons/documents/mango/mango.stores',
+  'addons/documents/index-results/actions'
+
 ],
-function (app, FauxtonAPI, Documents, ActionTypes, Stores) {
+function (app, FauxtonAPI, Documents, ActionTypes, Stores, IndexResultsActions) {
   var store = Stores.mangoStore;
 
   return {
@@ -32,14 +34,6 @@ function (app, FauxtonAPI, Documents, ActionTypes, Stores) {
       FauxtonAPI.dispatch({
         type: ActionTypes.MANGO_SET_DB,
         options: options
-      });
-    },
-
-    refetchIndexes: function () {
-      store.getIndexesCollection().fetch({reset: true}).then(function () {
-        FauxtonAPI.dispatch({
-          type: ActionTypes.MANGO_RESET_INDEX_LIST
-        });
       });
     },
 
@@ -62,7 +56,7 @@ function (app, FauxtonAPI, Documents, ActionTypes, Stores) {
           clear: true
         });
 
-        this.refetchIndexes();
+        IndexResultsActions.reloadResultsList();
       }.bind(this));
 
     }

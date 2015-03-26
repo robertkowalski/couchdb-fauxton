@@ -43,10 +43,9 @@ function (app, FauxtonAPI, React, Stores, Actions, Components, Documents) {
     },
 
     getUrlFragment: function (url) {
-      if (this.props.hasReduce) {
+      if (!this.props.isEditable) {
         return null;
       }
-
 
       return (
         <a href={url}>
@@ -107,7 +106,7 @@ function (app, FauxtonAPI, React, Stores, Actions, Components, Documents) {
         results: store.getResults(),
         isDeleteable: store.isDeleteable(),
         isSelected: store.isSelected,
-        hasReduce: store.hasReduce()
+        isEditable: store.isEditable()
       };
     },
 
@@ -142,7 +141,7 @@ function (app, FauxtonAPI, React, Stores, Actions, Components, Documents) {
         view = <ResultsScreen
           isCollapsed={this.isCollapsed}
           isSelected={this.isSelected}
-          hasReduce={this.state.hasReduce}
+          isEditable={this.state.isEditable}
           isDeleteable={this.state.isDeleteable}
           docChecked={this.docChecked}
           results={this.state.results} />;

@@ -17,18 +17,18 @@ define([
   // Modules
   'addons/documents/helpers',
   'addons/documents/shared-routes',
-  'addons/documents/views',
   'addons/documents/views-mango',
   'addons/databases/resources',
   'addons/fauxton/components',
   'addons/documents/shared-views',
   'addons/documents/resources',
 
+  'addons/documents/index-results/actions'
 
 ],
 
 function (app, FauxtonAPI, Helpers,
-  BaseRoute, Documents, Mango, Databases, Components, SharedViews, Resources) {
+  BaseRoute, Mango, Databases, Components, SharedViews, Resources, IndexResultsActions) {
 
 
   var MangoEditorAndResults = BaseRoute.extend({
@@ -49,6 +49,12 @@ function (app, FauxtonAPI, Helpers,
           urlParams = params.urlParams,
           mangoIndexCollection = new Resources.MangoIndexCollection({database: this.database});
 
+      IndexResultsActions.newResultsList({
+        collection: mangoIndexCollection,
+        deleteable: false
+      });
+
+
       this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
         toggleDisabled: true,
         crumbs: [
@@ -57,9 +63,7 @@ function (app, FauxtonAPI, Helpers,
         ]
       }));
 
-      this.resultList = this.setView('#dashboard-lower-content', new Mango.MangoIndexListReact({
-        collection: mangoIndexCollection
-      }));
+      this.resultList = this.setView('#dashboard-lower-content', new Mango.MangoIndexListReact());
 
       this.mangoEditor = this.setView('#left-content', new Mango.MangoIndexEditorReact({
         database: this.database

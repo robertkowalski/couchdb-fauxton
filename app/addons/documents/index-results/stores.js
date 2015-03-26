@@ -49,11 +49,16 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
       this.clearCollapsedDocs();
     },
 
-    hasReduce: function () {
+    isEditable: function () {
       if (!this._collection || !this._collection.params) {
-        return false;
+        return true;
       }
-      return this._collection.params.reduce;
+
+      if (!this._collection.params.reduce) {
+        return true;
+      }
+
+      return false;
     },
 
     getCollection: function () {

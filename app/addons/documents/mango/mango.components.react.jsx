@@ -24,63 +24,9 @@ define([
 function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
   var mangoStore = Stores.mangoStore;
 
-  var Document = ReactComponents.Document;
   var PaddedBorderedBox = ReactComponents.PaddedBorderedBox;
   var CodeEditor = ReactComponents.CodeEditor;
   var ConfirmButton = ReactComponents.ConfirmButton;
-
-  var MangoIndexListController = React.createClass({
-    getInitialState: function () {
-      return this.getStoreState();
-    },
-
-    getStoreState: function () {
-      return {
-        indexes: mangoStore.getIndexesResults()
-      };
-    },
-
-    onChange: function () {
-      this.setState(this.getStoreState());
-    },
-
-    componentDidMount: function () {
-      prettyPrint();
-      mangoStore.on('change', this.onChange, this);
-    },
-
-    componentWillUnmount: function () {
-      mangoStore.off('change', this.onChange);
-    },
-
-    getIndexList: function () {
-      return this.state.indexes.reduce(function (acc, key) {
-        var content = JSON.stringify({
-          def: key.def
-        }, null, ' ');
-
-        acc.push(
-          <Document
-            key={key.name}
-            checked={null}
-            docIdentifier={key.name}
-            keylabel="name: "
-            docContent={content} />
-        );
-
-        return acc;
-      }, []);
-    },
-
-    render: function () {
-      return (
-        <div id="doc-list">
-          {this.getIndexList()}
-        </div>
-      );
-    }
-
-  });
 
   var MangoIndexEditorController = React.createClass({
     getInitialState: function () {
@@ -171,12 +117,6 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
   });
 
   var Views = {
-    renderMangoIndexList: function (el) {
-      React.render(<MangoIndexListController />, el);
-    },
-    removeMangoIndexList: function (el) {
-      React.unmountComponentAtNode(el);
-    },
     renderMangoIndexEditor: function (el, description) {
       React.render(
         <MangoIndexEditorController description={app.i18n.en_US['mango-descripton']} />,
@@ -186,7 +126,6 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
     removeMangoIndexEditor: function (el) {
       React.unmountComponentAtNode(el);
     },
-    MangoIndexListController: MangoIndexListController,
     MangoIndexEditorController: MangoIndexEditorController
   };
 
