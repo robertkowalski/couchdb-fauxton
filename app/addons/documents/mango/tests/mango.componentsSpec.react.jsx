@@ -90,4 +90,43 @@ define([
     });
   });
 
+  describe('Mango QueryEditor', function () {
+    var database = new Databases.Model({id: 'testdb'}),
+        container,
+        editor;
+
+    beforeEach(function () {
+      container = document.createElement('div');
+      MangoActions.setDatabase({
+        database: database
+      });
+      $('body').append('<div id="query-field"></div>');
+    });
+
+    afterEach(function () {
+      React.unmountComponentAtNode(container);
+      $('#query-field').remove();
+    });
+
+    it('renders a default query', function () {
+      editor = TestUtils.renderIntoDocument(<Views.MangoQueryEditorController description="foo" />, container);
+      var $el = $(editor.getDOMNode());
+      var payload = JSON.parse($el.find('.js-editor').text());
+      assert.equal(Object.keys(payload.selector)[0], '_id');
+    });
+
+    it('renders the current database', function () {
+      editor = TestUtils.renderIntoDocument(<Views.MangoQueryEditorController description="foo" />, container);
+      var $el = $(editor.getDOMNode());
+
+      assert.equal($el.find('.db-title').text(), 'testdb');
+    });
+
+    it('renders a description', function () {
+      editor = TestUtils.renderIntoDocument(<Views.MangoQueryEditorController description="CouchDB Query is great!" />, container);
+      var $el = $(editor.getDOMNode());
+
+      assert.equal($el.find('.editor-description').text(), 'CouchDB Query is great!');
+    });
+  });
 });

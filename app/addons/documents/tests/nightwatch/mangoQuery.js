@@ -12,26 +12,23 @@
 
 module.exports = {
 
-  'Creating new indexes with mango': function (client) {
+  'Finding things with with mango': function (client) {
     /*jshint multistr: true */
-    var waitTime = client.globals.maxWaitTime,
+    var waitTime = 10000,
         newDatabaseName = client.globals.testDatabaseName,
         baseUrl = client.globals.test_settings.launch_url;
 
     client
       .populateDatabase(newDatabaseName)
       .loginToGUI()
-      .url(baseUrl + '/#/database/' + newDatabaseName + '/_index')
+      .url(baseUrl + '/#/database/' + newDatabaseName + '/_find')
       .waitForElementPresent('.watermark-logo', waitTime, false)
-      .assert.containsText('.watermark-logo', 'Mango')
       .assert.containsText('.editor-description', 'is an easy way to find documents on predefined indexes')
       .execute('\
         var json = \'{\
-          "index": {\
-            "fields": ["ente_ente_mango"]\
-          },\
-          "name": "rocko-artischocko",\
-          "type" : "json"\
+          "selector": {\
+            "ente_ente_mango_ananas": {"$gt": null}\
+          }\
         }\';\
         var editor = ace.edit("query-field");\
         editor.getSession().setValue(json);\
@@ -39,9 +36,9 @@ module.exports = {
       .execute('$(".save")[0].scrollIntoView();')
       .click('button.btn-success.save')
 
-      .waitForElementNotVisible('.global-notification', waitTime, false)
       .waitForElementPresent('.prettyprint', waitTime, false)
-      .assert.containsText('#dashboard-lower-content', 'ente_ente_mango')
+      .assert.containsText('#dashboard-lower-content', 'number')
+      .assert.containsText('#dashboard-lower-content', 'ente_ente_mango_ananas_res')
     .end();
   }
 };

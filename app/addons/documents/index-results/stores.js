@@ -33,6 +33,9 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
       this.clearCollapsedDocs();
       this._isLoading = false;
       this._textEmptyIndex = 'No Index Created Yet!';
+      this._typeOfIndex = 'view';
+      this._lastQuery = null;
+      this._bulkDeleteDocCollection = null;
     },
 
     clearSelectedItems: function () {
@@ -49,9 +52,27 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
       this.clearSelectedItems();
       this.clearCollapsedDocs();
 
+      this._bulkDeleteDocCollection = options.bulkCollection;
+
       if (options.textEmptyIndex) {
         this._textEmptyIndex = options.textEmptyIndex;
       }
+
+      if (options.typeOfIndex) {
+        this._typeOfIndex = options.typeOfIndex;
+      }
+
+      if (options.query) {
+        this._lastQuery = options.query;
+      }
+    },
+
+    getTypeOfIndex: function () {
+      return this._typeOfIndex;
+    },
+
+    getLastQuery: function () {
+      return this._lastQuery;
     },
 
     isEditable: function (doc) {
@@ -168,6 +189,10 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
       return this._textEmptyIndex;
     },
 
+    setbulkDeleteDocCollection: function (bulkDeleteDocCollection) {
+      this._bulkDeleteDocCollection = bulkDeleteDocCollection;
+    },
+
     createBulkDeleteFromSelected: function () {
       var items = _.map(_.keys(this._selectedItems), function (id) {
         var doc = this._collection.get(id);
@@ -179,7 +204,7 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
         };
       }, this);
 
-      var bulkDelete = new Documents.BulkDeleteDocCollection(items, {
+      var bulkDelete = new this._bulkDeleteDocCollection(items, {
         databaseId: this.getDatabase().safeID()
       });
 

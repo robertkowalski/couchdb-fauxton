@@ -76,7 +76,7 @@ function (app, FauxtonAPI, React, Components, beautifyHelper) {
 
     getTitleFragment: function () {
       if (!this.props.docs) {
-        return <strong>{this.props.title}</strong>;
+        return (<strong>{this.props.title}</strong>);
       }
 
       return (

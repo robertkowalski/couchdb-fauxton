@@ -18,19 +18,29 @@ define([
 function (FauxtonAPI, ActionTypes) {
 
 
-  var defaultQuery = '{\n' +
+  var defaultQueryIndexCode = '{\n' +
       '  "index": {\n' +
       '    "fields": ["_id"]\n' +
       '  },\n' +
       '  "type" : "json"\n' +
       '}';
 
+  var defaultQueryFindCode = '{\n' +
+      '  "selector": {\n' +
+      '    "_id": {"$gt": null}\n' +
+      '  }\n' +
+      '}';
+
   var Stores = {};
 
   Stores.MangoStore = FauxtonAPI.Store.extend({
 
-    getQueryCode: function () {
-      return defaultQuery;
+    getQueryIndexCode: function () {
+      return defaultQueryIndexCode;
+    },
+
+    getQueryFindCode: function () {
+      return defaultQueryFindCode;
     },
 
     setDatabase: function (options) {

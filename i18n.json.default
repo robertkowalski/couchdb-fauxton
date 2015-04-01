@@ -3,6 +3,8 @@
     "mango-descripton": "Mango is an easy way to find documents on predefined indexes.",
     "all-mango-indexes": "All Mango Indexes",
     "new-mango-index": "New Mango Index",
-    "mango-help-title": "Mango"
+    "mango-help-title": "Mango",
+    "run-query-with-mango": "Run A Query with Mango",
+    "mango-title-editor": "Mango Query"
   }
 }

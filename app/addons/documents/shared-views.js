@@ -42,8 +42,6 @@ function (app, FauxtonAPI, Components, Documents, Databases) {
 
     serialize: function () {
       var docLinks = FauxtonAPI.getExtensions('docLinks'),
-          newLinks = FauxtonAPI.getExtensions('sidebar:newLinks'),
-          addLinks = FauxtonAPI.getExtensions('sidebar:links'),
           extensionList = FauxtonAPI.getExtensions('sidebar:list'),
           safeDatabaseName = this.database.safeID(),
           changesLink = '#' + FauxtonAPI.urls('changes', 'app', safeDatabaseName, ''),
@@ -53,17 +51,15 @@ function (app, FauxtonAPI, Components, Documents, Databases) {
           base = FauxtonAPI.urls('base', 'app', safeDatabaseName);
 
       return {
-        changes_url: changesLink,
-        permissions_url: permissionsLink,
-        db_url: db_url,
-        database_url: '#' + databaseUrl,
-        database: this.collection.database,
+        changesUrl: changesLink,
+        permissionsUrl: permissionsLink,
         docLinks: docLinks,
-        addLinks: addLinks,
-        newLinks: newLinks,
-        extensionList: extensionList > 0,
         databaseUrl: databaseUrl,
-        base: base
+        base: base,
+        mangoIndexListUrl: FauxtonAPI.urls('mango', 'index-list-app', safeDatabaseName),
+        mangoQueryUrl: FauxtonAPI.urls('mango', 'query-app', safeDatabaseName),
+        allMangoIndexesText: app.i18n.en_US['all-mango-indexes'],
+        runQueryWithMangoText: app.i18n.en_US['run-query-with-mango']
       };
     },
 
@@ -90,6 +86,10 @@ function (app, FauxtonAPI, Components, Documents, Databases) {
         title: 'New View',
         url: newUrlPrefix + '/new_view',
         icon: 'fonticon-plus-circled'
+      }, {
+        title: app.i18n.en_US['new-mango-index'],
+        url: newUrlPrefix + '/_index',
+        icon: 'fonticon-plus-circled'
       }]);
     },
 
@@ -107,13 +107,16 @@ function (app, FauxtonAPI, Components, Documents, Databases) {
         links: this.getNewButtonLinks()
       }];
 
-      this.setView("#new-all-docs-button", new Components.MenuDropDown({
-        links: newLinks,
-      }));
-
-      this.setView("#new-design-docs-button", new Components.MenuDropDown({
-        links: newLinks,
-      }));
+      [
+        '#new-all-docs-button',
+        '#new-design-docs-button',
+        '#mango-query-button',
+        '#mango-index-list-button'
+      ].forEach(function (id) {
+        this.setView(id, new Components.MenuDropDown({
+          links: newLinks,
+        }));
+      }.bind(this));
 
       _.each(this.designDocList, function (view) { view.remove(); view = undefined;});
       this.designDocList = [];
