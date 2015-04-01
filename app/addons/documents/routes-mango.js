@@ -26,11 +26,12 @@ define([
 
   'addons/documents/index-results/actions',
   'addons/documents/pagination/stores',
+  'addons/documents/mango/mango.actions'
 
 ],
 
 function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
-  Components, Resources, Documents, IndexResultsActions, PaginationStores) {
+  Components, Resources, Documents, IndexResultsActions, PaginationStores, MangoActions) {
 
   var MangoIndexList = BaseRoute.extend({
     layout: 'with_tabs_sidebar',
@@ -39,7 +40,6 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
         route: 'mangoIndexList',
         roles: ['fx_loggedIn']
       },
-
     },
 
     establish: function () {
@@ -76,14 +76,12 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
             }
           });
 
-      this.viewEditor && this.viewEditor.remove();
-      this.headerView && this.headerView.remove();
-
       this.sidebar.setSelectedTab('mango-indexes');
 
       IndexResultsActions.newResultsList({
         collection: mangoIndexCollection,
-        isListDeletable: false
+        isListDeletable: true,
+        bulkCollection: Documents.MangoBulkDeleteDocCollection
       });
 
       this.reactHeader = this.setView('#react-headerbar', new Documents.Views.ReactHeaderbar());
@@ -94,25 +92,80 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
       this.resultList = this.setView('#dashboard-lower-content', new Mango.MangoIndexListReact());
 
       this.apiUrl = function () {
-        return [mangoIndexCollection.urlRef(urlParams), FauxtonAPI.constants.DOC_URLS.GENERAL];
+        return [mangoIndexCollection.urlRef('index-apiurl', urlParams), FauxtonAPI.constants.DOC_URLS.MANGO];
       };
     }
   });
 
-  var MangoIndexEditorAndResults = BaseRoute.extend({
+  var MangoIndexEditorAndQueryEditor = BaseRoute.extend({
     layout: 'two_pane',
     routes: {
       'database/:database/_index': {
         route: 'createIndex',
         roles: ['fx_loggedIn']
-      }
+      },
+      'database/:database/_find': {
+        route: 'findUsingIndex',
+        roles: ['fx_loggedIn']
+      },
     },
 
     initialize: function (route, masterLayout, options) {
       var databaseName = options[0];
-
       this.databaseName = databaseName;
       this.database = new Databases.Model({id: databaseName});
+
+      // magic methods
+      this.allDatabases = this.getAllDatabases();
+      this.createDesignDocsCollection();
+      this.addLeftHeader();
+      this.addSidebar();
+
+      MangoActions.setDatabase({
+        database: this.database
+      });
+    },
+
+    findUsingIndex: function () {
+      var params = this.createParams(),
+          urlParams = params.urlParams,
+          mangoResultCollection = new Resources.MangoDocumentCollection(null, {
+            database: this.database,
+            params: params,
+            paging: {
+              pageSize: PaginationStores.indexPaginationStore.getPerPage()
+            }
+          });
+
+      // magic method
+      this.sidebar.setSelectedTab('mango-query');
+      this.reactHeader = this.setView('#react-headerbar', new Documents.Views.ReactHeaderbar());
+
+      IndexResultsActions.newMangoResultsList({
+        collection: mangoResultCollection,
+        isListDeletable: true,
+        typeOfIndex: 'mango',
+        textEmptyIndex: 'No Results',
+        bulkCollection: Documents.BulkDeleteDocCollection
+      });
+
+      this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
+        toggleDisabled: true,
+        crumbs: [
+          {'type': 'back', 'link': Helpers.getPreviousPage(this.database)},
+          {'name': 'Search and Query', 'link': Databases.databaseUrl(this.database) }
+        ]
+      }));
+
+      this.mangoEditor = this.setView('#left-content', new Mango.MangoQueryEditorReact({
+        database: this.database
+      }));
+
+      this.resultList = this.setView('#dashboard-lower-content', new Mango.MangoIndexListReact());
+
+      this.apiUrl = function () {
+        return [mangoResultCollection.urlRef('query-apiurl', urlParams), FauxtonAPI.constants.DOC_URLS.MANGO];
+      };
     },
 
     createIndex: function (database) {
@@ -124,7 +177,8 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
 
       IndexResultsActions.newResultsList({
         collection: mangoIndexCollection,
-        isListDeletable: false
+        isListDeletable: false,
+        bulkCollection: Documents.BulkDeleteDocCollection
       });
 
       this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
@@ -142,13 +196,13 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
       }));
 
       this.apiUrl = function () {
-        return [mangoIndexCollection.urlRef(urlParams), FauxtonAPI.constants.DOC_URLS.GENERAL];
+        return [mangoIndexCollection.urlRef('index-apiurl', urlParams), FauxtonAPI.constants.DOC_URLS.MANGO];
       };
     }
   });
 
   return {
-    MangoIndexEditorAndResults: MangoIndexEditorAndResults,
+    MangoIndexEditorAndQueryEditor: MangoIndexEditorAndQueryEditor,
     MangoIndexList: MangoIndexList
   };
 });

@@ -139,7 +139,8 @@ function (app, FauxtonAPI, BaseRoute, Documents, Changes, Index, DocEditor, Mang
         IndexResultsActions.newResultsList({
           collection: collection,
           isListDeletable: true,
-          textEmptyIndex: 'No Document Created Yet!'
+          textEmptyIndex: 'No Document Created Yet!',
+          bulkCollection: Documents.BulkDeleteDocCollection
         });
 
         this.database.allDocs.paging.pageSize = PaginationStores.indexPaginationStore.getPerPage();

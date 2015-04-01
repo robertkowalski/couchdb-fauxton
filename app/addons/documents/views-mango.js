@@ -13,13 +13,23 @@
 define([
   'api',
   'addons/documents/mango/mango.components.react',
-  'addons/documents/mango/mango.actions',
   'addons/documents/index-results/index-results.components.react'
 ],
 
-function (FauxtonAPI, Mango, MangoActions, ViewResultList) {
+function (FauxtonAPI, Mango, ViewResultList) {
 
   var Views = {};
+
+  Views.MangoQueryEditorReact = FauxtonAPI.View.extend({
+
+    afterRender: function () {
+      Mango.renderQueryEditor(this.el);
+    },
+
+    cleanup: function () {
+      Mango.removeQueryEditor(this.el);
+    }
+  });
 
 
   Views.HelpScreen = FauxtonAPI.View.extend({
@@ -45,15 +55,8 @@ function (FauxtonAPI, Mango, MangoActions, ViewResultList) {
   });
 
   Views.MangoIndexEditorReact = FauxtonAPI.View.extend({
-    initialize: function (options) {
-      this.database = options.database;
-    },
 
     afterRender: function () {
-      MangoActions.setDatabase({
-        database: this.database
-      });
-
       Mango.renderMangoIndexEditor(this.el);
     },
 

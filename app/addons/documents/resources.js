@@ -120,9 +120,13 @@ function (app, FauxtonAPI, Documents, PagingCollection) {
       return res.indexes;
     },
 
-    urlRef: function (params) {
+    urlRef: function (context, params) {
       var database = this.database.safeID(),
           query = '';
+
+      if (!context) {
+        context = 'index-server';
+      }
 
       if (params) {
         if (!_.isEmpty(params)) {
@@ -135,7 +139,84 @@ function (app, FauxtonAPI, Documents, PagingCollection) {
         query = '?' + $.param(parsedParam);
       }
 
-      return FauxtonAPI.urls('mango', 'index-apiurl', database, query);
+      return FauxtonAPI.urls('mango', context, database, query);
+    }
+  });
+
+  // MANGO INDEX EDITOR
+  Documents.MangoDocumentCollection = PagingCollection.extend({
+    model: Documents.Doc,
+    initialize: function (_attr, options) {
+      var defaultLimit = FauxtonAPI.constants.MISC.DEFAULT_PAGE_SIZE;
+
+      this.database = options.database;
+      this.params = _.extend({limit: defaultLimit}, options.params);
+    },
+
+    url: function () {
+      return this.urlRef.apply(this, arguments);
+    },
+
+    updateSeq: function () {
+      return false;
+    },
+
+    isEditable: function () {
+      return false;
+    },
+
+    parse: function (res) {
+
+      return res.docs;
+    },
+
+    runQuery: function (query) {
+      var url = this.urlRef(),
+                promise = FauxtonAPI.Deferred();
+      $.ajax({
+        type: 'POST',
+        url: url,
+        contentType: 'application/json',
+        dataType: 'json',
+        data: query,
+      })
+      .then(function (res) {
+        this.handleResponse(res, promise);
+      }.bind(this))
+      .fail(function (res) {
+        promise.reject(res.responseJSON);
+      }.bind(this));
+
+      return promise;
+    },
+
+    handleResponse: function (res, promise) {
+      var models = this.parse(res);
+
+      this.reset(models);
+      promise.resolve();
+    },
+
+    urlRef: function (context, params) {
+      var database = this.database.safeID(),
+          query = '';
+
+      if (!context) {
+        context = 'query-server';
+      }
+
+      if (params) {
+        if (!_.isEmpty(params)) {
+          query = '?' + $.param(params);
+        } else {
+          query = '';
+        }
+      } else if (this.params) {
+        var parsedParam = Documents.QueryParams.stringify(this.params);
+        query = '?' + $.param(parsedParam);
+      }
+
+      return FauxtonAPI.urls('mango', context, database, query);
     }
   });
 
@@ -171,6 +252,10 @@ function (app, FauxtonAPI, Documents, PagingCollection) {
       this.databaseId = options.databaseId;
     },
 
+    url: function () {
+      return app.host + '/' + this.databaseId + '/_bulk_docs';
+    },
+
     bulkDelete: function () {
       var payload = this.createPayload(this.toJSON()),
           promise = FauxtonAPI.Deferred(),
@@ -178,7 +263,7 @@ function (app, FauxtonAPI, Documents, PagingCollection) {
 
       $.ajax({
         type: 'POST',
-        url: app.host + '/' + this.databaseId + '/_bulk_docs',
+        url: this.url(),
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(payload),
@@ -252,6 +337,24 @@ function (app, FauxtonAPI, Documents, PagingCollection) {
         docs: documentList
       };
     }
+  });
+
+  Documents.MangoBulkDeleteDocCollection = Documents.BulkDeleteDocCollection.extend({
+    url: function () {
+      return app.host + '/' + this.databaseId + '/_index/_bulk_delete';
+    },
+
+    createPayload: function (documents) {
+      var documentList = documents.map(function (doc) {
+        return '_design/' + doc._id;
+      });
+
+      console.log(documentList);
+      return {
+        docids: documentList
+      };
+    }
+
   });
 
   Documents.IndexCollection = PagingCollection.extend({
@@ -490,6 +593,10 @@ function (app, FauxtonAPI, Documents, PagingCollection) {
     }, {
       title: 'New View',
       url: newUrlPrefix + '/new_view',
+      icon: 'fonticon-plus-circled'
+    }, {
+      title: app.i18n.en_US['new-mango-index'],
+      url: newUrlPrefix + '/_index',
       icon: 'fonticon-plus-circled'
     }];
 

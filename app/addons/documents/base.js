@@ -135,6 +135,38 @@ function (app, FauxtonAPI, Documents) {
       }
 
       return 'database/' + db + '/_index' + query;
+    },
+
+    'index-list-app': function (db, query) {
+      if (!query) {
+        query = '';
+      }
+
+      return 'database/' + db + '/_indexlist' + query;
+    },
+
+    'query-server': function (db, query) {
+      if (!query) {
+        query = '';
+      }
+
+      return app.host + '/' + db + '/_find' + query;
+    },
+
+    'query-apiurl': function (db, query) {
+      if (!query) {
+        query = '';
+      }
+
+      return window.location.origin + '/' + db + '/_find' + query;
+    },
+
+    'query-app': function (db, query) {
+      if (!query) {
+        query = '';
+      }
+
+      return 'database/' + db + '/_find' + query;
     }
   });
 

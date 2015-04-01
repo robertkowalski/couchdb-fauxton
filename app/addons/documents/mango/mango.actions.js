@@ -15,8 +15,7 @@ define([
   'api',
   'addons/documents/resources',
   'addons/documents/mango/mango.actiontypes',
-  'addons/documents/mango/mango.stores',
-  'addons/documents/index-results/actions'
+  'addons/documents/mango/mango.stores'
 
 ],
 function (app, FauxtonAPI, Documents, ActionTypes, Stores, IndexResultsActions) {
@@ -41,18 +40,24 @@ function (app, FauxtonAPI, Documents, ActionTypes, Stores, IndexResultsActions) 
       });
 
       mangoIndex.save().then(function (res) {
-        var msg = res.result === 'created' ? 'Index created' : 'Index already exits',
-            url = FauxtonAPI.urls('mango', 'index-app', options.database.safeID());
+        var msg = res.result === 'created' ? 'Index created.' : 'Index already exits.',
+            url = FauxtonAPI.urls('mango', 'query-app', options.database.safeID());
 
         FauxtonAPI.addNotification({
-          msg:  msg,
+          msg:  msg + ' Redirect to search...',
           type: 'success',
           clear: true
         });
 
-        IndexResultsActions.reloadResultsList();
+        window.setTimeout(function () {
+          FauxtonAPI.navigate(url);
+          FauxtonAPI.addNotification({
+            msg:  'Feel free to search now.',
+            type: 'success',
+            clear: true
+          });
+        }, 400);
       }.bind(this));
-
     }
   };
 });

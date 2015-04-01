@@ -291,6 +291,8 @@ define([
         }
       });
 
+      store._bulkDeleteDocCollection = Documents.BulkDeleteDocCollection;
+
       store._selectedItems = {
         'testId1': true,
         'testId2': true

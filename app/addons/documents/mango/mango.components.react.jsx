@@ -17,11 +17,12 @@ define([
   'addons/documents/mango/mango.stores',
   'addons/documents/mango/mango.actions',
   'addons/components/react-components.react',
+  'addons/documents/index-results/actions',
 
   'plugins/prettify'
 ],
 
-function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
+function (app, FauxtonAPI, React, Stores, Actions, ReactComponents, IndexResultActions) {
   var mangoStore = Stores.mangoStore;
 
   var PaddedBorderedBox = ReactComponents.PaddedBorderedBox;
@@ -42,14 +43,14 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
     }
   });
 
-  var MangoIndexEditorController = React.createClass({
+  var MangoQueryEditorController = React.createClass({
     getInitialState: function () {
       return this.getStoreState();
     },
 
     getStoreState: function () {
       return {
-        queryCode: mangoStore.getQueryCode(),
+        queryCode: mangoStore.getQueryFindCode(),
         database: mangoStore.getDatabase(),
       };
     },
@@ -66,6 +67,46 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
       mangoStore.off('change', this.onChange);
     },
 
+    getMangoEditor: function () {
+      return this.refs.mangoEditor;
+    },
+
+    render: function () {
+      return (
+        <MangoEditor
+          ref="mangoEditor"
+          description={this.props.description}
+          dbName={this.state.database.id}
+          onSubmit={this.runQuery}
+          title={this.props.editorTitle}
+          docs={FauxtonAPI.constants.DOC_URLS.MANGO}
+          exampleCode={this.state.queryCode}
+          confirmbuttonText="Run Query" />
+      );
+    },
+
+    runQuery: function (event) {
+      event.preventDefault();
+
+      if (!this.getMangoEditor().hasValidCode()) {
+        FauxtonAPI.addNotification({
+          msg:  'Please fix the Javascript errors and try again.',
+          type: 'error',
+          clear: true
+        });
+        return;
+      }
+
+      this.getMangoEditor().clearNotifications();
+
+      IndexResultActions.runMangoFindQuery({
+        database: this.state.database,
+        queryCode: this.getMangoEditor().getEditorValue()
+      });
+    }
+  });
+
+  var MangoEditor = React.createClass({
     render: function () {
       return (
         <div className="editor-wrapper span5 scrollable">
@@ -74,20 +115,20 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
           </PaddedBorderedBox>
           <PaddedBorderedBox>
             <strong>Database</strong>
-            <div className="db-title">{this.state.database.id}</div>
+            <div className="db-title">{this.props.dbName}</div>
           </PaddedBorderedBox>
-          <form className="form-horizontal" onSubmit={this.saveQuery}>
+          <form className="form-horizontal" onSubmit={this.props.onSubmit}>
             <PaddedBorderedBox>
               <CodeEditor
                 id="query-field"
-                ref="indexQueryEditor"
-                title={'Index'}
-                docs={false}
-                code={this.state.queryCode} />
+                ref="field"
+                title={this.props.title}
+                docs={this.props.docs}
+                code={this.props.exampleCode} />
             </PaddedBorderedBox>
             <div className="padded-box">
               <div className="control-group">
-                <ConfirmButton text="Create Index" />
+                <ConfirmButton text={this.props.confirmbuttonText} />
               </div>
             </div>
           </form>
@@ -95,8 +136,12 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
       );
     },
 
+    getEditorValue: function () {
+      return this.refs.field.getValue();
+    },
+
     getEditor: function () {
-      return this.refs.indexQueryEditor.getEditor();
+      return this.refs.field.getEditor();
     },
 
     hasValidCode: function () {
@@ -107,12 +152,55 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
     clearNotifications: function () {
       var editor = this.getEditor();
       editor.editSaved();
+    }
+  });
+
+  var MangoIndexEditorController = React.createClass({
+    getInitialState: function () {
+      return this.getStoreState();
+    },
+
+    getStoreState: function () {
+      return {
+        queryIndexCode: mangoStore.getQueryIndexCode(),
+        database: mangoStore.getDatabase(),
+      };
+    },
+
+    onChange: function () {
+      this.setState(this.getStoreState());
+    },
+
+    componentDidMount: function () {
+      mangoStore.on('change', this.onChange, this);
+    },
+
+    componentWillUnmount: function () {
+      mangoStore.off('change', this.onChange);
+    },
+
+    getMangoEditor: function () {
+      return this.refs.mangoEditor;
+    },
+
+    render: function () {
+      return (
+        <MangoEditor
+          ref="mangoEditor"
+          description={this.props.description}
+          dbName={this.state.database.id}
+          onSubmit={this.saveQuery}
+          title="Index"
+          docs={FauxtonAPI.constants.DOC_URLS.MANGO}
+          exampleCode={this.state.queryIndexCode}
+          confirmbuttonText="Create Index" />
+      );
     },
 
     saveQuery: function (event) {
       event.preventDefault();
 
-      if (!this.hasValidCode()) {
+      if (!this.getMangoEditor().hasValidCode()) {
         FauxtonAPI.addNotification({
           msg:  'Please fix the Javascript errors and try again.',
           type: 'error',
@@ -121,16 +209,27 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
         return;
       }
 
-      this.clearNotifications();
+      this.getMangoEditor().clearNotifications();
 
       Actions.saveQuery({
         database: this.state.database,
-        queryCode: this.refs.indexQueryEditor.getValue()
+        queryCode: this.getMangoEditor().getEditorValue()
       });
     }
   });
 
   var Views = {
+    renderQueryEditor: function (el) {
+      React.render(
+        <MangoQueryEditorController
+          description={app.i18n.en_US['mango-descripton']}
+          editorTitle={app.i18n.en_US['mango-title-editor']} />,
+        el
+      );
+    },
+    removeQueryEditor: function (el) {
+      React.unmountComponentAtNode(el);
+    },
     renderHelpScreen: function (el) {
       React.render(
         <HelpScreen title={app.i18n.en_US['mango-help-title']} />,
@@ -149,7 +248,8 @@ function (app, FauxtonAPI, React, Stores, Actions, ReactComponents) {
     removeMangoIndexEditor: function (el) {
       React.unmountComponentAtNode(el);
     },
-    MangoIndexEditorController: MangoIndexEditorController
+    MangoIndexEditorController: MangoIndexEditorController,
+    MangoQueryEditorController: MangoQueryEditorController
   };
 
   return Views;
