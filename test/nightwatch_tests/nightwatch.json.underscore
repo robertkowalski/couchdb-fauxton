@@ -38,8 +38,7 @@
         "browserName" : "firefox",
         "javascriptEnabled" : true,
         "acceptSslCerts" : true
-      },
-      "exclude": <%= exclude_tests %>
+      }
     },
 
     "chrome" : {
