@@ -22,7 +22,7 @@ module.exports = {
       .loginToGUI()
       .url(baseUrl + '/#/database/' + newDatabaseName + '/_indexlist')
       .waitForElementPresent('.prettyprint', waitTime, false)
-      .assert.containsText('.header-doc-id', '_all_docs')
+      .assert.containsText('.header-doc-id', '_id')
       .assert.containsText('#doc-list', 'ente_ente_mango_ananas')
     .end();
   },

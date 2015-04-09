@@ -117,17 +117,52 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
       return '';
     },
 
+    getMangoDocContent: function (originalDoc) {
+      var doc = originalDoc.toJSON();
+
+      delete doc.ddoc;
+      delete doc.name;
+
+      return JSON.stringify(doc, null, '  ');
+    },
+
+    getMangoDoc: function (doc) {
+      var header = [];
+      if (doc.get('def') && doc.get('def').fields) {
+        header = doc.get('def').fields.reduce(function (acc, el) {
+          acc.push(Object.keys(el)[0]);
+          return acc;
+        }, []);
+      }
+
+      return {
+        content: this.getMangoDocContent(doc),
+        id: header.join(', '),
+        keylabel: '',
+        url: false,
+        isDeletable: this.isDeletable(doc),
+        isEditable: this.isEditable(doc)
+      };
+    },
+
     getResults: function () {
-      return this._collection.map(function (doc) {
-        return {
-          content: this.getDocContent(doc),
-          id: this.getDocId(doc),
-          keylabel: doc.isFromView() ? 'key' : 'id',
-          url: doc.isFromView() ? doc.url('app') : doc.url('web-index'),
-          isDeletable: this.isDeletable(doc),
-          isEditable: this.isEditable(doc)
-        };
-      }, this);
+      return this._collection
+        .filter(function (doc) {
+          return doc.get('language') !== 'query';
+        })
+        .map(function (doc) {
+          if (doc.get('def')) {
+            return this.getMangoDoc(doc);
+          }
+          return {
+            content: this.getDocContent(doc),
+            id: this.getDocId(doc),
+            keylabel: doc.isFromView() ? 'key' : 'id',
+            url: doc.isFromView() ? doc.url('app') : doc.url('web-index'),
+            isDeletable: this.isDeletable(doc),
+            isEditable: this.isEditable(doc)
+          };
+        }, this);
     },
 
     hasResults: function () {

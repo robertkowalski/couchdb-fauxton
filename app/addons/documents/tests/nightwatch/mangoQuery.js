@@ -22,7 +22,7 @@ module.exports = {
       .populateDatabase(newDatabaseName)
       .loginToGUI()
       .url(baseUrl + '/#/database/' + newDatabaseName + '/_find')
-      .waitForElementPresent('.watermark-logo', waitTime, false)
+      .waitForElementPresent('.prettyprint', waitTime, false)
       .assert.containsText('.editor-description', 'is an easy way to find documents on predefined indexes')
       .execute('\
         var json = \'{\

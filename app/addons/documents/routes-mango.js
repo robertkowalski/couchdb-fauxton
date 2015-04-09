@@ -26,12 +26,14 @@ define([
 
   'addons/documents/index-results/actions',
   'addons/documents/pagination/stores',
-  'addons/documents/mango/mango.actions'
+  'addons/documents/mango/mango.actions',
+  'addons/documents/mango/mango.stores'
 
 ],
 
 function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
-  Components, Resources, Documents, IndexResultsActions, PaginationStores, MangoActions) {
+  Components, Resources, Documents, IndexResultsActions, PaginationStores,
+  MangoActions, MangoStores) {
 
   var MangoIndexList = BaseRoute.extend({
     layout: 'with_tabs_sidebar',
@@ -81,7 +83,8 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
       IndexResultsActions.newResultsList({
         collection: mangoIndexCollection,
         isListDeletable: true,
-        bulkCollection: Documents.MangoBulkDeleteDocCollection
+        bulkCollection: Documents.MangoBulkDeleteDocCollection,
+        typeOfIndex: 'mango'
       });
 
       this.reactHeader = this.setView('#react-headerbar', new Documents.Views.ReactHeaderbar());
@@ -131,7 +134,7 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
           urlParams = params.urlParams,
           mangoResultCollection = new Resources.MangoDocumentCollection(null, {
             database: this.database,
-            params: params,
+            params: null,
             paging: {
               pageSize: PaginationStores.indexPaginationStore.getPerPage()
             }
@@ -144,9 +147,13 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
       IndexResultsActions.newMangoResultsList({
         collection: mangoResultCollection,
         isListDeletable: true,
-        typeOfIndex: 'mango',
         textEmptyIndex: 'No Results',
         bulkCollection: Documents.BulkDeleteDocCollection
+      });
+
+      IndexResultsActions.runMangoFindQuery({
+        database: this.database,
+        queryCode: MangoStores.mangoStore.getQueryFindCode()
       });
 
       this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
