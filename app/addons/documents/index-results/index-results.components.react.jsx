@@ -54,13 +54,15 @@ function (app, FauxtonAPI, React, Stores, Actions, Components, Documents) {
     },
 
     getDocumentList: function () {
+      var noop = function () {};
+
       return _.map(this.props.results, function (doc) {
 
         return (
          <Components.Document
            key={doc.id}
            doc={doc}
-           onDoubleClick={this.onDoubleClick}
+           onDoubleClick={this.props.isEditable ? this.onDoubleClick : noop}
            keylabel={doc.keylabel}
            docContent={doc.content}
            checked={this.props.isSelected(doc.id)}

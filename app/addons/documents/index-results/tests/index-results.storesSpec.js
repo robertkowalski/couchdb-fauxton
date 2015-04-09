@@ -306,6 +306,38 @@ define([
 
   });
 
+  describe('#getMangoDoc', function () {
+    var store = new Stores.IndexResultsStore();
+    var fakeMango = {
+      ddoc: '_design/e4d338e5d6f047749f5399ab998b4fa04ba0c816',
+      def: {
+        fields: [
+          {'_id': 'asc'},
+          {'foo': 'bar'},
+          {'ente': 'gans'}
+        ]
+      },
+      name: 'e4d338e5d6f047749f5399ab998b4fa04ba0c816',
+      type: 'json'
+    };
+
+    it('creates a special id from the header fields', function () {
+      var doc = new Documents.MangoIndex(fakeMango, {});
+      assert.equal(store.getMangoDoc(doc).id, '_id, foo, ente');
+    });
+
+    it('removes the name and ddoc field', function () {
+      var doc = new Documents.MangoIndex(fakeMango, {});
+      assert.ok(doc.get('name'));
+      assert.ok(doc.get('ddoc'));
+
+      var newDoc = store.getMangoDoc(doc);
+      assert.notOk(JSON.parse(newDoc.content).name);
+      assert.notOk(JSON.parse(newDoc.content).ddoc);
+      assert.ok(JSON.parse(newDoc.content).type);
+    });
+  });
+
   describe('#getDocId', function () {
 
     it('returns id if it exists', function () {

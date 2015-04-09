@@ -162,7 +162,7 @@ function (app, FauxtonAPI, Documents, PagingCollection) {
     },
 
     isEditable: function () {
-      return false;
+      return true;
     },
 
     parse: function (res) {
@@ -349,7 +349,6 @@ function (app, FauxtonAPI, Documents, PagingCollection) {
         return '_design/' + doc._id;
       });
 
-      console.log(documentList);
       return {
         docids: documentList
       };
