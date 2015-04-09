@@ -49,20 +49,13 @@ function (app, FauxtonAPI, Databases, Views, Components) {
     allDatabases: function () {
       var params = app.getParams(),
           dbPage = params.page ? parseInt(params.page, 10) : 1,
-          perPage = FauxtonAPI.constants.MISC.DEFAULT_PAGE_SIZE,
-          pagination;
+          perPage = FauxtonAPI.constants.MISC.DEFAULT_PAGE_SIZE;
 
-      pagination = new Components.Pagination({
+      this.footer = this.setView('#footer', new Views.Footer({
         page: dbPage,
         perPage: perPage,
-        collection: this.databases,
-        urlFun: function (page) {
-          return '#/_all_dbs?page=' + page;
-        }
-      });
-
-      this.footer = this.setView('#footer', new Views.Footer());
-      this.setView('#database-pagination', pagination);
+        collection: this.databases
+      }));
 
       this.databasesView = this.setView("#dashboard-content", new Views.List({
         collection: this.databases,
@@ -75,6 +68,7 @@ function (app, FauxtonAPI, Databases, Views, Components) {
       }));
 
       this.databasesView.setPage(dbPage);
+      this.footer.setPage(dbPage);
     },
 
     apiUrl: function () {

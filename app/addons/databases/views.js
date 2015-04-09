@@ -14,10 +14,12 @@ define([
   'app',
   'addons/fauxton/components',
   'api',
-  'addons/databases/resources'
+  'addons/databases/resources',
+  'addons/databases/actions',
+  'addons/databases/components.react'
 ],
 
-function (app, Components, FauxtonAPI, Databases) {
+function (app, Components, FauxtonAPI, Databases, Actions, ComponentsReact) {
 
   var Views = {};
 
@@ -26,55 +28,29 @@ function (app, Components, FauxtonAPI, Databases) {
   });
 
   Views.RightAllDBsHeader = FauxtonAPI.View.extend({
-    className: 'header-right',
-    template: 'addons/databases/templates/header_alldbs',
+    tagName: 'div',
 
-    beforeRender: function () {
-      this.headerSearch = this.insertView('#header-search', new JumpToDBView({
-        collection: this.collection
-      }));
-
-      this.newbutton = this.insertView('#add-db-button', new NewDatabaseView({
-        collection: this.collection
-      }));
-    }
-  });
-
-  Views.Item = FauxtonAPI.View.extend({
-    template: 'addons/databases/templates/item',
-    tagName: 'tr',
-
-    establish: function () {
-      return [this.model.fetch()];
-    },
-
-    serialize: function () {
-      return {
-        encoded: app.utils.safeURLName(this.model.get('name')),
-        database: this.model
-      };
+    initialize: function (options) {
+      this.collection = options.collection;
     },
 
     afterRender: function () {
-      this.$el.find('.js-db-graveyard').tooltip();
+      Actions.init(null, this.collection);
+      ComponentsReact.renderDatabasesHeader(this.el);
+    },
+
+    cleanup: function () {
+      ComponentsReact.removeDatabasesHeader(this.el);
     }
   });
 
   Views.List = FauxtonAPI.View.extend({
-    template: 'addons/databases/templates/list',
-    events: {
-      'click button.all': 'selectAll'
-    },
+    tagName: 'div',
 
     initialize: function (options) {
-      var params = app.getParams();
+      this.collection = options.collection;
     },
 
-    serialize: function () {
-      return {
-        databases: this.collection
-      };
-    },
     establish: function () {
       var currentDBs = this.paginated();
       var deferred = FauxtonAPI.Deferred();
@@ -95,146 +71,38 @@ function (app, Components, FauxtonAPI, Databases) {
       return this.collection.slice(start, end);
     },
 
-    beforeRender: function () {
-      _.each(this.paginated(), function (database) {
-        this.insertView('table.databases tbody', new Views.Item({
-          model: database
-        }));
-      }, this);
+    afterRender: function () {
+      Actions.init(this.paginated(), this.collection);
+      ComponentsReact.renderDatabases(this.el);
+    },
+
+    cleanup: function () {
+      ComponentsReact.removeDatabases(this.el);
     },
 
     setPage: function (page) {
       this.page = page || 1;
-    },
-
-    selectAll: function (event) {
-      $('input:checkbox').attr('checked', !$(event.target).hasClass('active'));
     }
   });
 
+  Views.Footer = FauxtonAPI.View.extend({
+    tagName: 'div',
 
-  // private Views
-
-  var JumpToDBView = FauxtonAPI.View.extend({
-    template: 'addons/databases/templates/jump_to_db',
-    events: {
-      'submit form#jump-to-db': 'switchDatabaseHandler'
-    },
-
-    initialize: function () {
-      var params = app.getParams();
-      this.page = params.page ? parseInt(params.page, 10) : 1;
-      this.listenTo(FauxtonAPI.Events, 'jumptodb:update', this.switchDatabase);
-    },
-
-    establish: function () {
-      var currentDBs = this.paginated();
-      var deferred = FauxtonAPI.Deferred();
-
-      FauxtonAPI.when(currentDBs.map(function (database) {
-        return database.status.fetchOnce();
-      })).always(function (resp) {
-        // make this always so that even if a user is not allowed access to a database
-        // they will still see a list of all databases
-        deferred.resolve();
-      });
-      return [deferred];
-    },
-
-    switchDatabase: function (selectedName) {
-      var dbname = this.$el.find('[name="search-query"]').val().trim();
-
-      if (selectedName) {
-        dbname = selectedName;
-      }
-      if (dbname && this.collection.where({ id: app.utils.safeURLName(dbname) }).length > 0) {
-        // TODO: switch to using a model, or Databases.databaseUrl()
-        // Neither of which are in scope right now
-        // var db = new Database.Model({id: dbname});
-        var url = FauxtonAPI.urls('allDocs', 'app', app.utils.safeURLName(dbname));
-        FauxtonAPI.navigate(url);
-      } else {
-        FauxtonAPI.addNotification({
-          msg: 'Database does not exist.',
-          type: 'error'
-        });
-      }
-    },
-
-    switchDatabaseHandler: function (event) {
-      event.preventDefault();
-      this.switchDatabase();
+    initialize: function (options) {
+      this.collection = options.collection;
     },
 
     afterRender: function () {
-      var AllDBsArray = _.map(this.collection.toJSON(), function (item, key) {
-            return item.name;
-          });
-
-      this.dbSearchTypeahead = new Components.Typeahead({
-        el: 'input.search-autocomplete',
-        source: AllDBsArray,
-        onUpdateEventName: 'jumptodb:update'
-      });
-      this.dbSearchTypeahead.render();
-    }
-  });
-
-  var NewDatabaseView = Components.Tray.extend({
-    template: 'addons/databases/templates/newdatabase',
-    events: {
-      'click #js-create-database': 'createDatabase',
-      'keyup #js-new-database-name': 'processKey'
+      Actions.init(null, this.collection);
+      ComponentsReact.renderDatabasePagination(this.el, this.page);
     },
 
-    initialize: function () {
-      this.initTray({ toggleTrayBtnSelector: '#add-new-database' });
+    cleanup: function () {
+      ComponentsReact.removeDatabasePagination(this.el);
     },
 
-    processKey: function (e) {
-      if (e.which === 13) {
-        this.createDatabase(e);
-      }
-    },
-
-    createDatabase: function (e) {
-      e.preventDefault();
-
-      var databaseName = $.trim(this.$('#js-new-database-name').val());
-      if (databaseName.length === 0) {
-        FauxtonAPI.addNotification({
-          msg: 'Please enter a valid database name',
-          type: 'error',
-          clear: true
-        });
-        return;
-      }
-      this.hideTray();
-
-      var db = new this.collection.model({
-        id: databaseName,
-        name: databaseName
-      });
-      FauxtonAPI.addNotification({ msg: 'Creating database.' });
-
-      db.save().done(function () {
-          FauxtonAPI.addNotification({
-            msg: 'Database created successfully',
-            type: 'success',
-            clear: true
-          });
-          var route = '#/database/' + app.utils.safeURLName(databaseName) + '/_all_docs?limit=' + Databases.DocLimit;
-          app.router.navigate(route, { trigger: true });
-        }
-      ).error(function (xhr) {
-          var responseText = JSON.parse(xhr.responseText).reason;
-          FauxtonAPI.addNotification({
-            msg: 'Create database failed: ' + responseText,
-            type: 'error',
-            clear: true
-          });
-        }
-      );
+    setPage: function (page) {
+      this.page = page || 1;
     }
   });
 
