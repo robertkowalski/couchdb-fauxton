@@ -101,7 +101,8 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
 
     getDocContent: function (originalDoc) {
       var doc = originalDoc.toJSON();
-      return (this.isCollapsed(doc._id)) ? '' : JSON.stringify(doc, null, ' ');
+
+      return this.isCollapsed(doc._id) ? '' : JSON.stringify(doc, null, ' ');
     },
 
     getDocId: function (doc) {
@@ -123,21 +124,30 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
       delete doc.ddoc;
       delete doc.name;
 
-      return JSON.stringify(doc, null, '  ');
+      return this.isCollapsed(originalDoc.id) ? '' : JSON.stringify(doc, null, ' ');
     },
 
     getMangoDoc: function (doc) {
-      var header = [];
+      var header = [],
+          selector,
+          indexes;
+
       if (doc.get('def') && doc.get('def').fields) {
         header = doc.get('def').fields.reduce(function (acc, el) {
           acc.push(Object.keys(el)[0]);
           return acc;
         }, []);
+
+        if (!header.length) {
+          indexes = FauxtonAPI.getExtensions('mango:additionalIndexes')[0];
+          header = indexes.createHeader(doc);
+        }
       }
 
       return {
         content: this.getMangoDocContent(doc),
-        id: header.join(', '),
+        header: header.join(', '),
+        id: this.getDocId(doc),
         keylabel: '',
         url: false,
         isDeletable: this.isDeletable(doc),
@@ -157,6 +167,7 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
           return {
             content: this.getDocContent(doc),
             id: this.getDocId(doc),
+            header: this.getDocId(doc),
             keylabel: doc.isFromView() ? 'key' : 'id',
             url: doc.isFromView() ? doc.url('app') : doc.url('web-index'),
             isDeletable: this.isDeletable(doc),
@@ -179,6 +190,10 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
     },
 
     selectDoc: function (id) {
+      if (id === '_all_docs') {
+        return;
+      }
+
       if (!this._selectedItems[id]) {
         this._selectedItems[id] = true;
       } else {
@@ -247,7 +262,13 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
     },
 
     canSelectAll: function () {
-      return this._collection.length > this.getSelectedItemsLength();
+      var length = this._collection.length;
+
+      if (this._collection.get && this._collection.get('_all_docs')) {
+        length = length - 1;
+      }
+
+      return length > this.getSelectedItemsLength();
     },
 
     canDeselectAll: function () {

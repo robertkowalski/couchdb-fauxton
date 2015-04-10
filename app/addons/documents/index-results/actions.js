@@ -92,7 +92,6 @@ function (app, FauxtonAPI, ActionTypes, Stores, HeaderStores, HeaderActions, Doc
             collection: collection,
             isListDeletable: indexResultsStore.isListDeletable(),
             query: options.queryCode,
-            typeOfIndex: 'mango',
             textEmptyIndex: 'No Results Found!',
             bulkCollection: Documents.BulkDeleteDocCollection
           });
@@ -109,8 +108,11 @@ function (app, FauxtonAPI, ActionTypes, Stores, HeaderStores, HeaderActions, Doc
 
     reloadResultsList: function () {
       if (indexResultsStore.getTypeOfIndex() === 'mango') {
-        return this.runMangoFindQuery({
-          queryCode: indexResultsStore.getLastQuery()
+        return this.newResultsList({
+          collection: indexResultsStore.getCollection(),
+          isListDeletable: true,
+          bulkCollection: Documents.MangoBulkDeleteDocCollection,
+          typeOfIndex: 'mango'
         });
       }
 

@@ -28,6 +28,10 @@ define([
       dispatchToken = FauxtonAPI.dispatcher.register(store.dispatch);
     });
 
+    afterEach(function () {
+      FauxtonAPI.dispatcher.unregister(dispatchToken);
+    });
+
     describe('#hasResults', function () {
 
       it('returns true for collection', function () {
@@ -59,10 +63,6 @@ define([
         assert.equal(doc.keylabel, 'id');
       });
 
-    });
-
-    afterEach(function () {
-      FauxtonAPI.dispatcher.unregister(dispatchToken);
     });
   });
 
@@ -96,6 +96,25 @@ define([
       assert.notOk(store.canSelectAll());
     });
 
+    it('returns true even with _all_docs (mango)', function () {
+      store._collection = new Documents.AllDocs([
+        {_id: 'testId1'},
+        {_id: 'testId2'},
+        {_id: '_all_docs'}
+      ], {
+        params: {},
+        database: {
+          safeID: function () { return '1';}
+        }
+      });
+
+      store._selectedItems = {
+        'testId1': true,
+        'testId2': true
+      };
+
+      assert.notOk(store.canSelectAll());
+    });
   });
 
   describe('canDeselectAll', function () {
@@ -323,7 +342,25 @@ define([
 
     it('creates a special id from the header fields', function () {
       var doc = new Documents.MangoIndex(fakeMango, {});
-      assert.equal(store.getMangoDoc(doc).id, '_id, foo, ente');
+      assert.equal(store.getMangoDoc(doc).header, '_id, foo, ente');
+    });
+
+    it('supports custom header fields', function () {
+      FauxtonAPI.registerExtension('mango:additionalIndexes', {
+        createHeader: function (doc) {
+          return ['foobar'];
+        }
+      });
+
+      var doc = new Documents.MangoIndex({
+        ddoc: '_design/e4d338e5d6f047749f5399ab998b4fa04ba0c816',
+        def: {
+          fields: []
+        },
+        name: 'e4d338e5d6f047749f5399ab998b4fa04ba0c816',
+        type: 'json'
+      }, {});
+      assert.equal(store.getMangoDoc(doc).header, 'foobar');
     });
 
     it('removes the name and ddoc field', function () {

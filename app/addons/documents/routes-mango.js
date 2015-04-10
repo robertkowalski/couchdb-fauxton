@@ -89,7 +89,14 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
 
       this.reactHeader = this.setView('#react-headerbar', new Documents.Views.ReactHeaderbar());
 
-      this.leftheader.updateCrumbs(this.getCrumbs(this.database));
+      this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
+        toggleDisabled: true,
+        crumbs: [
+          {'type': 'back', 'link': Databases.databaseUrl(this.database)},
+          {'name': 'Indexes', 'link': Databases.databaseUrl(this.database)}
+        ]
+      }));
+
       this.rightHeader.hideQueryOptions();
 
       this.resultList = this.setView('#dashboard-lower-content', new Mango.MangoIndexListReact());
@@ -138,6 +145,13 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
             paging: {
               pageSize: PaginationStores.indexPaginationStore.getPerPage()
             }
+          }),
+          mangoIndexList = new Resources.MangoIndexCollection(null, {
+            database: this.database,
+            params: null,
+            paging: {
+              pageSize: PaginationStores.indexPaginationStore.getPerPage()
+            }
           });
 
       // magic method
@@ -156,11 +170,15 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
         queryCode: MangoStores.mangoStore.getQueryFindCode()
       });
 
+      MangoActions.getIndexList({
+        indexList: mangoIndexList
+      });
+
       this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
         toggleDisabled: true,
         crumbs: [
-          {'type': 'back', 'link': Helpers.getPreviousPage(this.database)},
-          {'name': 'Search and Query', 'link': Databases.databaseUrl(this.database) }
+          {'type': 'back', 'link': Databases.databaseUrl(this.database)},
+          {'name': app.i18n.en_US['mango-find-heading'], 'link': Databases.databaseUrl(this.database)}
         ]
       }));
 
@@ -179,24 +197,29 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
       var params = this.createParams(),
           urlParams = params.urlParams,
           mangoIndexCollection = new Resources.MangoIndexCollection(null, {
-            database: this.database
+            database: this.database,
+            params: null,
+            paging: {
+              pageSize: PaginationStores.indexPaginationStore.getPerPage()
+            }
           });
 
       IndexResultsActions.newResultsList({
         collection: mangoIndexCollection,
         isListDeletable: false,
-        bulkCollection: Documents.BulkDeleteDocCollection
+        bulkCollection: Documents.MangoBulkDeleteDocCollection,
+        typeOfIndex: 'mango'
       });
 
       this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
         toggleDisabled: true,
         crumbs: [
-          {'type': 'back', 'link': Helpers.getPreviousPage(this.database)},
+          {'type': 'back', 'link': Databases.databaseUrl(this.database)},
           {'name': 'Create new index', 'link': Databases.databaseUrl(this.database) }
         ]
       }));
 
-      this.resultList = this.setView('#dashboard-lower-content', new Mango.HelpScreen());
+      this.resultList = this.setView('#dashboard-lower-content', new Mango.MangoIndexListReact());
 
       this.mangoEditor = this.setView('#left-content', new Mango.MangoIndexEditorReact({
         database: this.database

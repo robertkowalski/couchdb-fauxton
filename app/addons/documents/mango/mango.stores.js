@@ -18,29 +18,71 @@ define([
 function (FauxtonAPI, ActionTypes) {
 
 
-  var defaultQueryIndexCode = '{\n' +
-      '  "index": {\n' +
-      '    "fields": ["_id"]\n' +
-      '  },\n' +
-      '  "type" : "json"\n' +
-      '}';
+  var defaultQueryIndexCode = {
+    "index": {
+      "fields": ["_id"]
+    },
+    "type" : "json"
+  };
 
-  var defaultQueryFindCode = '{\n' +
-      '  "selector": {\n' +
-      '    "_id": {"$gt": null}\n' +
-      '  }\n' +
-      '}';
+  var defaultQueryFindCode = {
+    "selector": {
+      "_id": {"$gt": null}
+    }
+  };
 
   var Stores = {};
 
   Stores.MangoStore = FauxtonAPI.Store.extend({
 
+    initialize: function () {
+      this._queryFindCode = defaultQueryFindCode;
+      this._queryIndexCode = defaultQueryIndexCode;
+      this._queryFindCodeChanged = false;
+      this._availableIndexes = [];
+    },
+
     getQueryIndexCode: function () {
-      return defaultQueryIndexCode;
+      return this.formatCode(this._queryIndexCode);
+    },
+
+    setQueryIndexCode: function (options) {
+      this._queryIndexCode = options.code;
     },
 
     getQueryFindCode: function () {
-      return defaultQueryFindCode;
+      return this.formatCode(this._queryFindCode);
+    },
+
+    setQueryFindCode: function (options) {
+      this._queryFindCode = options.code;
+    },
+
+    formatCode: function (code) {
+      return JSON.stringify(code, null, '  ');
+    },
+
+    newQueryFindCodeFromFields: function (options) {
+      var fields = options.fields,
+          queryCode = JSON.parse(JSON.stringify(this._queryFindCode)),
+          selectorContent;
+
+      if (!fields) {
+        return;
+      }
+
+      selectorContent = fields.reduce(function (acc, field) {
+        acc[field] = {"$gt": null};
+        return acc;
+      }, {});
+
+      queryCode.selector = selectorContent;
+      this._queryFindCode = queryCode;
+      this._queryFindCodeChanged = true;
+    },
+
+    getQueryFindCodeChanged: function () {
+      return this._queryFindCodeChanged;
     },
 
     setDatabase: function (options) {
@@ -51,6 +93,33 @@ function (FauxtonAPI, ActionTypes) {
       return this._database;
     },
 
+    setAvailableIndexes: function (options) {
+      this._availableIndexes = options.indexList;
+    },
+
+    getAvailableQueryIndexes: function () {
+      return this._availableIndexes.filter(function (el) {
+        return ['json', 'special'].indexOf(el.get('type')) !== -1;
+      }).map(function (model) {
+        var json = model.toJSON();
+        return {type: json.type, fields: json.def.fields};
+      });
+    },
+
+    getAvailableAdditionalIndexes: function () {
+      var indexes = FauxtonAPI.getExtensions('mango:additionalIndexes')[0];
+
+      if (!indexes) {
+        return;
+      }
+
+      return this._availableIndexes.filter(function (el) {
+        return el.get('type').indexOf(indexes.type) !== -1;
+      }).map(function (model) {
+        return indexes.filterFunc(model.toJSON());
+      });
+    },
+
     dispatch: function (action) {
       switch (action.type) {
 
@@ -59,6 +128,28 @@ function (FauxtonAPI, ActionTypes) {
           this.triggerChange();
         break;
 
+        case ActionTypes.MANGO_NEW_QUERY_CREATE_INDEX_CODE:
+          this.setQueryIndexCode(action.options);
+          this.triggerChange();
+        break;
+
+        case ActionTypes.MANGO_NEW_QUERY_FIND_CODE_FROM_FIELDS:
+          this.newQueryFindCodeFromFields(action.options);
+          this.triggerChange();
+        break;
+
+        case ActionTypes.MANGO_NEW_QUERY_FIND_CODE:
+          this.setQueryFindCode(action.options);
+          this.triggerChange();
+        break;
+
+        case ActionTypes.MANGO_NEW_AVAILABLE_INDEXES:
+          this.setAvailableIndexes(action.options);
+        break;
+
+        case ActionTypes.MANGO_RESET:
+          this.triggerChange();
+        break;
       }
     }
 
