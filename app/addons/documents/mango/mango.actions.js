@@ -31,7 +31,8 @@ function (app, FauxtonAPI, Documents, ActionTypes, Stores, IndexResultsActions) 
     },
 
     saveQuery: function (options) {
-      var mangoIndex = new Documents.MangoIndex(JSON.parse(options.queryCode), {database: options.database});
+      var queryCode = JSON.parse(options.queryCode),
+          mangoIndex = new Documents.MangoIndex(queryCode, {database: options.database});
 
       FauxtonAPI.addNotification({
         msg:  'Saving Index for Query...',
@@ -49,6 +50,13 @@ function (app, FauxtonAPI, Documents, ActionTypes, Stores, IndexResultsActions) 
           clear: true
         });
 
+        FauxtonAPI.dispatch({
+          type: ActionTypes.MANGO_NEW_QUERY_CODE_FROM_FIELDS,
+          options: {
+            fields: queryCode.index.fields
+          }
+        });
+
         window.setTimeout(function () {
           FauxtonAPI.navigate(url);
           FauxtonAPI.addNotification({
@@ -58,6 +66,29 @@ function (app, FauxtonAPI, Documents, ActionTypes, Stores, IndexResultsActions) 
           });
         }, 400);
       }.bind(this));
+    },
+
+    mangoReset: function () {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.MANGO_RESET
+      });
+    },
+
+    getIndexList: function (options) {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.MANGO_NEW_AVAILABLE_INDEXES,
+        options: options
+      });
+
+      options.indexList.fetch({reset: true}).then(function () {
+        this.mangoReset();
+      }.bind(this), function () {
+        FauxtonAPI.addNotification({
+          msg: 'Bad request!',
+          type: "error",
+          clear:  true
+       });
+      });
     }
   };
 });

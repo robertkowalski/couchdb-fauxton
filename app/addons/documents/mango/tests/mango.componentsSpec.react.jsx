@@ -15,40 +15,17 @@ define([
   'addons/documents/mango/mango.components.react',
   'addons/documents/mango/mango.stores',
   'addons/documents/mango/mango.actions',
+  'addons/documents/mango/mango.actiontypes',
 
   'addons/documents/resources',
   'addons/databases/resources',
 
   'testUtils',
   'react'
-], function (FauxtonAPI, Views, Stores, MangoActions, Resources, Databases, utils, React) {
+], function (FauxtonAPI, Views, Stores, MangoActions, ActionTypes, Resources, Databases, utils, React) {
 
   var assert = utils.assert;
   var TestUtils = React.addons.TestUtils;
-
-  var fakeData = [
-      {
-        ddoc: '_design/e4d338e5d6f047749f5399ab998b4fa04ba0c816',
-        def: {
-          fields: [{
-            '_id': 'asc'
-          }]
-        },
-        name: 'e4d338e5d6f047749f5399ab998b4fa04ba0c816',
-        type: 'json'
-      },
-      {
-        ddoc: null,
-        def: {
-          fields: [{
-            '_id': 'asc'
-          }]
-        },
-        name: '_all_docs',
-        type: 'special'
-      }
-    ];
-
 
   describe('Mango IndexEditor', function () {
     var database = new Databases.Model({id: 'testdb'}),
@@ -93,13 +70,47 @@ define([
   describe('Mango QueryEditor', function () {
     var database = new Databases.Model({id: 'testdb'}),
         container,
-        editor;
+        editor,
+        mangoCollection;
 
     beforeEach(function () {
       container = document.createElement('div');
       MangoActions.setDatabase({
         database: database
       });
+
+      mangoCollection = new Resources.MangoIndexCollection([{
+        ddoc: '_design/e4d338e5d6f047749f5399ab998b4fa04ba0c816',
+        def: {
+          fields: [
+            {'_id': 'asc'},
+            {'foo': 'bar'},
+            {'ente': 'gans'}
+          ]
+        },
+        name: 'e4d338e5d6f047749f5399ab998b4fa04ba0c816',
+        type: 'json'
+      }, {
+        ddoc: null,
+        def: {
+          fields: [{
+            '_id': 'asc'
+          }]
+        },
+        name: '_all_docs',
+        type: 'special'
+      }], {
+        params: {},
+        database: {
+          safeID: function () { return '1'; }
+        }
+      });
+
+      FauxtonAPI.dispatch({
+        type: ActionTypes.MANGO_NEW_AVAILABLE_INDEXES,
+        options: {indexList: mangoCollection}
+      });
+
       $('body').append('<div id="query-field"></div>');
     });
 
@@ -108,22 +119,83 @@ define([
       $('#query-field').remove();
     });
 
+    it('lists our available indexes', function () {
+      editor = TestUtils.renderIntoDocument(
+        <Views.MangoQueryEditorController description="foo" />,
+        container
+      );
+      var $el = $(editor.getDOMNode());
+      assert.equal($el.find('.mango-available-indexes').length, 1);
+
+      assert.include(
+        $el.find('.mango-available-indexes').text(),
+        '[{"_id":"asc"},{"foo":"bar"},{"ente":"gans"}]'
+      );
+      assert.include(
+        $el.find('.mango-available-indexes').text(),
+        '[{"_id":"asc"}]'
+      );
+    });
+
     it('renders a default query', function () {
-      editor = TestUtils.renderIntoDocument(<Views.MangoQueryEditorController description="foo" />, container);
+      editor = TestUtils.renderIntoDocument(
+        <Views.MangoQueryEditorController description="foo" />,
+        container
+      );
       var $el = $(editor.getDOMNode());
       var payload = JSON.parse($el.find('.js-editor').text());
       assert.equal(Object.keys(payload.selector)[0], '_id');
     });
 
+    it('can render a query based on the last defined index', function () {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.MANGO_NEW_QUERY_CODE_FROM_FIELDS,
+        options: {
+          fields: ['zetti', 'mussmaennchen']
+        }
+      });
+
+      editor = TestUtils.renderIntoDocument(
+        <Views.MangoQueryEditorController description="foo" />,
+        container
+      );
+      var $el = $(editor.getDOMNode());
+      var payload = JSON.parse($el.find('.js-editor').text());
+      assert.equal(Object.keys(payload.selector)[0], 'zetti');
+      assert.equal(Object.keys(payload.selector)[1], 'mussmaennchen');
+    });
+
+    it('informs the user that it uses a query based on the last defined index', function () {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.MANGO_NEW_QUERY_CODE_FROM_FIELDS,
+        options: {
+          fields: ['zetti', 'mussmaennchen']
+        }
+      });
+
+      editor = TestUtils.renderIntoDocument(
+        <Views.MangoQueryEditorController description="foo" />,
+        container
+      );
+      var $el = $(editor.getDOMNode());
+      assert.equal($el.find('.info-changed-query').length, 1);
+    });
+
     it('renders the current database', function () {
-      editor = TestUtils.renderIntoDocument(<Views.MangoQueryEditorController description="foo" />, container);
+      editor = TestUtils.renderIntoDocument(
+        <Views.MangoQueryEditorController description="foo" />,
+        container
+      );
       var $el = $(editor.getDOMNode());
 
       assert.equal($el.find('.db-title').text(), 'testdb');
     });
 
     it('renders a description', function () {
-      editor = TestUtils.renderIntoDocument(<Views.MangoQueryEditorController description="CouchDB Query is great!" />, container);
+      editor = TestUtils.renderIntoDocument(
+        <Views.MangoQueryEditorController description="CouchDB Query is great!" />,
+        container
+      );
       var $el = $(editor.getDOMNode());
 
       assert.equal($el.find('.editor-description').text(), 'CouchDB Query is great!');

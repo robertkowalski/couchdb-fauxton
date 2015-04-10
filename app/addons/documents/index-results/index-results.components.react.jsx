@@ -56,8 +56,7 @@ function (app, FauxtonAPI, React, Stores, Actions, Components, Documents) {
     getDocumentList: function () {
       var noop = function () {};
 
-      return _.map(this.props.results, function (doc) {
-
+      return _.map(this.props.results, function (doc, i) {
         return (
          <Components.Document
            key={doc.id}
@@ -66,6 +65,7 @@ function (app, FauxtonAPI, React, Stores, Actions, Components, Documents) {
            keylabel={doc.keylabel}
            docContent={doc.content}
            checked={this.props.isSelected(doc.id)}
+           header={doc.header}
            docChecked={this.props.docChecked}
            isDeletable={doc.isDeletable}
            docIdentifier={doc.id} >

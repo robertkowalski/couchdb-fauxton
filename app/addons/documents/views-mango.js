@@ -31,18 +31,6 @@ function (FauxtonAPI, Mango, ViewResultList) {
     }
   });
 
-
-  Views.HelpScreen = FauxtonAPI.View.extend({
-
-    afterRender: function () {
-      Mango.renderHelpScreen(this.el);
-    },
-
-    cleanup: function () {
-      Mango.removeHelpScreen(this.el);
-    }
-  });
-
   Views.MangoIndexListReact = FauxtonAPI.View.extend({
 
     afterRender: function () {

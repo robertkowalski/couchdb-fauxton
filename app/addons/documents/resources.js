@@ -128,17 +128,6 @@ function (app, FauxtonAPI, Documents, PagingCollection) {
         context = 'index-server';
       }
 
-      if (params) {
-        if (!_.isEmpty(params)) {
-          query = '?' + $.param(params);
-        } else {
-          query = '';
-        }
-      } else if (this.params) {
-        var parsedParam = Documents.QueryParams.stringify(this.params);
-        query = '?' + $.param(parsedParam);
-      }
-
       return FauxtonAPI.urls('mango', context, database, query);
     }
   });
@@ -197,23 +186,12 @@ function (app, FauxtonAPI, Documents, PagingCollection) {
       promise.resolve();
     },
 
-    urlRef: function (context, params) {
+    urlRef: function (context) {
       var database = this.database.safeID(),
           query = '';
 
       if (!context) {
         context = 'query-server';
-      }
-
-      if (params) {
-        if (!_.isEmpty(params)) {
-          query = '?' + $.param(params);
-        } else {
-          query = '';
-        }
-      } else if (this.params) {
-        var parsedParam = Documents.QueryParams.stringify(this.params);
-        query = '?' + $.param(parsedParam);
       }
 
       return FauxtonAPI.urls('mango', context, database, query);
@@ -345,9 +323,13 @@ function (app, FauxtonAPI, Documents, PagingCollection) {
     },
 
     createPayload: function (documents) {
-      var documentList = documents.map(function (doc) {
-        return '_design/' + doc._id;
-      });
+      var documentList = documents
+        .filter(function (doc) {
+          return doc._id !== '_all_docs';
+        })
+        .map(function (doc) {
+          return '_design/' + doc._id;
+        });
 
       return {
         docids: documentList

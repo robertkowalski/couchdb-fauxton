@@ -138,6 +138,13 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
             paging: {
               pageSize: PaginationStores.indexPaginationStore.getPerPage()
             }
+          }),
+          mangoIndexList = new Resources.MangoIndexCollection(null, {
+            database: this.database,
+            params: null,
+            paging: {
+              pageSize: PaginationStores.indexPaginationStore.getPerPage()
+            }
           });
 
       // magic method
@@ -154,6 +161,10 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
       IndexResultsActions.runMangoFindQuery({
         database: this.database,
         queryCode: MangoStores.mangoStore.getQueryFindCode()
+      });
+
+      MangoActions.getIndexList({
+        indexList: mangoIndexList
       });
 
       this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
@@ -179,13 +190,18 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
       var params = this.createParams(),
           urlParams = params.urlParams,
           mangoIndexCollection = new Resources.MangoIndexCollection(null, {
-            database: this.database
+            database: this.database,
+            params: null,
+            paging: {
+              pageSize: PaginationStores.indexPaginationStore.getPerPage()
+            }
           });
 
       IndexResultsActions.newResultsList({
         collection: mangoIndexCollection,
         isListDeletable: false,
-        bulkCollection: Documents.BulkDeleteDocCollection
+        bulkCollection: Documents.MangoBulkDeleteDocCollection,
+        typeOfIndex: 'mango'
       });
 
       this.breadcrumbs = this.setView('#breadcrumbs', new Components.Breadcrumbs({
@@ -196,7 +212,7 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Mango, Databases,
         ]
       }));
 
-      this.resultList = this.setView('#dashboard-lower-content', new Mango.HelpScreen());
+      this.resultList = this.setView('#dashboard-lower-content', new Mango.MangoIndexListReact());
 
       this.mangoEditor = this.setView('#left-content', new Mango.MangoIndexEditorReact({
         database: this.database
