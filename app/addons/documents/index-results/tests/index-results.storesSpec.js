@@ -435,5 +435,15 @@ define([
       store._collection.isEditable = function () { return 'stub'; };
       assert.equal(store.isEditable(), 'stub');
     });
+
+    it('retuns false for ghost-docs that are filtered away', function () {
+      assert.equal(store.isEditable({}), false);
+    });
+  });
+
+  describe('isDeletable', function () {
+    it('retuns false for ghost-docs that are filtered away', function () {
+      assert.equal(store.isDeletable({}), false);
+    });
   });
 });

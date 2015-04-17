@@ -80,6 +80,10 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
         return false;
       }
 
+      if (doc && !Object.keys(doc.attributes).length) {
+        return false;
+      }
+
       if (!this._collection.isEditable) {
         return false;
       }
@@ -88,6 +92,10 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
     },
 
     isDeletable: function (doc) {
+      if (doc && !Object.keys(doc.attributes).length) {
+        return false;
+      }
+
       return doc.isDeletable();
     },
 
@@ -127,7 +135,7 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
       return this.isCollapsed(originalDoc.id) ? '' : JSON.stringify(doc, null, ' ');
     },
 
-    getMangoDoc: function (doc) {
+    getMangoDoc: function (doc, index) {
       var header = [],
           selector,
           indexes;
@@ -142,17 +150,29 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
           indexes = FauxtonAPI.getExtensions('mango:additionalIndexes')[0];
           header = indexes.createHeader(doc);
         }
+
+        return {
+          content: this.getMangoDocContent(doc),
+          header: header.join(', '),
+          id: this.getDocId(doc),
+          keylabel: '',
+          url: doc.isFromView() ? doc.url('app') : doc.url('web-index'),
+          isDeletable: this.isDeletable(doc),
+          isEditable: this.isEditable(doc)
+        };
       }
 
+      // we filtered away our content with the fields param
       return {
-        content: this.getMangoDocContent(doc),
+        content: ' ',
         header: header.join(', '),
-        id: this.getDocId(doc),
+        id: this.getDocId(doc) + index,
         keylabel: '',
-        url: false,
+        url: this.isEditable(doc) ? doc.url('app') : null,
         isDeletable: this.isDeletable(doc),
         isEditable: this.isEditable(doc)
       };
+
     },
 
     getResults: function () {
@@ -160,16 +180,16 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
         .filter(function (doc) {
           return doc.get('language') !== 'query';
         })
-        .map(function (doc) {
-          if (doc.get('def')) {
-            return this.getMangoDoc(doc);
+        .map(function (doc, i) {
+          if (doc.get('def') || !Object.keys(doc.attributes).length) {
+            return this.getMangoDoc(doc, i);
           }
           return {
             content: this.getDocContent(doc),
             id: this.getDocId(doc),
             header: this.getDocId(doc),
             keylabel: doc.isFromView() ? 'key' : 'id',
-            url: doc.isFromView() ? doc.url('app') : doc.url('web-index'),
+            url: this.getDocId(doc) ? doc.url('app') : null,
             isDeletable: this.isDeletable(doc),
             isEditable: this.isEditable(doc)
           };
@@ -185,7 +205,10 @@ function (FauxtonAPI, ActionTypes, HeaderActionTypes, Documents) {
       return this._isLoading;
     },
 
-    isDeleteable: function () {
+    isDeleteable: function (doc) {
+      if (!Object.keys(doc.attributes).length) {
+        return false;
+      }
       return this._deleteable;
     },
 

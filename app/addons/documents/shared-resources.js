@@ -65,6 +65,10 @@ define([
       return !this.id;
     },
 
+    isMangoDoc: function () {
+      return false;
+    },
+
     isReducedShown : function () {
       if (this.collection) {
         return this.collection.params.reduce;

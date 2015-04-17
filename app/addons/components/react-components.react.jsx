@@ -267,7 +267,7 @@ function (app, FauxtonAPI, React, Components, beautifyHelper) {
                 {this.props.keylabel}
               </span>
               <span className="header-doc-id">
-                "{this.props.header}"
+                {this.props.header ? '"' + this.props.header + '"' : null}
               </span>
               {this.getUrlFragment()}
               <div className="doc-item-extension-icons pull-right">{this.getExtensionIcons()}</div>
