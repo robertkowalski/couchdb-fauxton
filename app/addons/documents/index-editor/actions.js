@@ -48,6 +48,13 @@ function (app, FauxtonAPI, Documents, ActionTypes, IndexResultsActions) {
       });
     },
 
+    updateMapCode: function (code) {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.EDITOR_UPDATE_MAP_CODE,
+        mapCode: code
+      });
+    },
+
     newDesignDoc: function () {
       FauxtonAPI.dispatch({
         type: ActionTypes.NEW_DESIGN_DOC

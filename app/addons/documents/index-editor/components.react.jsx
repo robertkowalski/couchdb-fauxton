@@ -181,8 +181,7 @@ function (app, FauxtonAPI, React, Stores, Actions, Components, ReactComponents) 
           ref='reduceEditor'
           id='reduce-function'
           code={this.state.reduce}
-          docs={false} title={'Custom Reduce function'}
-           />;
+          docs={false} title={'Custom Reduce function'} />;
       }
 
       return (
@@ -351,6 +350,10 @@ function (app, FauxtonAPI, React, Stores, Actions, Components, ReactComponents) 
       });
     },
 
+    onMapChange: function () {
+      Actions.updateMapCode(this.refs.mapEditor.getValue());
+    },
+
     viewChange: function (event) {
       Actions.changeViewName(event.target.value);
     },
@@ -394,7 +397,8 @@ function (app, FauxtonAPI, React, Stores, Actions, Components, ReactComponents) 
                   ref="mapEditor"
                   title={"Map function"}
                   docs={getDocUrl('MAP_FUNCS')}
-                  code={this.state.map} />
+                  code={this.state.map}
+                  changeCallback={this.onMapChange} />
               </PaddedBorderedBox>
             </div>
             <PaddedBorderedBox>

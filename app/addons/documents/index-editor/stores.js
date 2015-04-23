@@ -58,6 +58,10 @@ function (FauxtonAPI, ActionTypes) {
       }
     },
 
+    setMapCode: function (code) {
+      this._view.map = code;
+    },
+
     getDatabase: function () {
       return this._database;
     },
@@ -220,6 +224,10 @@ function (FauxtonAPI, ActionTypes) {
           this.updateDesignDoc(action.designDoc);
           this.setView();
           this.triggerChange();
+        break;
+
+        case ActionTypes.EDITOR_UPDATE_MAP_CODE:
+          this.setMapCode(action.mapCode);
         break;
 
         default:

@@ -71,8 +71,7 @@ define([
           _id: '_design/test-doc',
           views: {
             'test-view': {
-              map: 'function () {};',
-              //reduce: 'function (reduce) { reduce(); }'
+              map: 'function () {};'
             }
           }
         };
