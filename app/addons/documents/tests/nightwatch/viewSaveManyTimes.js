@@ -34,6 +34,8 @@ module.exports = {
       var editor = ace.edit("map-function");\
       editor.getSession().setValue("function (doc) { emit(\'boom\', doc._id); }");\
     ')
+    .execute('$(".save")[0].scrollIntoView();')
+
     .click('button.btn-success.save')
     .waitForElementVisible('.alert-success', waitTime, false)
     .waitForElementNotVisible('.alert-success', waitTime, false)
