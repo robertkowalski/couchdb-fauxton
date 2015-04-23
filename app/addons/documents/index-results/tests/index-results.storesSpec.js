@@ -28,6 +28,10 @@ define([
       dispatchToken = FauxtonAPI.dispatcher.register(store.dispatch);
     });
 
+    afterEach(function () {
+      FauxtonAPI.dispatcher.unregister(dispatchToken);
+    });
+
     describe('#hasResults', function () {
 
       it('returns true for collection', function () {
@@ -59,10 +63,6 @@ define([
         assert.equal(doc.keylabel, 'id');
       });
 
-    });
-
-    afterEach(function () {
-      FauxtonAPI.dispatcher.unregister(dispatchToken);
     });
   });
 

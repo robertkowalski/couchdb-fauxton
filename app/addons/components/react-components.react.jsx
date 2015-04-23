@@ -104,18 +104,18 @@ function (app, FauxtonAPI, React, Components, ace, beautifyHelper) {
       this.editor.getSession().setMode('ace/mode/' + props.mode);
       this.editor.setTheme('ace/theme/' + props.theme);
       this.editor.setFontSize(props.fontSize);
-
-      if (!props.changeCallback) {
-        return;
-      }
-      this.editor.getSession().on('change', function () {
-        props.changeCallback();
-      });
     },
 
     setupEvents: function () {
       $(window).on('beforeunload.editor_' + this.props.id, _.bind(this.quitWarningMsg));
       FauxtonAPI.beforeUnload('editor_' + this.props.id, _.bind(this.quitWarningMsg, this));
+
+      if (!this.props.changeCallback) {
+        return;
+      }
+      this.editor.getSession().on('change', function () {
+        this.props.changeCallback();
+      }.bind(this));
     },
 
     quitWarningMsg: function () {
