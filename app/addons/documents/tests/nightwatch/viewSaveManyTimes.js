@@ -35,13 +35,16 @@ module.exports = {
       editor.getSession().setValue("function (doc) { emit(\'boom\', doc._id); }");\
     ')
     .execute('$(".save")[0].scrollIntoView();')
+    .click('button.btn-success.save')
+    .waitForElementVisible('.alert-success', waitTime, false)
+    .waitForElementNotVisible('.alert-success', waitTime, false)
+    .execute('$(".save")[0].scrollIntoView();')
 
     .click('button.btn-success.save')
     .waitForElementVisible('.alert-success', waitTime, false)
     .waitForElementNotVisible('.alert-success', waitTime, false)
-    .click('button.btn-success.save')
-    .waitForElementVisible('.alert-success', waitTime, false)
-    .waitForElementNotVisible('.alert-success', waitTime, false)
+    .execute('$(".save")[0].scrollIntoView();')
+
     .click('button.btn-success.save')
     .assert.containsText('.alert-success', 'View Saved.')
     .end();
