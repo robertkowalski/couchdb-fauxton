@@ -46,6 +46,8 @@ module.exports = {
     .execute('$(".save")[0].scrollIntoView();')
 
     .click('button.btn-success.save')
+    .waitForElementVisible('.alert-success', waitTime, false)
+
     .assert.containsText('.alert-success', 'View Saved.')
     .end();
   },
