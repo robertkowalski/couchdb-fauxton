@@ -21,6 +21,73 @@ define([
   'helpers'
 ], function (app, FauxtonAPI, React, ComponentsReact, Stores, Resources, Actions, Helpers) {
 
+
+// ES 6 to ES 5 compiled Code from testing
+
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+var HelloMessage = (function (_React$Component) {
+  function HelloMessage() {
+    _classCallCheck(this, HelloMessage);
+
+    if (_React$Component != null) {
+      _React$Component.apply(this, arguments);
+    }
+  }
+
+  _inherits(HelloMessage, _React$Component);
+
+  _createClass(HelloMessage, [{
+    key: 'render',
+    value: function render() {
+      return React.createElement(
+        'div',
+        null,
+        'Hello ',
+        this.props.name
+      );
+    }
+  }, {
+    key: 'method',
+    value: function method() {
+      return 'hello from parent';
+    }
+  }]);
+
+  return HelloMessage;
+})(React.Component);
+
+var HelloMessageNew = (function (_HelloMessage) {
+  function HelloMessageNew() {
+    _classCallCheck(this, HelloMessageNew);
+
+    if (_HelloMessage != null) {
+      _HelloMessage.apply(this, arguments);
+    }
+  }
+
+  _inherits(HelloMessageNew, _HelloMessage);
+
+  _createClass(HelloMessageNew, [{
+    key: 'render',
+    value: function render() {
+      return React.createElement(
+        'div',
+        null,
+        'Hello OVERRIDE!!! ',
+        this.method()
+      );
+    }
+  }]);
+
+  return HelloMessageNew;
+})(HelloMessage);
   var databasesStore = Stores.databasesStore;
 
   var DatabasesController = React.createClass({
@@ -102,6 +169,7 @@ define([
             <a className="db-actions btn fonticon-replicate set-replication-start" title={"Replicate "+name} href={"#/replication/"+encoded}></a>&#160;
             <a className="db-actions btn icon-lock set-permissions" title={"Set permissions for "+name} href={"#/database/"+encoded+"/permissions"}></a>
           </td>
+          {this.props.myItem}
         </tr>
       );
     }
@@ -237,9 +305,176 @@ define([
     }
   });
 
+
+    // this is temproray and goes away with ES6 classes
+    // ES 6 classes are just sugar for prototypes, BUT
+    // we need react 13 to use either ES6 classes or
+    // prototypal inheritance in ES5
+
+
+    // Minimalistic example in ES6 (tested):
+/*
+    class HelloMessage extends React.Component {
+      render() {
+        return <div>Hello {this.props.name}</div>;
+      }
+
+      method() {
+        return 'hello from parent';
+      }
+    }
+
+    class HelloMessageNew extends HelloMessage {
+      render() {
+        return (
+          <div>Hello OVERRIDE!!!</div>
+          <div>{this.method()}</div>
+        );
+      }
+    }
+
+
+    // production example for databases needs react 13 compiler with babel:
+
+    class DatabasesControllerCloudant extends DatabasesController {
+      render () {
+        return (
+          <CloudantDatabaseTable body={this.state.collection} />
+        );
+      }
+    }
+
+    // just override createRows, reuse other code
+    class CloudantDatabaseTable extends DatabaseTable {
+      createRows () {
+        return _.map(this.props.body, function (item, iteration) {
+          return (
+            <CloudantDatabaseRow row={item} />
+          );
+        });
+      }
+    }
+
+    // just override render, reuse other code
+    // introduce more methods to reuse more code
+    class CloudantDatabaseRow extends DatabaseRow {
+        render: () {
+        var row = this.props.row;
+        var name = row.get("name");
+        var encoded = app.utils.safeURLName(name);
+        var size = Helpers.formatSize(row.status.dataSize());
+        return (
+          <tr>
+            <td>
+              <a href={"#/database/"+encoded+"/_all_docs"}>{name}</a>
+            </td>
+            <td>{size}</td>
+            <td>{row.status.numDocs()} {this.renderGraveyard(row)}</td>
+            <td>{row.status.updateSeq()}</td>
+            <td>
+              <a className="db-actions btn fonticon-replicate set-replication-start" title={"Replicate "+name} href={"#/replication/"+encoded}></a>&#160;
+              <a className="db-actions btn icon-lock set-permissions" title={"Set permissions for "+name} href={"#/database/"+encoded+"/permissions"}></a>
+            </td>
+          </tr>
+        );
+      }
+    }
+
+
+*/
+  // React 12 to 13 upgradable path for now (tested):
+  // cloudantdatabases/components.reacts.jsx
+  var DatabasesControllerCloudant = React.createClass({
+
+    getStoreState: function () {
+      return {
+        collection: databasesStore.getCollection()
+      };
+    },
+
+    getInitialState: function () {
+      return this.getStoreState();
+    },
+
+    render: function () {
+      return (
+        <CloudantDatabaseTable body={this.state.collection} />
+      );
+    }
+  });
+
+  var CloudantDatabaseTable = React.createClass({
+    createRows: function () {
+      return _.map(this.props.body, function (item, iteration) {
+        return (
+          <CloudantDatabaseRow row={item} />
+        );
+      });
+    },
+
+
+    render: function () {
+      var rows = this.createRows();
+      return (
+        <HelloMessageNew />
+      );
+    }
+  });
+
+  var CloudantDatabaseRow = React.createClass({
+
+    renderGraveyard : function (row) {
+      if (row.status.isGraveYard()) {
+        return (
+          <GraveyardInfo row={row} />
+        );
+      } else {
+        return null;
+      }
+    },
+
+    render: function () {
+      var row = this.props.row;
+      var name = row.get("name");
+      var encoded = app.utils.safeURLName(name);
+      var size = Helpers.formatSize(row.status.dataSize());
+      return (
+        <tr>
+          <td>
+            <a href={"#/database/"+encoded+"/_all_docs"}>{name}</a>
+          </td>
+          <td>{size}</td>
+          <td>{row.status.numDocs()} {this.renderGraveyard(row)}</td>
+          <td>{row.status.updateSeq()}</td>
+          <td>
+            <a className="db-actions btn fonticon-replicate set-replication-start" title={"Replicate "+name} href={"#/replication/"+encoded}></a>&#160;
+            <a className="db-actions btn icon-lock set-permissions" title={"Set permissions for "+name} href={"#/database/"+encoded+"/permissions"}></a>
+            {"Hello OVERRIDE"}
+          </td>
+        </tr>
+      );
+    }
+  });
+
+  // slight variation with injecting props:
+
+
+    var CloudantDatabaseRow = React.createClass({
+      render: function () {
+        // customcode
+        var myitem = (<span>myitem</span>);
+        return (
+          <DatabaseRow row={this.props.row} additionalItems={myitem} />
+        );
+      }
+    });
+
+
   return {
     renderDatabases: function (el) {
-      React.render(<DatabasesController />, el);
+      // this would happen cloudantdatabases/routes.js
+      React.render(<DatabasesControllerCloudant />, el);
+
     },
     removeDatabases: function (el) {
       React.unmountComponentAtNode(el);

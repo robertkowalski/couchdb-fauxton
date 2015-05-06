@@ -541,9 +541,9 @@ module.exports = function (grunt) {
 
   // build a debug release
   grunt.registerTask('debug', ['lint', 'dependencies', "gen_initialize:development", 'jsx', 'concat:requirejs', 'less', 'concat:index_css', 'template:development', 'copy:debug']);
-  grunt.registerTask('debugDev', ['clean', 'dependencies', "gen_initialize:development", 'jsx', 'jshint', 'shell:stylecheck', 'less', 'concat:index_css', 'template:development', 'copy:debug']);
+  grunt.registerTask('debugDev', ['clean', 'dependencies', "gen_initialize:development", 'jsx', 'less', 'concat:index_css', 'template:development', 'copy:debug']);
 
-  grunt.registerTask('watchRun', ['clean:watch', 'dependencies', 'jshint', 'shell:stylecheck']);
+  grunt.registerTask('watchRun', ['clean:watch', 'dependencies', 'shell:stylecheck']);
 
   // build a release
   grunt.registerTask('release_commons_prefix', ['clean', 'dependencies']);
