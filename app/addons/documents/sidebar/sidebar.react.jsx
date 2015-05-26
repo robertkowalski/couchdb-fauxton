@@ -26,6 +26,46 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
 
   var MainSidebar = React.createClass({
 
+    getNewButtonLinks: function () {  //these are links for the sidebar '+' on All Docs and All Design Docs
+      var addLinks = FauxtonAPI.getExtensions('sidebar:links');
+      var databaseName = this.props.databaseName;
+      var newUrlPrefix = '#' + FauxtonAPI.urls('databaseBaseURL', 'app', databaseName);
+
+      var addNewLinks = _.reduce(addLinks, function (menuLinks, link) {
+        menuLinks.push({
+          title: link.title,
+          url: newUrlPrefix + '/' + link.url,
+          icon: 'fonticon-plus-circled'
+        });
+
+        return menuLinks;
+      }, [{
+        title: 'New Doc',
+        url: newUrlPrefix + '/new',
+        icon: 'fonticon-plus-circled'
+      }, {
+        title: 'New View',
+        url: newUrlPrefix + '/new_view',
+        icon: 'fonticon-plus-circled'
+      }, this.getMangoLink()]);
+
+      return [{
+        title: 'Add new',
+        links: addNewLinks
+      }];
+    },
+
+    getMangoLink: function () {
+      var databaseName = this.props.databaseName;
+      var newUrlPrefix = '#' + FauxtonAPI.urls('databaseBaseURL', 'app', databaseName);
+
+      return {
+        title: app.i18n.en_US['new-mango-index'],
+        url: newUrlPrefix + '/_index',
+        icon: 'fonticon-plus-circled'
+      };
+    },
+
     buildDocLinks: function () {
       var base = FauxtonAPI.urls('base', 'app', this.props.databaseName);
       var isActive = this.props.isActive;
@@ -48,6 +88,7 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
       var databaseUrl = FauxtonAPI.urls('allDocs', 'app', this.props.databaseName, '');
       var mangoQueryUrl = FauxtonAPI.urls('mango', 'query-app', this.props.databaseName);
       var runQueryWithMangoText = app.i18n.en_US['run-query-with-mango'];
+      var buttonLinks = this.getNewButtonLinks();
 
       return (
         <ul className="nav nav-list">
@@ -64,7 +105,9 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
               className="toggle-view">
               All Documents
             </a>
-            <div id="new-all-docs-button" className="add-dropdown"> </div>
+            <div id="new-all-docs-button" className="add-dropdown">
+              <Components.MenuDropDown links={buttonLinks} />
+            </div>
            </li>
           <li className={isActive('mango-query')}>
             <a
@@ -73,7 +116,9 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
               className="toggle-view">
               {runQueryWithMangoText}
             </a>
-            <div id="mango-query-button" className="add-dropdown"> </div>
+            <div id="mango-query-button" className="add-dropdown">
+              <Components.MenuDropDown links={buttonLinks} />
+            </div>
           </li>
           <li className={isActive('design-docs')}>
             <a
@@ -82,7 +127,9 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
               className="toggle-view">
               All Design Docs
             </a>
-            <div id="new-design-docs-button" className="add-dropdown"> </div>
+            <div id="new-design-docs-button" className="add-dropdown">
+              <Components.MenuDropDown links={buttonLinks} />
+            </div>
           </li>
         </ul>
       );
@@ -90,10 +137,74 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
 
   });
 
-  var DesignDocs = React.createClass({
+  var DesignDoc = React.createClass({
+
+    getInitialState: function () {
+      return {
+        contentHidden: true
+      };
+    },
+
+    toggle: function (e) {
+      e.preventDefault();
+      var toggleState = !this.state.contentHidden;
+      //this.setState({contentHidden: !toggleState});
+      console.log(this.state.contentHidden);
+      console.log(this.props.designDocName, this.getDOMNode());
+      //$('#' + this.props.designDocName).toggleClass('down');
+      var $collapseEl = $('#' + this.props.designDocName);
+      console.log($collapseEl);
+      $collapseEl.collapse({
+        toggle: toggleState
+      });
+    },
 
     render: function () {
-      return null;
+      var designDocName = this.props.designDocName;
+      var designDocMetaUrl = FauxtonAPI.urls('designDocs', 'app', this.props.databaseName, designDocName);
+      return (
+        <li onClick={this.toggle} className="nav-header">
+
+        <div className='js-collapse-toggle accordion-header'>
+          <div className='accordion-list-item'>
+            <div className='fonticon-play'></div>
+            <p className='design-doc-name'>
+              <span title={'_design/' + designDocName}>{'_design/' + designDocName}</span>
+            </p>
+          </div>
+          <div className='new-button add-dropdown'></div>
+        </div>
+        <ul className='accordion-body collapse in' id={this.props.designDocName}>
+          <li>
+            <a href={"#/" + designDocMetaUrl} className="toggle-view accordion-header">
+              <span className="fonticon-sidenav-info fonticon"></span>
+              Design Doc Metadata
+            </a>
+          </li>
+        </ul>
+        </li>
+      );
+    }
+
+  });
+
+  var DesignDocList = React.createClass({
+    createDesignDocs: function () {
+      return this.props.designDocs.map(function (designDoc, key) {
+        console.log(designDoc);
+        return <DesignDoc key={key} designDocName={designDoc.safeId} databaseName={this.props.databaseName} />;
+      }.bind(this));
+    },
+
+    render: function () {
+      var designDocName = this.props.designDocName;
+      var designDocMetaUrl = FauxtonAPI.urls('designDocs', 'app', this.props.databaseName, designDocName);
+
+      return (
+        <ul className="nav nav-list">
+          {this.createDesignDocs()}
+        </ul>
+      );
     }
 
   });
@@ -103,12 +214,12 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
     getStoreState: function () {
       return {
         databaseName: store.getDatabaseName(),
-        selectedTab: store.getSelectedTab()
+        selectedTab: store.getSelectedTab(),
+        designDocs: store.getDesignDocs()
       };
     },
 
     isActive: function (id) {
-      console.log('ac', this.state.selectedTab);
       if (id === this.state.selectedTab) {
         return 'active';
       }
@@ -135,10 +246,11 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
 
     render: function () {
 
+      console.log(this.props);
       return (
         <nav className="sidenav">
           <MainSidebar isActive={this.isActive} databaseName={this.state.databaseName} />
-          <DesignDocs />
+          <DesignDocList designDocs={this.state.designDocs} databaseName={this.state.databaseName} />
         </nav>
       );
     }

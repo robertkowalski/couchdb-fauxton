@@ -11,11 +11,12 @@
 // the License.
 
 define([
+  'app',
   'api',
   'addons/documents/sidebar/actiontypes'
 ],
 
-function (FauxtonAPI, ActionTypes) {
+function (app, FauxtonAPI, ActionTypes) {
   var Stores = {};
 
   Stores.SidebarStore = FauxtonAPI.Store.extend({
@@ -39,6 +40,14 @@ function (FauxtonAPI, ActionTypes) {
 
     getDatabaseName: function () {
       return this._database.safeID();
+    },
+
+    getDesignDocs: function () {
+      var docs = this._designDocs.toJSON();
+      return docs.map(function (doc) {
+        doc.safeId = app.utils.safeURLName(doc._id.replace(/^_design\//, ""));
+        return doc;
+      });
     },
 
     getSelectedTab: function () {
