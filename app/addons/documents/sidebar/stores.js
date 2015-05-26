@@ -21,10 +21,40 @@ function (FauxtonAPI, ActionTypes) {
   Stores.SidebarStore = FauxtonAPI.Store.extend({
 
     initialize: function () {
+      this._selectedTab = 'all-docs';
+    },
+
+    newOptions: function (options) {
+      this._database = options.database;
+      this._designDocs = options.designDocs;
+
+      if (options.selectedTab) {
+        this.setSelectedTab(options.selectedTab);
+      }
+    },
+
+    setSelectedTab: function (tab) {
+      this._selectedTab = tab;
+    },
+
+    getDatabaseName: function () {
+      return this._database.safeID();
+    },
+
+    getSelectedTab: function () {
+      return this._selectedTab;
     },
 
     dispatch: function (action) {
       switch (action.type) {
+        case ActionTypes.SIDEBAR_SET_SELECTED_TAB:
+          this.setSelectedTab(action.tab);
+          this.triggerChange();
+        break;
+        case ActionTypes.SIDEBAR_NEW_OPTIONS:
+          this.newOptions(action.options);
+          this.triggerChange();
+        break;
         default:
         return;
         // do nothing
@@ -35,7 +65,7 @@ function (FauxtonAPI, ActionTypes) {
 
   Stores.sidebarStore = new Stores.SidebarStore();
 
-  Stores.sidebarStore.dispatchToken = FauxtonAPI.dispatcher.register(Stores.SidebarStore.dispatch);
+  Stores.sidebarStore.dispatchToken = FauxtonAPI.dispatcher.register(Stores.sidebarStore.dispatch);
 
   return Stores;
 

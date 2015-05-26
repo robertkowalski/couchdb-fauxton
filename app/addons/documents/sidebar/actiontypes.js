@@ -12,5 +12,7 @@
 
 define([], function () {
   return {
+    SIDEBAR_SET_SELECTED_TAB: 'SIDEBAR_SET_SELECTED_TAB',
+    SIDEBAR_NEW_OPTIONS: 'SIDEBAR_NEW_OPTIONS'
   };
 });

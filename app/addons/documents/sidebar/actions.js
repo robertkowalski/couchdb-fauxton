@@ -17,5 +17,18 @@ define([
 ],
 function (app, FauxtonAPI, ActionTypes) {
   return {
+    newOptions: function (options) {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.SIDEBAR_NEW_OPTIONS,
+        options: options
+      });
+    },
+
+    setSelectedTab: function (tab) {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.SIDEBAR_SET_SELECTED_TAB,
+        tab: tab
+      });
+    }
   };
 });

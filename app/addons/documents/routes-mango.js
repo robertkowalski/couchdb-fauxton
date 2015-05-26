@@ -31,8 +31,7 @@ define([
   'addons/documents/mango/mango.components.react',
   'addons/documents/mango/mango.actions',
   'addons/documents/mango/mango.stores',
-  'addons/documents/index-results/index-results.components.react'
-
+  'addons/documents/index-results/index-results.components.react',
 ],
 
 
@@ -63,7 +62,6 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Databases,
       this.allDatabases = this.getAllDatabases();
       this.createDesignDocsCollection();
       this.addLeftHeader();
-      this.addSidebar();
 
       MangoActions.setDatabase({
         database: this.database
@@ -87,8 +85,6 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Databases,
             }
           });
 
-      // magic method
-      this.sidebar.setSelectedTab('mango-query');
       this.setComponent('#react-headerbar', ReactHeader.HeaderBarController);
       this.setComponent('#footer', ReactPagination.Footer);
 
