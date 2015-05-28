@@ -19,8 +19,10 @@ module.exports = {
     client
       .loginToGUI()
       .waitForElementNotPresent('.loading-lines', waitTime, false)
+      .pause(1000)
       .url(baseUrl + '/#/database/' + newDatabaseName + '/_all_docs')
 
+      .pause(1000)
       .waitForElementVisible('.nav-list', waitTime, false)
       .waitForElementPresent('#header-dropdown-menu a.dropdown-toggle.icon.fonticon-cog', waitTime, false)
       .clickWhenVisible("#header-dropdown-menu a.dropdown-toggle.icon.fonticon-cog", waitTime, false)
