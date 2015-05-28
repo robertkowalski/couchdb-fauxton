@@ -18,6 +18,7 @@ module.exports = {
 
     client
       .loginToGUI()
+      .waitForElementNotPresent('.loading-lines', waitTime, false)
       .url(baseUrl + '/#/database/' + newDatabaseName + '/_all_docs')
 
       .waitForElementVisible('.nav-list', waitTime, false)
