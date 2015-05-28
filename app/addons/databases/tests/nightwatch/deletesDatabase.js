@@ -26,7 +26,9 @@ module.exports = {
       .clickWhenVisible('#header-dropdown-menu .fonticon-trash', waitTime, false)
       .waitForElementVisible('#db-name', waitTime, false)
       .clickWhenVisible('#db-name', waitTime, false)
-      .setValue('#db-name', [newDatabaseName, client.Keys.ENTER])
+      .setValue('#db-name', [newDatabaseName])
+      .clickWhenVisible('#delete-db-btn', waitTime, false)
+
       .checkForDatabaseDeleted(newDatabaseName, waitTime)
 
     .end();
