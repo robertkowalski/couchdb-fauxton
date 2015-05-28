@@ -24,7 +24,7 @@ define([
     },
 
     reset: function () {
-      this._collection = new Backbone.Collection();
+      this._collection = {};
       this._loading = false;
       this._promptVisible = false;
     },
