@@ -46,7 +46,7 @@ function (app, FauxtonAPI, ActionTypes) {
       var docs = this._designDocs.toJSON();
       return docs.map(function (doc) {
         doc.safeId = app.utils.safeURLName(doc._id.replace(/^_design\//, ""));
-        return doc;
+        return _.extend(doc, doc.doc);
       });
     },
 

@@ -137,6 +137,51 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
 
   });
 
+  var IndexSection = React.createClass({
+
+    getDefaultProps: function () {
+      return {
+        indexTypeMap: {
+          views:   { icon: 'fonticon-sidenav-map-reduce', urlFolder: '_view', type: 'view' },
+          indexes: { icon: 'fonticon-sidenav-search', urlFolder: '_indexes', type: 'search' }
+        }
+      };
+    },
+
+    createItems: function () {
+      this.props.items(function (index, key) {
+        var href = FauxtonAPI.urls(this.indexTypeMap[this.props.selector].type, 'app', this.database, this.ddoc);
+        return (
+          <li key={key}>
+          <a
+            id="<%- removeSpecialCharacters(ddoc) %>_<%- removeSpecialCharacters(index) %>"
+            href={"#/" + href + index}
+            class="toggle-view">
+            {index}
+          </a>
+          </li>
+        );
+      });
+    },
+
+    render: function () {
+      var title = this.props.title;
+      return (
+        <li>
+          <a class="accordion-header" data-toggle="collapse"  data-target="#<%- removeSpecialCharacters(ddoc) + ddocType %>">
+            <div class="fonticon-play"></div>
+            <span class={this.props.icon + " fonticon"}></span>
+            {title}
+            </a>
+            <ul class="accordion-body collapse" id="<%- removeSpecialCharacters(ddoc) + ddocType %>">
+              {this.createItems()}
+          </ul>
+        </li>
+      );
+    }
+
+  });
+
   var DesignDoc = React.createClass({
 
     getInitialState: function () {
@@ -145,27 +190,42 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
       };
     },
 
+    createIndexList: function () {
+      var sidebarListTypes = FauxtonAPI.getExtensions('sidebar:list');
+      sidebarListTypes.unshift({
+        selector: 'views',
+        name: 'Views'
+      });
+
+      return _.map(sidebarListTypes, function (index, key) {
+        return <IndexSection
+          key={key}
+          title={index.name}
+          selector={index.selector}
+          items={this.props.designDoc[index.selector]} />;
+      }.bind(this));
+    },
+
     toggle: function (e) {
       e.preventDefault();
       var toggleState = !this.state.contentHidden;
-      //this.setState({contentHidden: !toggleState});
-      console.log(this.state.contentHidden);
-      console.log(this.props.designDocName, this.getDOMNode());
-      //$('#' + this.props.designDocName).toggleClass('down');
-      var $collapseEl = $('#' + this.props.designDocName);
-      console.log($collapseEl);
-      $collapseEl.collapse({
-        toggle: toggleState
-      });
+      this.setState({contentHidden: toggleState});
+      var state = toggleState ? 'hide' : 'show';
+      $(this.getDOMNode()).find('#' + this.props.designDocName).collapse(state);
     },
 
     render: function () {
+      console.log(this.props.designDoc);
+      var toggleClassNames = 'accordion-header';
+      if (!this.state.contentHidden) {
+        toggleClassNames += ' down';
+      }
       var designDocName = this.props.designDocName;
       var designDocMetaUrl = FauxtonAPI.urls('designDocs', 'app', this.props.databaseName, designDocName);
       return (
         <li onClick={this.toggle} className="nav-header">
 
-        <div className='js-collapse-toggle accordion-header'>
+        <div className={toggleClassNames}>
           <div className='accordion-list-item'>
             <div className='fonticon-play'></div>
             <p className='design-doc-name'>
@@ -174,13 +234,14 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
           </div>
           <div className='new-button add-dropdown'></div>
         </div>
-        <ul className='accordion-body collapse in' id={this.props.designDocName}>
+        <ul className='accordion-body collapse' id={this.props.designDocName}>
           <li>
             <a href={"#/" + designDocMetaUrl} className="toggle-view accordion-header">
               <span className="fonticon-sidenav-info fonticon"></span>
               Design Doc Metadata
             </a>
           </li>
+          {this.createIndexList()}
         </ul>
         </li>
       );
@@ -191,8 +252,7 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
   var DesignDocList = React.createClass({
     createDesignDocs: function () {
       return this.props.designDocs.map(function (designDoc, key) {
-        console.log(designDoc);
-        return <DesignDoc key={key} designDocName={designDoc.safeId} databaseName={this.props.databaseName} />;
+        return <DesignDoc key={key} designDoc={designDoc} designDocName={designDoc.safeId} databaseName={this.props.databaseName} />;
       }.bind(this));
     },
 
