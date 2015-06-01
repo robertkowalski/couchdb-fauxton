@@ -23,6 +23,7 @@ function (app, FauxtonAPI, ActionTypes) {
 
     initialize: function () {
       this._selectedTab = 'all-docs';
+      this._toggledSections = {};
     },
 
     newOptions: function (options) {
@@ -32,6 +33,45 @@ function (app, FauxtonAPI, ActionTypes) {
       if (options.selectedTab) {
         this.setSelectedTab(options.selectedTab);
       }
+    },
+
+    toggleContent: function (designDoc, index) {
+      if (!this._toggledSections[designDoc]) {
+        this._toggledSections[designDoc] = {
+          visible: true,
+          indexes: {}
+        };
+        return;
+      }
+
+      if (index) {
+        return this.toggleIndex(designDoc, index);
+      }
+
+      this._toggledSections[designDoc].visible = !this._toggledSections[designDoc].visible;
+    },
+
+    toggleIndex: function (designDoc, indexName) {
+      var index = this._toggledSections[designDoc].indexes[indexName];
+
+      if (_.isUndefined(index)) {
+        this._toggledSections[designDoc].indexes[indexName] = true;
+        return;
+      }
+
+      this._toggledSections[designDoc].indexes[indexName] = !index;
+    },
+
+    isVisible: function (designDoc, index) {
+      if (!this._toggledSections[designDoc]) {
+        return false;
+      }
+
+      if (index) {
+        return this._toggledSections[designDoc].indexes[index];
+      }
+
+      return this._toggledSections[designDoc].visible;
     },
 
     setSelectedTab: function (tab) {
@@ -62,6 +102,10 @@ function (app, FauxtonAPI, ActionTypes) {
         break;
         case ActionTypes.SIDEBAR_NEW_OPTIONS:
           this.newOptions(action.options);
+          this.triggerChange();
+        break;
+        case ActionTypes.SIDEBAR_TOGGLE_CONTENT:
+          this.toggleContent(action.designDoc, action.index);
           this.triggerChange();
         break;
         default:

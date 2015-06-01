@@ -149,31 +149,45 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
     },
 
     createItems: function () {
-      this.props.items(function (index, key) {
-        var href = FauxtonAPI.urls(this.indexTypeMap[this.props.selector].type, 'app', this.database, this.ddoc);
+      return _.map(this.props.items, function (index, key) {
+        var href = FauxtonAPI.urls(this.props.indexTypeMap[this.props.selector].type, 'app', this.props.databaseName, this.props.designDocName);
         return (
           <li key={key}>
           <a
-            id="<%- removeSpecialCharacters(ddoc) %>_<%- removeSpecialCharacters(index) %>"
             href={"#/" + href + index}
-            class="toggle-view">
+            className="toggle-view">
             {index}
           </a>
           </li>
         );
-      });
+      }, this);
+    },
+
+    toggle: function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var newToggleState = !this.props.contentVisible;
+      var state = newToggleState ? 'show' : 'hide';
+      $(this.getDOMNode()).find('.accordion-body').collapse(state);
+      console.log('dd', this.props.designDocName, this.props.title);
+      this.props.toggle(this.props.designDocName, this.props.title);
     },
 
     render: function () {
+      var toggleClassNames = 'accordion-header';
+      if (this.props.contentVisible) {
+        toggleClassNames += ' down';
+      }
       var title = this.props.title;
+      var icon = this.props.indexTypeMap[this.props.selector].icon;
       return (
-        <li>
-          <a class="accordion-header" data-toggle="collapse"  data-target="#<%- removeSpecialCharacters(ddoc) + ddocType %>">
-            <div class="fonticon-play"></div>
-            <span class={this.props.icon + " fonticon"}></span>
+        <li onClick={this.toggle}>
+          <a className={toggleClassNames} data-toggle="collapse">
+            <div className="fonticon-play"></div>
+            <span className={icon + " fonticon"}></span>
             {title}
             </a>
-            <ul class="accordion-body collapse" id="<%- removeSpecialCharacters(ddoc) + ddocType %>">
+            <ul className="accordion-body collapse">
               {this.createItems()}
           </ul>
         </li>
@@ -184,12 +198,6 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
 
   var DesignDoc = React.createClass({
 
-    getInitialState: function () {
-      return {
-        contentHidden: true
-      };
-    },
-
     createIndexList: function () {
       var sidebarListTypes = FauxtonAPI.getExtensions('sidebar:list');
       sidebarListTypes.unshift({
@@ -199,25 +207,28 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
 
       return _.map(sidebarListTypes, function (index, key) {
         return <IndexSection
+          contentVisible={this.props.isVisible(this.props.designDocName, index.name)}
+          toggle={this.props.toggle}
+          databaseName={this.props.databaseName}
+          designDocName={this.props.designDocName}
           key={key}
           title={index.name}
           selector={index.selector}
-          items={this.props.designDoc[index.selector]} />;
+          items={_.keys(this.props.designDoc[index.selector])} />;
       }.bind(this));
     },
 
     toggle: function (e) {
       e.preventDefault();
-      var toggleState = !this.state.contentHidden;
-      this.setState({contentHidden: toggleState});
-      var state = toggleState ? 'hide' : 'show';
+      var newToggleState = !this.props.contentVisible;
+      var state = newToggleState ? 'show' : 'hide';
       $(this.getDOMNode()).find('#' + this.props.designDocName).collapse(state);
+      this.props.toggle(this.props.designDocName);
     },
 
     render: function () {
-      console.log(this.props.designDoc);
       var toggleClassNames = 'accordion-header';
-      if (!this.state.contentHidden) {
+      if (this.props.contentVisible) {
         toggleClassNames += ' down';
       }
       var designDocName = this.props.designDocName;
@@ -252,7 +263,14 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
   var DesignDocList = React.createClass({
     createDesignDocs: function () {
       return this.props.designDocs.map(function (designDoc, key) {
-        return <DesignDoc key={key} designDoc={designDoc} designDocName={designDoc.safeId} databaseName={this.props.databaseName} />;
+        return <DesignDoc
+          toggle={this.props.toggle}
+          contentVisible={this.props.isVisible(designDoc.safeId)}
+          isVisible={this.props.isVisible}
+          key={key}
+          designDoc={designDoc}
+          designDocName={designDoc.safeId}
+          databaseName={this.props.databaseName} />;
       }.bind(this));
     },
 
@@ -275,7 +293,8 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
       return {
         databaseName: store.getDatabaseName(),
         selectedTab: store.getSelectedTab(),
-        designDocs: store.getDesignDocs()
+        designDocs: store.getDesignDocs(),
+        isVisible: _.bind(store.isVisible, store)
       };
     },
 
@@ -305,12 +324,14 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
 
 
     render: function () {
-
-      console.log(this.props);
       return (
         <nav className="sidenav">
           <MainSidebar isActive={this.isActive} databaseName={this.state.databaseName} />
-          <DesignDocList designDocs={this.state.designDocs} databaseName={this.state.databaseName} />
+          <DesignDocList
+            toggle={Actions.toggleContent}
+            isVisible={this.state.isVisible}
+            designDocs={this.state.designDocs}
+            databaseName={this.state.databaseName} />
         </nav>
       );
     }

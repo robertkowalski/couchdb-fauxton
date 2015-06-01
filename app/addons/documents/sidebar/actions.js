@@ -18,9 +18,19 @@ define([
 function (app, FauxtonAPI, ActionTypes) {
   return {
     newOptions: function (options) {
+      options.designDocs.fetch().then(function () {
+        FauxtonAPI.dispatch({
+          type: ActionTypes.SIDEBAR_NEW_OPTIONS,
+          options: options
+        });
+      });
+    },
+
+    toggleContent: function (designDoc, index) {
       FauxtonAPI.dispatch({
-        type: ActionTypes.SIDEBAR_NEW_OPTIONS,
-        options: options
+        type: ActionTypes.SIDEBAR_TOGGLE_CONTENT,
+        designDoc: designDoc,
+        index: index
       });
     },
 

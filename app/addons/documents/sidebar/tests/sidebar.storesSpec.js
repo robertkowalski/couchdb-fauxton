@@ -21,7 +21,7 @@ define([
   var store;
   var opts;
 
-  describe('Index Results Store', function () {
+  describe('Sidebar Store', function () {
     beforeEach(function () {
       store = new Stores.SidebarStore();
       dispatchToken = FauxtonAPI.dispatcher.register(store.dispatch);
@@ -29,6 +29,51 @@ define([
 
     afterEach(function () {
       FauxtonAPI.dispatcher.unregister(dispatchToken);
+    });
+
+    describe('toggle state', function () {
+
+      it('should not be visible if never toggled', function () {
+        assert.notOk(store.isVisible('designDoc'));
+      });
+
+      it('should be visible after being toggled', function () {
+        var designDoc = 'designDoc';
+        store.toggleContent(designDoc);
+        assert.ok(store.isVisible(designDoc));
+      });
+
+      it('should not be visible after being toggled twice', function () {
+        var designDoc = 'designDoc';
+        store.toggleContent(designDoc);
+        store.toggleContent(designDoc);
+        assert.notOk(store.isVisible(designDoc));
+      });
+
+    });
+
+    describe('toggle state for index', function () {
+      var designDoc = 'design-doc';
+
+      beforeEach(function () {
+        store.toggleContent(designDoc);
+      });
+
+      it('should be hidden if never toggled', function () {
+        assert.notOk(store.isVisible(designDoc, 'index'));
+      });
+
+      it('should be if toggled', function () {
+        store.toggleContent(designDoc, 'index');
+        assert.ok(store.isVisible(designDoc, 'index'));
+      });
+
+      it('should be hidden after being toggled twice', function () {
+        store.toggleContent(designDoc, 'index');
+        store.toggleContent(designDoc, 'index');
+        assert.notOk(store.isVisible(designDoc, 'index'));
+      });
+
     });
   });
 });
