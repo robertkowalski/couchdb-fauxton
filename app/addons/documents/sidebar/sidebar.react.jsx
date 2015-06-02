@@ -25,46 +25,55 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
   var store = Stores.sidebarStore;
   var LoadLines = Components.LoadLines;
 
-  var SidebarToggle = React.createClass({
+  var SidebarToggleController = React.createClass({
     getInitialState: function () {
+      return this.getStoreState();
+    },
+
+    getStoreState: function () {
       return {
-        hidden: false
+        isSidebarVisible: store.isSidebarVisible()
       };
     },
 
+    componentDidMount: function () {
+      store.on('change', this.onChange, this);
+    },
+
+    componentWillUnmount: function () {
+      store.off('change', this.onChange);
+    },
+
+    onChange: function () {
+      this.setState(this.getStoreState());
+    },
+
     toggle: function (e) {
-      console.log('clik');
       e.preventDefault();
-      var newHiddenState = !this.state.hidden;
-      this.setState({hidden: newHiddenState});
-      var $dashboard = $('#dashboard-content');
 
-      if (newHiddenState) {
-        $dashboard.animate({left: '210px'}, 300);
-      } else {
-        $dashboard.animate({left: '550px'}, 300);
-      }
-
+      Actions.toggleSidebar();
+      $('body').toggleClass('close-sidebar', this.state.isMinimized);
     },
 
     render: function () {
-      return null;
-      /*var text = this.state.hidden ? 'show sidebar' : 'hide';
+      var text = 'hide';
       var classNames = 'sidebar-toggler';
       var icon = 'icon icon-chevron-left';
 
-      if (this.state.hidden) {
+      if (!this.state.isSidebarVisible) {
+        text = 'show sidebar';
         classNames += ' sidebar-hidden';
         icon = 'icon icon-chevron-right';
       }
+
       return (
-        <div >
+        <div className="sidebar-toggler-wrapper">
           <a onClick={this.toggle} data-bypass="true" className={classNames} href="#">
             <span className={icon}></span>
             {text}
           </a>
         </div>
-      );*/
+      );
     }
 
   });
@@ -210,7 +219,6 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
 
     toggle: function (e) {
       e.preventDefault();
-      e.stopPropagation();
       var newToggleState = !this.props.contentVisible;
       var state = newToggleState ? 'show' : 'hide';
       $(this.getDOMNode()).find('.accordion-body').collapse(state);
@@ -373,7 +381,8 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
         selectedTab: store.getSelectedTab(),
         designDocs: store.getDesignDocs(),
         isVisible: _.bind(store.isVisible, store),
-        isLoading: store.isLoading()
+        isLoading: store.isLoading(),
+        isSidebarVisible: store.isSidebarVisible()
       };
     },
 
@@ -401,22 +410,43 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
       this.setState(this.getStoreState());
     },
 
+    isFirstRender: true,
 
     render: function () {
       if (this.state.isLoading) {
         return <LoadLines />;
       }
 
+      var classes = 'sidebar-content scrollable';
+
+
+      // garren: we don't want to run the animation on the initial load of the page
+      // maybe you have an better idea, this is a bit hacky
+      if (this.state.isSidebarVisible && !this.isFirstRender) {
+        classes += ' sidebar-show';
+      }
+
+      if (!this.state.isSidebarVisible) {
+        classes += ' sidebar-hide';
+      }
+
+      this.isFirstRender = false;
+
       return (
-        <nav className="sidenav">
-          <SidebarToggle />
-          <MainSidebar isActive={this.isActive} databaseName={this.state.databaseName} />
-          <DesignDocList
-            toggle={Actions.toggleContent}
-            isVisible={this.state.isVisible}
-            designDocs={this.state.designDocs}
-            databaseName={this.state.databaseName} />
-        </nav>
+        <div className="sidebar-container">
+          {this.state.isSidebarVisible ? null : <SidebarToggleController />}
+          <div className={classes}>
+            <nav className="sidenav">
+              <SidebarToggleController />
+              <MainSidebar isActive={this.isActive} databaseName={this.state.databaseName} />
+              <DesignDocList
+                toggle={Actions.toggleContent}
+                isVisible={this.state.isVisible}
+                designDocs={this.state.designDocs}
+                databaseName={this.state.databaseName} />
+            </nav>
+          </div>
+        </div>
       );
     }
   });

@@ -112,7 +112,7 @@ define([
       }
 
       SidebarActions.newOptions(options);
-      this.setComponent("#sidebar-content", SidebarComponents.SidebarController);
+      this.setComponent("#sidebar-wrapper", SidebarComponents.SidebarController);
     },
 
     getCrumbs: function (database) {

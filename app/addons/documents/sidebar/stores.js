@@ -25,6 +25,7 @@ function (app, FauxtonAPI, ActionTypes) {
       this._selectedTab = 'all-docs';
       this._loading = true;
       this._toggledSections = {};
+      this._sidebarVisibility = true;
     },
 
     newOptions: function (options) {
@@ -66,6 +67,14 @@ function (app, FauxtonAPI, ActionTypes) {
       }
 
       this._toggledSections[designDoc].indexes[indexName] = !index;
+    },
+
+    toggleSidebarVisibility: function () {
+      this._sidebarVisibility = !this._sidebarVisibility;
+    },
+
+    isSidebarVisible: function () {
+      return this._sidebarVisibility;
     },
 
     isVisible: function (designDoc, index) {
@@ -110,24 +119,25 @@ function (app, FauxtonAPI, ActionTypes) {
       switch (action.type) {
         case ActionTypes.SIDEBAR_SET_SELECTED_TAB:
           this.setSelectedTab(action.tab);
-          this.triggerChange();
         break;
         case ActionTypes.SIDEBAR_NEW_OPTIONS:
           this.newOptions(action.options);
-          this.triggerChange();
         break;
         case ActionTypes.SIDEBAR_TOGGLE_CONTENT:
           this.toggleContent(action.designDoc, action.index);
-          this.triggerChange();
         break;
         case ActionTypes.SIDEBAR_FETCHING:
           this._loading = true;
-          this.triggerChange();
+        break;
+        case ActionTypes.SIDEBAR_TOGGLE_SIDEBAR:
+          this.toggleSidebarVisibility();
         break;
         default:
         return;
         // do nothing
       }
+
+      this.triggerChange();
     }
 
   });

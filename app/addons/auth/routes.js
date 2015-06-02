@@ -74,7 +74,7 @@ function (app, FauxtonAPI, Auth, AuthActions, Components) {
     },
 
     initialize: function () {
-      this.setComponent('#sidebar-content', Components.CreateAdminSidebar);
+      this.setComponent('#sidebar-wrapper', Components.CreateAdminSidebar);
     },
 
     changePassword: function () {

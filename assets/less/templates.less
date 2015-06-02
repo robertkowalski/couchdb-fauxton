@@ -310,7 +310,13 @@ with_tabs_sidebar.html
   }
 }
 
-#sidebar-content {
+.sidebar-wrapper {
+  position: absolute;
+  top: @collapsedNavWidth;
+  left: 0;
+}
+
+.sidebar-container {
   width: @sidebarWidth;
   position: absolute;
   top: @collapsedNavWidth;
@@ -320,11 +326,18 @@ with_tabs_sidebar.html
     display: block;
   }
   margin-top: 6px;
-
+  height: 100%;
   .nav-list:last-child {
     margin-bottom: 30px;
   }
+}
 
+.sidebar-show {
+  animation: makeVisibleWithDelay 1s steps(1, end);
+}
+
+.sidebar-content.sidebar-hide {
+  opacity: 0;
 }
 
 .scrollable {
@@ -395,6 +408,7 @@ with_tabs_sidebar.html
   .closeMenu & {
     left: @sidebarWidth+@collapsedNavWidth;
   }
+
 }
 
 #dashboard-lower-content {
@@ -403,6 +417,9 @@ with_tabs_sidebar.html
 }
 
 #dashboard-content {
+  transition-property: left;
+  transition-duration: 0.5s, 0.5s;
+  transition-delay: 0s, 0.5s;
 
   & > div {
     padding-left: 15px;
@@ -428,6 +445,9 @@ with_tabs_sidebar.html
     .box-sizing(border-box);
     .closeMenu & {
       left: @sidebarWidth+@collapsedNavWidth;
+    }
+    .close-sidebar.closeMenu & {
+      left: @sidebarTogglerWidth + @collapsedNavWidth;
     }
   }
   .with-tabs-sidebar & {
@@ -528,4 +548,5 @@ with_tabs_sidebar.html
   bottom: 0;
   left: 0;
   right: 0;
+  background-color: #fff;
 }

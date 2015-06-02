@@ -27,7 +27,7 @@ function (app, FauxtonAPI, Config, Views, CORSComponents, CORSActions) {
     initialize: function () {
       this.configs = new Config.Collection();
 
-      this.sidebar = this.setView("#sidebar-content", new Views.Tabs({
+      this.sidebar = this.setView("#sidebar-wrapper", new Views.Tabs({
         sidebarItems: [
           {
             title: 'Main config',
