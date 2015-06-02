@@ -23,16 +23,22 @@ function (app, FauxtonAPI, ActionTypes) {
 
     initialize: function () {
       this._selectedTab = 'all-docs';
+      this._loading = true;
       this._toggledSections = {};
     },
 
     newOptions: function (options) {
       this._database = options.database;
       this._designDocs = options.designDocs;
+      this._loading = false;
 
       if (options.selectedTab) {
         this.setSelectedTab(options.selectedTab);
       }
+    },
+
+    isLoading: function () {
+      return this._loading;
     },
 
     toggleContent: function (designDoc, index) {
@@ -68,7 +74,9 @@ function (app, FauxtonAPI, ActionTypes) {
       }
 
       if (index) {
-        return this._toggledSections[designDoc].indexes[index];
+        var x = this._toggledSections[designDoc].indexes[index];
+        console.log('in', index, x, designDoc);
+        return x;
       }
 
       return this._toggledSections[designDoc].visible;
@@ -79,10 +87,14 @@ function (app, FauxtonAPI, ActionTypes) {
     },
 
     getDatabaseName: function () {
+      if (this.isLoading()) { return '';}
+
       return this._database.safeID();
     },
 
     getDesignDocs: function () {
+      if (this.isLoading()) { return {};}
+
       var docs = this._designDocs.toJSON();
       return docs.map(function (doc) {
         doc.safeId = app.utils.safeURLName(doc._id.replace(/^_design\//, ""));
@@ -106,6 +118,10 @@ function (app, FauxtonAPI, ActionTypes) {
         break;
         case ActionTypes.SIDEBAR_TOGGLE_CONTENT:
           this.toggleContent(action.designDoc, action.index);
+          this.triggerChange();
+        break;
+        case ActionTypes.SIDEBAR_FETCHING:
+          this._loading = true;
           this.triggerChange();
         break;
         default:

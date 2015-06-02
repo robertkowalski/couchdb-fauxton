@@ -23,6 +23,51 @@ define([
 
 function (app, FauxtonAPI, React, Stores, Actions, Components) {
   var store = Stores.sidebarStore;
+  var LoadLines = Components.LoadLines;
+
+  var SidebarToggle = React.createClass({
+    getInitialState: function () {
+      return {
+        hidden: false
+      };
+    },
+
+    toggle: function (e) {
+      console.log('clik');
+      e.preventDefault();
+      var newHiddenState = !this.state.hidden;
+      this.setState({hidden: newHiddenState});
+      var $dashboard = $('#dashboard-content');
+
+      if (newHiddenState) {
+        $dashboard.animate({left: '210px'}, 300);
+      } else {
+        $dashboard.animate({left: '550px'}, 300);
+      }
+
+    },
+
+    render: function () {
+      return null;
+      /*var text = this.state.hidden ? 'show sidebar' : 'hide';
+      var classNames = 'sidebar-toggler';
+      var icon = 'icon icon-chevron-left';
+
+      if (this.state.hidden) {
+        classNames += ' sidebar-hidden';
+        icon = 'icon icon-chevron-right';
+      }
+      return (
+        <div >
+          <a onClick={this.toggle} data-bypass="true" className={classNames} href="#">
+            <span className={icon}></span>
+            {text}
+          </a>
+        </div>
+      );*/
+    }
+
+  });
 
   var MainSidebar = React.createClass({
 
@@ -169,15 +214,17 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
       var newToggleState = !this.props.contentVisible;
       var state = newToggleState ? 'show' : 'hide';
       $(this.getDOMNode()).find('.accordion-body').collapse(state);
-      console.log('dd', this.props.designDocName, this.props.title);
       this.props.toggle(this.props.designDocName, this.props.title);
     },
 
     render: function () {
       var toggleClassNames = 'accordion-header';
+      var toggleBodyClassNames = 'accordion-body collapse';
       if (this.props.contentVisible) {
         toggleClassNames += ' down';
+        toggleBodyClassNames += ' in';
       }
+
       var title = this.props.title;
       var icon = this.props.indexTypeMap[this.props.selector].icon;
       return (
@@ -187,7 +234,7 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
             <span className={icon + " fonticon"}></span>
             {title}
             </a>
-            <ul className="accordion-body collapse">
+            <ul className={toggleBodyClassNames}>
               {this.createItems()}
           </ul>
         </li>
@@ -226,26 +273,57 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
       this.props.toggle(this.props.designDocName);
     },
 
+    getNewButtonLinks: function () {
+      var databaseName = this.props.databaseName;
+      var newUrlPrefix = FauxtonAPI.urls('databaseBaseURL', 'app', databaseName);
+      var designDocName = this.props.designDocName;
+
+      var addNewLinks = _.reduce(FauxtonAPI.getExtensions('sidebar:links'), function (menuLinks, link) {
+        menuLinks.push({
+          title: link.title,
+          url: '#' + newUrlPrefix + '/' + link.url + '/' + designDocName,
+          icon: 'fonticon-plus-circled'
+        });
+
+        return menuLinks;
+      }, [{
+        title: 'New View',
+        url: '#' + FauxtonAPI.urls('new', 'addView', databaseName, designDocName),
+        icon: 'fonticon-plus-circled'
+      }]);
+
+      return [{
+        title: 'Add new',
+        links: addNewLinks
+      }];
+    },
+
     render: function () {
+      var buttonLinks = this.getNewButtonLinks();
       var toggleClassNames = 'accordion-header';
+      var toggleBodyClassNames = 'accordion-body collapse';
+
       if (this.props.contentVisible) {
         toggleClassNames += ' down';
+        toggleBodyClassNames += ' in';
       }
       var designDocName = this.props.designDocName;
       var designDocMetaUrl = FauxtonAPI.urls('designDocs', 'app', this.props.databaseName, designDocName);
       return (
-        <li onClick={this.toggle} className="nav-header">
+        <li  className="nav-header">
 
         <div className={toggleClassNames}>
-          <div className='accordion-list-item'>
+          <div onClick={this.toggle} className='accordion-list-item'>
             <div className='fonticon-play'></div>
             <p className='design-doc-name'>
               <span title={'_design/' + designDocName}>{'_design/' + designDocName}</span>
             </p>
           </div>
-          <div className='new-button add-dropdown'></div>
+          <div className='new-button add-dropdown'>
+            <Components.MenuDropDown links={buttonLinks} />
+          </div>
         </div>
-        <ul className='accordion-body collapse' id={this.props.designDocName}>
+        <ul className={toggleBodyClassNames} id={this.props.designDocName}>
           <li>
             <a href={"#/" + designDocMetaUrl} className="toggle-view accordion-header">
               <span className="fonticon-sidenav-info fonticon"></span>
@@ -262,7 +340,7 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
 
   var DesignDocList = React.createClass({
     createDesignDocs: function () {
-      return this.props.designDocs.map(function (designDoc, key) {
+      return _.map(this.props.designDocs, function (designDoc, key) {
         return <DesignDoc
           toggle={this.props.toggle}
           contentVisible={this.props.isVisible(designDoc.safeId)}
@@ -294,7 +372,8 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
         databaseName: store.getDatabaseName(),
         selectedTab: store.getSelectedTab(),
         designDocs: store.getDesignDocs(),
-        isVisible: _.bind(store.isVisible, store)
+        isVisible: _.bind(store.isVisible, store),
+        isLoading: store.isLoading()
       };
     },
 
@@ -324,8 +403,13 @@ function (app, FauxtonAPI, React, Stores, Actions, Components) {
 
 
     render: function () {
+      if (this.state.isLoading) {
+        return <LoadLines />;
+      }
+
       return (
         <nav className="sidenav">
+          <SidebarToggle />
           <MainSidebar isActive={this.isActive} databaseName={this.state.databaseName} />
           <DesignDocList
             toggle={Actions.toggleContent}

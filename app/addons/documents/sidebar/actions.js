@@ -13,11 +13,19 @@
 define([
   'app',
   'api',
-  'addons/documents/sidebar/actiontypes'
+  'addons/documents/sidebar/actiontypes',
+  'addons/documents/sidebar/stores'
 ],
-function (app, FauxtonAPI, ActionTypes) {
+function (app, FauxtonAPI, ActionTypes, Stores) {
+  var store = Stores.sidebarStore;
   return {
     newOptions: function (options) {
+      if (options.database.safeID() !== store.getDatabaseName()) {
+        FauxtonAPI.dispatch({
+          type: ActionTypes.SIDEBAR_FETCHING
+        });
+      }
+
       options.designDocs.fetch().then(function () {
         FauxtonAPI.dispatch({
           type: ActionTypes.SIDEBAR_NEW_OPTIONS,
