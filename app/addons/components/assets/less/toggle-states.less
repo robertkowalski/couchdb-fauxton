@@ -1,0 +1,58 @@
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not
+// use this file except in compliance with the License. You may obtain a copy of
+// the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+// License for the specific language governing permissions and limitations under
+// the License.
+@import "../../../../../assets/less/variables.less";
+
+@toggleColor: @red;
+
+.toggle-states {
+  width: 182px;
+  height: 41px;
+  text-align: center;
+
+  .input-toggle-hidden {
+    display: none;
+  }
+  
+  .toggle-title {
+    font-size: 11px;
+    color: #838383;
+    margin-bottom: 3px;
+  }
+
+  .toggles {
+    color: #908F8F;
+    border: 1px solid #ccc;
+    height: 22px;
+    
+    .toggle-state-button {
+      background: #fff;
+      margin: 0px;
+      padding: 0px;
+      width: 90px;
+      font-size: 11px;
+      
+      &.left {
+        float: left;
+      }
+
+      &.right {
+        float: right;
+      }
+    }
+
+    input[type="radio"]:checked+label{ 
+      font-weight: bold; 
+      background: #E8E8E8;
+      color: @darkRed;
+    }
+  }  
+}

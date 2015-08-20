@@ -9,13 +9,14 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
-
-@import "../../../../../assets/less/variables.less";
-
-@import "header-togglebutton.less";
-@import "styled-select.less";
-@import "docs.less";
-@import "loading-lines.less";
-@import "code-editor.less";
-@import "toggle-states.less";
-@import "small-dropdown.less";
+define([], function () {
+  return {
+    DATA_IMPORTER_INIT: 'DATA_IMPORTER_INIT',
+    DATA_IMPORTER_LOAD_FILE: 'DATA_IMPORTER_LOAD_FILE',
+    DATA_IMPORTER_SET_PREVIEW_VIEW: 'DATA_IMPORTER_SET_PREVIEW_VIEW',
+    DATA_IMPORTER_SET_PARSE_CONFIG: 'DATA_IMPORTER_SET_PARSE_CONFIG',
+    DATA_IMPORTER_LOAD_DATA_INTO_DB: 'DATA_IMPORTER_LOAD_DATA_INTO_DB',
+    DATA_IMPORTER_SET_ALL_DBS: 'DATA_IMPORTER_SET_ALL_DBS',
+    DATA_IMPORTER_GO_TO_ERROR_SCREEN: 'DATA_IMPORTER_GO_TO_ERROR_SCREEN'
+  };
+});
