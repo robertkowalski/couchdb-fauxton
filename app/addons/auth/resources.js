@@ -182,9 +182,7 @@ function (app, FauxtonAPI, CouchdbSession) {
       return $.ajax({
         type: "DELETE",
         url: app.host + "/_session",
-        dataType: "json",
-        username : "_",
-        password : "_"
+        dataType: 'json'
       }).then(function () {
         return that.fetchUser({forceFetch: true });
       });
