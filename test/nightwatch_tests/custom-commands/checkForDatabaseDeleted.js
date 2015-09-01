@@ -35,6 +35,9 @@ CheckForDatabaseDeleted.prototype.command = function (databaseName, timeout) {
 
   var intervalId = setInterval(function () {
     request(couchUrl + '/_all_dbs', function (er, res, body) {
+      console.log("-------------------------");
+      console.log(res);
+      console.log(body);
       if (body) {
         if (body.indexOf(databaseName) === -1) {
           clearTimeout(timeOutId);
