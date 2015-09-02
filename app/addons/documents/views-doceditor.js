@@ -49,8 +49,12 @@ function (app, FauxtonAPI, Components, Documents, Databases, prettify) {
 
       this.$('#_rev').val(docRev);
 
+      var db = this.model.getDatabase().safeID(),
+          docId = this.model.safeID(),
+          query = '?rev=' + docRev;
+
       $.ajax({
-        url: this.model.url() + '/' + file.name + '?rev=' + docRev,
+        url: FauxtonAPI.urls('document', 'attachment', db, docId, file.name, query),
         xhrFields: {
           withCredentials: true
         },
