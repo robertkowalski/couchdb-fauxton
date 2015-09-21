@@ -320,7 +320,7 @@ define([
     loadingIntoDB: function () {
       if (this.props.isLoadingInDBInProgress) {
         return (
-          <div className="dataIsLoading">
+          <div className="data-is-loading">
             <Components.LoadLines />
           </div>
         );
@@ -558,7 +558,7 @@ define([
       var data = this.eachRow(),
           header = this.header();
 
-      if (this.props.getPreviewView != 'table') {
+      if (this.props.getPreviewView !== 'table') {
         return null;
       }
       return (
@@ -604,7 +604,7 @@ define([
     },
 
     render: function () {
-      if (this.props.getPreviewView != "json") {
+      if (this.props.getPreviewView !== 'json') {
         return null;
       }
       return (
