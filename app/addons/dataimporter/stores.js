@@ -47,7 +47,7 @@ define([
       this._completeFn = this._config.complete;
       this._errorFn = this._config.error;
       this._fileSize = 0;
-      this._time = "just started";
+      this._time = 'just started';
       this._repeatTimeID;
       this._chunkedData = [];
       this._maxSize = DATA_IMPORTER_NUMBERS.FILE_MAX_SIZE;
@@ -223,18 +223,17 @@ define([
     },
 
     getDefaultConfig: function () {
-
       // the following object shows all of the options available for papaparse
       // some are defaulted to undefined
       // this is from http://papaparse.com/docs#config
       return {
-        delimiter : '',  // auto-detect
-        newline: '',  // auto-detect
+        delimiter : '',   // auto-detect
+        newline: '',      // auto-detect
         header: true,
         dynamicTyping: true,
         preview: 0,
         encoding: '',
-        worker: true, //true = page doesn't lock up
+        worker: true,     //true means page doesn't lock up
         comments: false,
         complete: function (results) {
           this.loadingComplete(results);
@@ -248,7 +247,7 @@ define([
         }.bind(this),
         download: false,
         skipEmptyLines: false,
-        chunk: undefined, //define function for streaming
+        chunk: undefined,   //define function for streaming
         beforeFirstChunk: undefined,
       };
     },

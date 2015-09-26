@@ -25,12 +25,13 @@ function (FauxtonAPI, ActionTypes, Resources) {
 
     fetchAllDBs: function () {
       $.ajax({
-        method: "GET",
-        dataType: "json",
-        url: window.location.origin + "/_all_dbs"
+        method: 'GET',
+        dataType: 'json',
+        url: window.location.origin + '/_all_dbs'
       }).then(function (resp) {
         this._all_dbs = _.filter(resp, function (dbName) {
-          return dbName[0] !== '_'; //_all_dbs without _ as first letter
+          return dbName[0] !== '_';
+          // returns _all_dbs without _ (underscore) as first letter
         });
         this.setAllDBs(this._all_dbs);
       }.bind(this));
@@ -98,30 +99,37 @@ function (FauxtonAPI, ActionTypes, Resources) {
       }).then(function (resp) {
         this.loadDataIntoTarget(targetDB, chunkedData);
       }.bind(this), function (resp) {
-        this.goToErrorScreen(resp,  ['There was an error', 'Could not create a new database named: ' + targetDB]);
+        this.goToErrorScreen(resp,
+          [ 'There was an error',
+            'Could not create a new database named: ' + targetDB]);
       }.bind(this));
     },
 
     loadDataIntoTarget: function (targetDB, chunkedData) {
-      var loadURL = FauxtonAPI.urls('document', 'server', targetDB, '_bulk_docs');
-      _.each(chunkedData, function (data, i) {
-        var payload = JSON.stringify({ 'docs': data });
-        var prettyprint = JSON.stringify({ 'docs': data }, null, 2);
-        $.ajax({
+      var loadURL =
+        FauxtonAPI.urls('document', 'server', targetDB, '_bulk_docs');
+
+      var importPromiseArray = _.map(chunkedData, function (data, i) {
+        var payload = JSON.stringify({'docs': data});
+        var prettyprint = JSON.stringify({'docs': data}, null, 2);
+
+        return $.ajax({
           url: loadURL,
           xhrFields: { withCredentials: true },
           contentType: 'application/json; charset=UTF-8',
           method: 'POST',
           data: payload
-        }).then(function (resp) {
-          i++;
-          if (i === chunkedData.length ) {
-            this.successfulImport(targetDB);
-            this.dataImporterInit(true);
-          }
-        }.bind(this), function (resp) {
-          this.goToErrorScreen(resp, ['There was an error loading documents into ' + targetDB, 'Data that failed to load:' + prettyprint]);
+        }).fail(function (resp) {
+          this.goToErrorScreen(resp,
+            [ 'There was an error loading documents into ' + targetDB,
+              'Data that failed to load:' + prettyprint
+            ]);
         }.bind(this));
+      }.bind(this));
+
+      FauxtonAPI.when(importPromiseArray).then(function (resp) {
+        this.successfulImport(targetDB);
+        this.dataImporterInit(true);
       }.bind(this));
     },
 
@@ -138,7 +146,8 @@ function (FauxtonAPI, ActionTypes, Resources) {
     },
 
     successfulImport: function (targetDB) {
-      FauxtonAPI.navigate(FauxtonAPI.urls('allDocs', 'app', targetDB, '?include_docs=true'));
+      FauxtonAPI.navigate(
+        FauxtonAPI.urls('allDocs', 'app', targetDB, '?include_docs=true'));
     },
   };
 });
