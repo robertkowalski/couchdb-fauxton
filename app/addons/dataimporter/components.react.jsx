@@ -330,13 +330,14 @@ define([
 
     fileMetadataInfo: function () {
       var totalRows = this.props.rowsTotal,
-          previewMsg = totalRows > 500 ? 'This is a 500 row (max) preview of the file.' : '';
+          previewMsg = (totalRows > 500) ? 'This is a 500 row (max) preview of the file.' : '';
 
       return (
         <div className="top-row">
           <div className="big-file-info-message">
             <p className="big-file-preview-limit-info-message">
-              All {totalRows} rows from this file will be imported. {previewMsg}
+              All {totalRows} rows from this file will be imported.
+              {previewMsg}
             </p>
           </div>
           {this.loadingIntoDB()}
@@ -346,11 +347,11 @@ define([
     render: function () {
 
       var fileInfoMessage =
-            this.props.isBigFile ? this.bigFilePreviewWarning() :  this.fileMetadataInfo(),
+            this.props.isBigFile ? this.bigFilePreviewWarning() : this.fileMetadataInfo(),
           style = {'left': this.state.left};
 
       return (
-        <div id="preview-page" >
+        <div id="preview-page">
           <div id="data-import-options" style={style}>
             {fileInfoMessage}
             <OptionsRow 
@@ -476,7 +477,7 @@ define([
           },
         ]
       };
-      return <Components.SmallDropdown dropdownSetup={setup}/>;
+      return <Components.SmallDropdown dropdownSetup={setup} />;
     },
 
     renderControls: function () {
