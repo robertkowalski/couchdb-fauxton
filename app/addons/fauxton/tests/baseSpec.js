@@ -28,7 +28,8 @@ define([
 
     beforeEach(function () {
       TestRouteObject = FauxtonAPI.RouteObject.extend({
-        crumbs: ['mycrumbs']
+        crumbs: ['mycrumbs'],
+        hideNotificationCenter: true
       });
 
       testRouteObject = new TestRouteObject();
