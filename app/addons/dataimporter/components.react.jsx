@@ -385,43 +385,29 @@ define([
   var OptionsRow = React.createClass({
     previewToggle: function () {
       var buttons = [
-        {labelText: 'Table', id: 'a', onClick: function () { Actions.setPreviewView('table'); }, selected: true},
-        {labelText: 'JSON', id: 'b', onClick: function () { Actions.setPreviewView('json'); }, selected: false}
+        {labelText: 'Table', id: 'preview-toggle-a', onClick: function () { Actions.setPreviewView('table'); }, selected: true},
+        {labelText: 'JSON', id: 'preview-toggle-b', onClick: function () { Actions.setPreviewView('json'); }, selected: false}
       ];
 
       return <Components.ToggleStateController title="Preview View" buttons={buttons} />;
     },
 
     header: function () {
-      var config = {
-        title: 'Header',
-        leftLabel : 'First Line',
-        rightLabel : 'No Header',
-        defaultLeft: true,
-        leftClick: function () {  Actions.setParseConfig('header', true); },
-        rightClick: function () { Actions.setParseConfig('header', false); },
-        enclosingID: 'header-toggle-id'
-      };
+      var buttons = [
+        {labelText: 'First Line', id: 'header-toggle-a', onClick: function () { Actions.setParseConfig('header', true); }, selected: true},
+        {labelText: 'No Header', id: 'header-toggle-b', onClick: function () { Actions.setParseConfig('header', false); }, selected: false}
+      ];
 
-      return <Components.ToggleState toggleConfig={config} />;
+      return <Components.ToggleStateController title="Header" buttons={buttons} />;
     },
 
     numbersFormat: function () {
-      var config = {
-        title: 'Numbers are',
-        leftLabel : 'Numbers',
-        rightLabel : 'Strings',
-        defaultLeft: true,
-        leftClick: function () {
-          Actions.setParseConfig('dynamicTyping', true);
-        },
-        rightClick: function () {
-          Actions.setParseConfig('dynamicTyping', false);
-        },
-        enclosingID: 'numbers-toggle-id'
-      };
-      return <Components.ToggleState toggleConfig={config} />;
+      var buttons = [
+        {labelText: 'Numbers', id: 'numbers-format-toggle-a', onClick: function () { Actions.setParseConfig('dynamicTyping', true); }, selected: true},
+        {labelText: 'Strings', id: 'numbers-format-toggle-b', onClick: function () { Actions.setParseConfig('dynamicTyping', false); }, selected: false}
+      ];
 
+      return <Components.ToggleStateController title="Numbers are" buttons={buttons} />;
     },
 
     delimiter: function () {
@@ -650,24 +636,28 @@ define([
     },
 
     newOrExistingToggle : function () {
-      var config = {
-        title: 'Load into',
-        leftLabel: 'Existing database',
-        rightLabel: 'New database',
-        defaultLeft: true,
-        leftClick: function () {
+      var buttons = [{
+        labelText: 'Existing database',
+        id: 'load-csv-into-toggle-a',
+        onClick: function () {
           this.setState({
             selectExistingDB: true,
             targetDB: this.props.getAllDBs[0]
           });
         }.bind(this),
-        rightClick: function () {
+        selected: true
+      },
+      {
+        labelText: 'New database',
+        id: 'load-csv-into-toggle-b',
+        onClick: function () {
           this.setState({ selectExistingDB: false });
         }.bind(this),
-        enclosingID: 'choose-database-to-load-data-into'
-      };
+        selected: false
+      }];
 
-      return <Components.ToggleState toggleConfig={config} />;
+      return <Components.ToggleStateController title="Load into" buttons={buttons} />;
+
     },
 
     chooseDatabaseFromDropdown : function () {
