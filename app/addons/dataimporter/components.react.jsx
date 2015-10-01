@@ -384,17 +384,12 @@ define([
 
   var OptionsRow = React.createClass({
     previewToggle: function () {
-      var config = {
-        title: 'Preview View',
-        leftLabel: 'Table',
-        rightLabel: 'JSON',
-        defaultLeft: true,
-        leftClick: function () { Actions.setPreviewView('table'); },
-        rightClick: function () { Actions.setPreviewView('json'); },
-        enclosingID: 'preview-toggle-id'
-      };
+      var buttons = [
+        {labelText: 'Table', id: 'a', onClick: function () { Actions.setPreviewView('table'); }, selected: true},
+        {labelText: 'JSON', id: 'b', onClick: function () { Actions.setPreviewView('json'); }, selected: false}
+      ];
 
-      return <Components.ToggleState toggleConfig={config} />;
+      return <Components.ToggleStateController title="Preview View" buttons={buttons} />;
     },
 
     header: function () {

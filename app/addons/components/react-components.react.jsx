@@ -1103,12 +1103,111 @@ function (app, FauxtonAPI, React, Components, ace, beautifyHelper) {
 
   });
 
+  var ToggleButton = React.createClass({
+    propTypes: {
+      id: React.PropTypes.string.isRequired,
+      labelText: React.PropTypes.string.isRequired,
+      onClick: React.PropTypes.func.isRequired,
+      selected: React.PropTypes.bool.isRequired
+    },
+
+    render: function () {
+      var id = this.props.id;
+
+      return (
+        <div>
+          <input type="radio"
+            id={"toggle-state-id-" + id}
+            name="toggle-button-switch"
+            className="input-toggle-hidden"
+            checked={this.props.selected}
+            onChange={this.props.onClick} />
+          <label
+            htmlFor={"toggle-state-id-" + id}
+            className="checkbox-label toggle-state-button">
+            {this.props.labelText}
+          </label>
+        </div>
+      );
+    }
+
+  });
+
+  var ToggleStateController = React.createClass({
+    propTypes: {
+      // example button
+      // [{
+      //   id: 'left',
+      //   onClick: callbackForLeftButton,
+      //   selected: true,
+      //   labelText: 'foo'
+      // },
+      // {
+      //   id: 'right',
+      //   onClick: callbackForRightButton,
+      //   selected: false,
+      //   labelText: 'bar'
+      // }]
+      buttons: React.PropTypes.array.isRequired,
+
+      title: React.PropTypes.string.isRequired
+    },
+
+    getInitialState: function () {
+      return {
+        buttons: this.props.buttons
+      };
+    },
+
+    onClick: function (index, cb) {
+      var newButtons = this.state.buttons.map(function (button, i) {
+        var selected = false;
+        if (i === index) {
+          selected = true;
+        }
+
+        button.selected = selected;
+        return button;
+      });
+
+      this.setState({buttons: newButtons});
+      cb();
+    },
+
+    getToggleButtons: function () {
+
+      return this.state.buttons.map(function (config, i) {
+        return (
+          <ToggleButton
+            index={i}
+            id={config.id}
+            key={i}
+            onClick={this.onClick.bind(this, i, config.onClick)}
+            selected={config.selected}
+            labelText={config.labelText} />
+        );
+      }.bind(this));
+    },
+
+    render: function () {
+      return (
+        <div className="toggle-states">
+          <div className="toggle-title">{this.props.title}</div>
+          <form className="toggles">
+            {this.getToggleButtons()}
+          </form>
+        </div>
+      );
+    }
+  });
+
   var ToggleState = React.createClass({
     getDefaultProps: function () {
       return {
         defaultLeft: 'true'
       };
     },
+
     render: function () {
       var config = this.props.toggleConfig,
           defaultLeft = false,
@@ -1245,6 +1344,7 @@ function (app, FauxtonAPI, React, Components, ace, beautifyHelper) {
     TrayContents: TrayContents,
     TrayLink: TrayLink,
     ToggleState: ToggleState,
+    ToggleStateController: ToggleStateController,
     SimpleDoc: SimpleDoc,
     SmallDropdown: SmallDropdown
   };

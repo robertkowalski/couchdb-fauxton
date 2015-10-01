@@ -14,7 +14,7 @@
 @toggleColor: @red;
 
 .toggle-states {
-  width: 182px;
+  width: 184px;
   height: 41px;
   text-align: center;
 
@@ -32,21 +32,15 @@
     color: #908F8F;
     border: 1px solid #ccc;
     height: 22px;
-    
+    div {
+      float: left;
+    }
     .toggle-state-button {
       background: #fff;
       margin: 0px;
       padding: 0px;
       width: 90px;
       font-size: 11px;
-      
-      &.left {
-        float: left;
-      }
-
-      &.right {
-        float: right;
-      }
     }
 
     input[type="radio"]:checked+label{ 
