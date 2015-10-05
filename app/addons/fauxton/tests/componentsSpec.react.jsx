@@ -31,7 +31,7 @@ define([
       container = document.createElement('div');
 
       // when we want to control the diff, we have to render directly
-      trayEl = React.render(<Views.Tray className="traytest" />, container);
+      trayEl = TestUtils.renderIntoDocument(<Views.Tray className="traytest" />, container);
 
       oldToggleSpeed = FauxtonAPI.constants.MISC.TRAY_TOGGLE_SPEED;
 
@@ -112,7 +112,7 @@ define([
         }
       });
 
-      var reactEl = React.render(React.createElement(wrapper), container);
+      var reactEl = TestUtils.renderIntoDocument(React.createElement(wrapper), container);
       reactEl.runTest();
 
       React.unmountComponentAtNode(container);
@@ -138,7 +138,7 @@ define([
     });
 
     it('renders 20-wise pages per default', function () {
-      var pageEl = React.render(
+      var pageEl = TestUtils.renderIntoDocument(
         <Views.Pagination page={3} total={55} urlPrefix="?prefix=" urlSuffix="&suffix=88" />,
         container
       );
@@ -155,7 +155,7 @@ define([
     });
 
     it("can overwrite collection size", function () {
-      var pageEl = React.render(
+      var pageEl = TestUtils.renderIntoDocument(
         <Views.Pagination perPage={10} page={3} total={55} urlPrefix="?prefix=" urlSuffix="&suffix=88" />,
         container
       );
@@ -165,7 +165,7 @@ define([
     });
 
     it("handles large collections properly - beginning", function () {
-      var pageEl = React.render(
+      var pageEl = TestUtils.renderIntoDocument(
         <Views.Pagination page={3} total={600} />,
         container
       );
@@ -178,7 +178,7 @@ define([
     });
 
     it("handles large collections properly - middle", function () {
-      var pageEl = React.render(
+      var pageEl = TestUtils.renderIntoDocument(
         <Views.Pagination page={10} total={600} />,
         container
       );
@@ -192,7 +192,7 @@ define([
     });
 
     it("handles large collections properly - end", function () {
-      var pageEl = React.render(
+      var pageEl = TestUtils.renderIntoDocument(
         <Views.Pagination page={29} total={600} />,
         container
       );
@@ -219,17 +219,17 @@ define([
     });
 
     it('shows a clipboard icon by default', function () {
-      var clipboard = React.render(<Views.Clipboard text="copy me" />, container);
+      var clipboard = TestUtils.renderIntoDocument(<Views.Clipboard text="copy me" />, container);
       assert.equal($(clipboard.getDOMNode()).find('.fonticon-clipboard').length, 1);
     });
 
     it('shows text if specified', function () {
-      var clipboard = React.render(<Views.Clipboard displayType="text" text="copy me" />, container);
+      var clipboard = TestUtils.renderIntoDocument(<Views.Clipboard displayType="text" text="copy me" />, container);
       assert.equal($(clipboard.getDOMNode()).find('.fonticon-clipboard').length, 0);
     });
 
     it('shows custom text if specified ', function () {
-      var clipboard = React.render(<Views.Clipboard displayType="text" textDisplay='booyah!' text="copy me" />, container);
+      var clipboard = TestUtils.renderIntoDocument(<Views.Clipboard displayType="text" textDisplay='booyah!' text="copy me" />, container);
       assert.ok(/booyah!/.test($(clipboard.getDOMNode())[0].outerHTML));
     });
 
@@ -269,21 +269,21 @@ define([
     });
 
     it('shows all notification types when "all" filter applied', function () {
-      var row1 = React.render(
+      var row1 = TestUtils.renderIntoDocument(
         <Views.NotificationRow filter="all" item={notifications.success} transitionSpeed={0} />,
         container
       );
       assert.equal($(row1.getDOMNode()).data('visible'), true);
       React.unmountComponentAtNode(container);
 
-      var row2 = React.render(
+      var row2 = TestUtils.renderIntoDocument(
         <Views.NotificationRow filter="all" item={notifications.error} transitionSpeed={0} />,
         container
       );
       assert.equal($(row2.getDOMNode()).data('visible'), true);
       React.unmountComponentAtNode(container);
 
-      var row3 = React.render(
+      var row3 = TestUtils.renderIntoDocument(
         <Views.NotificationRow filter="all" item={notifications.info} transitionSpeed={0} />,
         container
       );
@@ -292,7 +292,7 @@ define([
     });
 
     it('hides notification when filter doesn\'t match', function () {
-      var rowEl = React.render(
+      var rowEl = TestUtils.renderIntoDocument(
         <Views.NotificationRow filter="success" item={notifications.info} transitionSpeed={0} />,
         container
       );
@@ -300,7 +300,7 @@ define([
     });
 
     it('shows notification when filter exact match', function () {
-      var rowEl = React.render(
+      var rowEl = TestUtils.renderIntoDocument(
         <Views.NotificationRow filter="info" item={notifications.info} transitionSpeed={0} />,
         container
       );
@@ -330,7 +330,7 @@ define([
       store.addNotification({ type: 'error', msg: 'Error #2' });
       store.addNotification({ type: 'error', msg: 'Error #3' });
 
-      var panelEl = React.render(<Views.NotificationCenterPanel />, container);
+      var panelEl = TestUtils.renderIntoDocument(<Views.NotificationCenterPanel />, container);
       assert.equal($(panelEl.getDOMNode()).find('.notification-list li[data-visible=true]').length, 6);
     });
 
@@ -342,7 +342,7 @@ define([
       store.addNotification({ type: 'error', msg: 'Error #2' });
       store.addNotification({ type: 'error', msg: 'Error #3' });
 
-      var panelEl = React.render(<Views.NotificationCenterPanel />, container);
+      var panelEl = TestUtils.renderIntoDocument(<Views.NotificationCenterPanel />, container);
 
       // there are 2 success messages
       TestUtils.Simulate.click($(panelEl.getDOMNode()).find('.notification-filter li[data-filter="success"]')[0]);
@@ -363,7 +363,7 @@ define([
       store.addNotification({ type: 'error', msg: 'Error #2' });
       store.addNotification({ type: 'error', msg: 'Error #3' });
 
-      var panelEl = React.render(<Views.NotificationCenterPanel />, container);
+      var panelEl = TestUtils.renderIntoDocument(<Views.NotificationCenterPanel />, container);
       assert.equal($(panelEl.getDOMNode()).find('.notification-list li[data-visible=true]').length, 4);
       TestUtils.Simulate.click($(panelEl.getDOMNode()).find('footer input')[0]);
 

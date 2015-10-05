@@ -57,9 +57,8 @@ function (app, FauxtonAPI, React, Actions, Stores, ZeroClipboard) {
     getClipboardElement: function () {
       if (this.props.displayType === 'icon') {
         return (<i className="fonticon-clipboard"></i>);
-      } else {
-        return this.props.textDisplay;
       }
+      return this.props.textDisplay;
     },
 
     componentDidMount: function () {
@@ -424,11 +423,6 @@ function (app, FauxtonAPI, React, Actions, Stores, ZeroClipboard) {
       }, this);
     },
 
-    selectFilter: function (e) {
-      var filter = $(e.target).closest('li').data('filter');
-      Actions.selectNotificationFilter(filter);
-    },
-
     render: function () {
       var panelClasses = 'notification-center-panel flex-layout flex-col';
       if (this.state.isVisible) {
@@ -451,18 +445,22 @@ function (app, FauxtonAPI, React, Actions, Stores, ZeroClipboard) {
             <header className="flex-layout flex-row">
               <span className="fonticon fonticon-bell"></span>
               <h1 className="flex-body">Notifications</h1>
-              <button type="button" aria-hidden="true" onClick={Actions.hideNotificationCenter}>×</button>
+              <button type="button" onClick={Actions.hideNotificationCenter}>×</button>
             </header>
 
-            <ul className="notification-filter flex-layout flex-row" onClick={this.selectFilter}>
-              <li className={filterClasses.all} data-filter="all" title="All notifications">All</li>
-              <li className={filterClasses.success} data-filter="success" title="Success notifications">
+            <ul className="notification-filter flex-layout flex-row">
+              <li className={filterClasses.all} title="All notifications" data-filter="all"
+                onClick={Actions.selectNotificationFilter.bind(this, 'all')}>All</li>
+              <li className={filterClasses.success} title="Success notifications" data-filter="success"
+                onClick={Actions.selectNotificationFilter.bind(this, 'success')}>
                 <span className="fonticon fonticon-ok-circled"></span>
               </li>
-              <li className={filterClasses.error} data-filter="error" title="Error notifications">
+              <li className={filterClasses.error} title="Error notifications" data-filter="error"
+                onClick={Actions.selectNotificationFilter.bind(this, 'error')}>
                 <span className="fonticon fonticon-attention-circled"></span>
               </li>
-              <li className={filterClasses.info} data-filter="info" title="Info notifications">
+              <li className={filterClasses.info} title="Info notifications" data-filter="info"
+                onClick={Actions.selectNotificationFilter.bind(this, 'info')}>
                 <span className="fonticon fonticon-info-circled"></span>
               </li>
             </ul>
@@ -524,11 +522,10 @@ function (app, FauxtonAPI, React, Actions, Stores, ZeroClipboard) {
         show = this.props.item.type === this.props.filter;
       }
       if (show) {
-        console.log(this.state.elementHeight);
         $(this.getDOMNode()).velocity({ opacity: 1, height: this.state.elementHeight }, this.props.transitionSpeed);
-      } else {
-        this.hide();
+        return;
       }
+      this.hide();
     },
 
     getHeight: function () {
@@ -565,14 +562,14 @@ function (app, FauxtonAPI, React, Actions, Stores, ZeroClipboard) {
           <div className={classes}>
             <span className={rowIconClasses}></span>
             <div className="flex-body">
-              <p dangerouslySetInnerHTML={{__html: this.props.item.msg}}></p>
+              <p>{this.props.item.cleanMsg}</p>
               <div className="notification-actions">
                 <span className="time-elapsed">{timeElapsed}</span>
                 <span className="divider">|</span>
-                <Clipboard text={this.props.item.msg} displayType="text" />
+                <Clipboard text={this.props.item.cleanMsg} displayType="text" />
               </div>
             </div>
-            <button type="button" aria-hidden="true" onClick={this.clearNotification}>×</button>
+            <button type="button" onClick={this.clearNotification}>×</button>
           </div>
         </li>
       );

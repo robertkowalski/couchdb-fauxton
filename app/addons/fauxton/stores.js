@@ -12,11 +12,12 @@
 
 define([
   'api',
+  'app',
   'addons/fauxton/actiontypes',
   'moment'
 ],
 
-function (FauxtonAPI, ActionTypes, moment) {
+function (FauxtonAPI, app, ActionTypes, moment) {
   var Stores = {};
 
   // static var used to assign a unique ID to each notification
@@ -57,6 +58,7 @@ function (FauxtonAPI, ActionTypes, moment) {
       }
 
       info.notificationId = ++counter;
+      info.cleanMsg = app.utils.stripHTML(info.msg);
       info.time = moment();
 
       this._notifications.unshift(info);
