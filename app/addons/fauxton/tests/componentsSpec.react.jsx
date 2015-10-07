@@ -12,16 +12,13 @@
 define([
   'api',
   'addons/fauxton/components.react',
-  'addons/fauxton/stores',
   'testUtils',
   'react',
   'moment'
-], function (FauxtonAPI, Views, Stores, utils, React, moment) {
+], function (FauxtonAPI, Views, utils, React, moment) {
 
   var assert = utils.assert;
   var TestUtils = React.addons.TestUtils;
-  var store = Stores.notificationStore;
-
 
   describe('Tray', function () {
 
@@ -231,143 +228,6 @@ define([
     it('shows custom text if specified ', function () {
       var clipboard = TestUtils.renderIntoDocument(<Views.Clipboard displayType="text" textDisplay='booyah!' text="copy me" />, container);
       assert.ok(/booyah!/.test($(clipboard.getDOMNode())[0].outerHTML));
-    });
-
-  });
-
-
-  describe('NotificationRow', function () {
-    var container;
-
-    var notifications = {
-      success: {
-        notificationId: 1,
-        type: 'success',
-        msg: 'Success!',
-        time: moment()
-      },
-      info: {
-        notificationId: 2,
-        type: 'info',
-        msg: 'Error!',
-        time: moment()
-      },
-      error: {
-        notificationId: 3,
-        type: 'error',
-        msg: 'Error!',
-        time: moment()
-      }
-    };
-
-    beforeEach(function () {
-      container = document.createElement('div');
-    });
-
-    afterEach(function () {
-      React.unmountComponentAtNode(container);
-    });
-
-    it('shows all notification types when "all" filter applied', function () {
-      var row1 = TestUtils.renderIntoDocument(
-        <Views.NotificationRow filter="all" item={notifications.success} transitionSpeed={0} />,
-        container
-      );
-      assert.equal($(row1.getDOMNode()).data('visible'), true);
-      React.unmountComponentAtNode(container);
-
-      var row2 = TestUtils.renderIntoDocument(
-        <Views.NotificationRow filter="all" item={notifications.error} transitionSpeed={0} />,
-        container
-      );
-      assert.equal($(row2.getDOMNode()).data('visible'), true);
-      React.unmountComponentAtNode(container);
-
-      var row3 = TestUtils.renderIntoDocument(
-        <Views.NotificationRow filter="all" item={notifications.info} transitionSpeed={0} />,
-        container
-      );
-      assert.equal($(row3.getDOMNode()).data('visible'), true);
-      React.unmountComponentAtNode(container);
-    });
-
-    it('hides notification when filter doesn\'t match', function () {
-      var rowEl = TestUtils.renderIntoDocument(
-        <Views.NotificationRow filter="success" item={notifications.info} transitionSpeed={0} />,
-        container
-      );
-      assert.equal($(rowEl.getDOMNode()).data('visible'), false);
-    });
-
-    it('shows notification when filter exact match', function () {
-      var rowEl = TestUtils.renderIntoDocument(
-        <Views.NotificationRow filter="info" item={notifications.info} transitionSpeed={0} />,
-        container
-      );
-      assert.equal($(rowEl.getDOMNode()).data('visible'), true);
-    });
-
-  });
-
-
-  describe('NotificationCenterPanel', function () {
-    var container;
-
-    beforeEach(function () {
-      container = document.createElement('div');
-      store.reset();
-    });
-
-    afterEach(function () {
-      React.unmountComponentAtNode(container);
-    });
-
-    it('shows all notifications by default', function () {
-      store.addNotification({ type: 'success', msg: 'Success are okay' });
-      store.addNotification({ type: 'success', msg: 'another success.' });
-      store.addNotification({ type: 'info', msg: 'A single info message' });
-      store.addNotification({ type: 'error', msg: 'Error #1' });
-      store.addNotification({ type: 'error', msg: 'Error #2' });
-      store.addNotification({ type: 'error', msg: 'Error #3' });
-
-      var panelEl = TestUtils.renderIntoDocument(<Views.NotificationCenterPanel />, container);
-      assert.equal($(panelEl.getDOMNode()).find('.notification-list li[data-visible=true]').length, 6);
-    });
-
-    it('clicking on a filter icon filters applies appropriate filter', function () {
-      store.addNotification({ type: 'success', msg: 'Success are okay' });
-      store.addNotification({ type: 'success', msg: 'another success.' });
-      store.addNotification({ type: 'info', msg: 'A single info message' });
-      store.addNotification({ type: 'error', msg: 'Error #1' });
-      store.addNotification({ type: 'error', msg: 'Error #2' });
-      store.addNotification({ type: 'error', msg: 'Error #3' });
-
-      var panelEl = TestUtils.renderIntoDocument(<Views.NotificationCenterPanel />, container);
-
-      // there are 2 success messages
-      TestUtils.Simulate.click($(panelEl.getDOMNode()).find('.notification-filter li[data-filter="success"]')[0]);
-      assert.equal($(panelEl.getDOMNode()).find('.notification-list li[data-visible=true]').length, 2);
-
-      // 3 errors
-      TestUtils.Simulate.click($(panelEl.getDOMNode()).find('.notification-filter li[data-filter="error"]')[0]);
-      assert.equal($(panelEl.getDOMNode()).find('.notification-list li[data-visible=true]').length, 3);
-
-      // 1 info
-      TestUtils.Simulate.click($(panelEl.getDOMNode()).find('.notification-filter li[data-filter="info"]')[0]);
-      assert.equal($(panelEl.getDOMNode()).find('.notification-list li[data-visible=true]').length, 1);
-    });
-
-    it('clear all clears all notifications', function () {
-      store.addNotification({ type: 'success', msg: 'Success are okay' });
-      store.addNotification({ type: 'info', msg: 'A single info message' });
-      store.addNotification({ type: 'error', msg: 'Error #2' });
-      store.addNotification({ type: 'error', msg: 'Error #3' });
-
-      var panelEl = TestUtils.renderIntoDocument(<Views.NotificationCenterPanel />, container);
-      assert.equal($(panelEl.getDOMNode()).find('.notification-list li[data-visible=true]').length, 4);
-      TestUtils.Simulate.click($(panelEl.getDOMNode()).find('footer input')[0]);
-
-      assert.equal($(panelEl.getDOMNode()).find('.notification-list li[data-visible=true]').length, 0);
     });
 
   });
