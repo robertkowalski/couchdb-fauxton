@@ -64,11 +64,11 @@ module.exports = function (grunt) {
       res.setHeader('x-couchdb-csrf-valid', 'true');
 
       if (!!url.match(/^\/addons\/.*\/assets\/js/)) {
-        filePath = path.join(app_dir, url.replace('/_utils/fauxton/', ''));
+        filePath = path.join('dist/debug/app/', url.replace('/_utils/fauxton/', ''));
       } else if (!!url.match(/assets/)) {
-        // serve any javascript or css files from here assets dir
-        url = url.replace(/\?.*/, '');
-        filePath = path.join('./', url);
+        // serve any javascript or css files from the assets dir
+        filePath = url.replace(/\?.*/, '');
+        filePath = path.join('./', url.replace('/_utils/fauxton/', ''));
       } else if (!!url.match(/mocha|\/test\/core\/|test\.config/)) {
         filePath = path.join('./test', url.replace('/test/', ''));
       } else if (!!url.match(/fonts/)) {
@@ -81,10 +81,9 @@ module.exports = function (grunt) {
         // server js from app directory
         url = url.replace(/\?_.*/, '');
         filePath = path.join(app_dir, url.replace('/_utils/fauxton/', ''));
-      // handles local references to any addon dependencies (e.g. ZeroClipboard.swf)
-      } else if (!!url.match(/addons\/[^\/]+\/dependencies\/.+/)) {
+      } else if (!!url.match(/(\.swf)/)) {
         var urlNoQueryStr = url.replace(/\?.*$/, '');
-        filePath = './app' + urlNoQueryStr;
+        filePath = urlNoQueryStr.replace(/^\//, '');
       } else if (!!url.match(/testrunner/)) {
         var testSetup = grunt.util.spawn({cmd: 'grunt', grunt: true, args: ['test_inline']}, function (error, result, code) {/* log.writeln(String(result));*/ });
         testSetup.stdout.pipe(process.stdout);
@@ -95,10 +94,17 @@ module.exports = function (grunt) {
         filePath = path.join(dist_dir, 'index.html');
       }
 
+      if (/^app\/addons\//.test(filePath) || /\.swf$/.test(filePath)) {
+        filePath = 'dist/debug/' + filePath;
+      }
+      console.log(filePath);
+
       if (/_utils\/docs/.test(filePath)) {
         filePath = false;
       }
 
+
+      //console.log("server", filePath);
       if (filePath) {
         return send(req, filePath)
           .on('error', function (err) {

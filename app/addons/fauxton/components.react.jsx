@@ -14,20 +14,13 @@ define([
   'app',
   'api',
   'react',
-  'addons/fauxton/dependencies/ZeroClipboard',
+  'plugins/zeroclipboard/ZeroClipboard',
 
   // needed to run the test individually. Don't remove
   'velocity.ui'
 ],
 
 function (app, FauxtonAPI, React, ZeroClipboard) {
-
-
-  // the path to the swf depends on whether we're in a bundled environment (e.g. prod) or local
-  function getZeroClipboardSwfPath () {
-    var path = (app.bundled) ? 'js/fauxton' : 'app/addons/fauxton/dependencies';
-    return app.root + path + '/ZeroClipboard.swf';
-  }
 
   // super basic right now, but can be expanded later to handle all the varieties of copy-to-clipboards
   // (target content element, custom label, classes, notifications, etc.)
@@ -44,10 +37,6 @@ function (app, FauxtonAPI, React, ZeroClipboard) {
         displayType: 'icon',
         textDisplay: 'Copy'
       };
-    },
-
-    componentWillMount: function () {
-      ZeroClipboard.config({ moviePath: getZeroClipboardSwfPath() });
     },
 
     getClipboardElement: function () {
@@ -76,9 +65,6 @@ function (app, FauxtonAPI, React, ZeroClipboard) {
   //  </ComponentsReact.ClipboardWithTextField>
   // pass in the text and a unique key, the key has to be unique or you'll get a warning
   var ClipboardWithTextField = React.createClass({
-    componentWillMount: function () {
-      ZeroClipboard.config({ moviePath: getZeroClipboardSwfPath() });
-    },
 
     componentDidMount: function () {
       var el = this.refs["copy-text-" + this.props.uniqueKey].getDOMNode();

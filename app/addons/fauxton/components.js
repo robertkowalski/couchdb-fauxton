@@ -27,13 +27,10 @@ define([
   "ace_configuration",
   "spin",
 
-  // this should never be global available:
-  // https://github.com/zeroclipboard/zeroclipboard/blob/master/docs/security.md
-  'addons/fauxton/dependencies/ZeroClipboard',
   "velocity.ui"
 ],
 
-function (app, FauxtonAPI, ace, spin, ZeroClipboard) {
+function (app, FauxtonAPI, ace, spin) {
   var Components = FauxtonAPI.addon();
 
   // setting up the left header with the backbutton used in Views and All docs

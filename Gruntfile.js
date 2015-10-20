@@ -84,16 +84,6 @@ module.exports = function (grunt) {
           lessPath + "/" + addon.name + ".less";
         theAssets.css.push("dist/debug/css/" + addon.name + ".css");
       }
-      // Images
-      root = addon.path || "app/addons/" + addon.name;
-      var imgPath = root + "/assets/img";
-      if (fs.existsSync(imgPath)) {
-        theAssets.img.push(imgPath + "/**");
-      }
-      var fontsPath = root + "/assets/fonts";
-      if (fs.existsSync(fontsPath)) {
-        theAssets.fonts.push(fontsPath + "/**");
-      }
     });
     return theAssets;
   }();
@@ -267,12 +257,12 @@ module.exports = function (grunt) {
     requirejs: {
       compile: {
         options: {
-          baseUrl: 'app',
+          baseUrl: 'dist/build/app',
           // Include the main configuration file.
-          mainConfigFile: "app/config.js",
+          mainConfigFile: "dist/build/app/config.js",
 
           // Output file.
-          out: "dist/debug/require.js",
+          out: "dist/build/require.js",
 
           // Root application module.
           name: "config",
@@ -319,22 +309,28 @@ module.exports = function (grunt) {
         ]
       },
 
-      addonDependencies: {
-        files: initHelper.getAddonDependencies()
-      },
-
       dist:{
         files:[
+          {src: 'dist/debug/*.swf', dest: 'dist/release/', flatten: true, expand: true},
+          {src: 'dist/debug/templates', dest: 'dist/release/', flatten: false, expand: false},
+          {src: 'dist/debug/addons/**/*.html', dest: 'dist/release/', flatten: false, expand: false},
+
           {src: 'dist/debug/index.html', dest: 'dist/release/index.html'},
-          {src: assets.img, dest: 'dist/release/img/', flatten: true, expand: true},
-          {src: assets.fonts, dest: 'dist/release/fonts/', flatten: true, expand: true},
+          {src: 'dist/debug/img/', dest: 'dist/release/img/', flatten: true, expand: true},
+          {src: 'dist/debug/fonts/', dest: 'dist/release/fonts/', flatten: true, expand: true},
           {src: './favicon.ico', dest: "dist/release/favicon.ico"}
         ]
       },
       debug:{
         files:[
-          {src: assets.fonts, dest: "dist/debug/fonts/", flatten: true, expand: true},
-          {src: assets.img, dest: "dist/debug/img/", flatten: true, expand: true},
+          {src: 'assets/**/*.swf', dest: 'dist/debug/', flatten: true, expand: true},
+          {src: 'app/templates', dest: 'dist/debug/', flatten: false, expand: false},
+          {src: 'app/addons/**/*.html', dest: 'dist/debug/', flatten: false, expand: false},
+          {src: 'app/addons/**/assets/js/*', dest: 'dist/debug/', flatten: false, expand: false},
+
+          {src: 'app/addons/**/assets/img/*', dest: 'dist/debug/img/', flatten: true, expand: true},
+          {src: 'app/addons/**/assets/fonts/*', dest: 'dist/debug/fonts/', flatten: true, expand: true},
+          {src: 'assets/fonts/**[eot|woff|svg|ttf]', dest: 'dist/debug/fonts/', flatten: true, expand: true},
           {src: './favicon.ico', dest: "dist/debug/favicon.ico"}
         ]
       },
@@ -375,7 +371,13 @@ module.exports = function (grunt) {
 
     shell: {
       'build-jsx': {
-        command: 'node ./node_modules/react-tools/bin/jsx -x jsx app/addons/ app/addons/ --no-cache-dir',
+        command: 'node ./node_modules/babel/bin/babel.js app --out-dir dist/debug/app --ignore=node_modules,\/assets\/js\/',
+        stdout: true,
+        failOnError: true
+      },
+
+      'build-jsx-release': {
+        command: 'node ./node_modules/babel/bin/babel.js app --out-dir dist/build/app --ignore=node_modules,\/assets\/js\/,\/tests\/',
         stdout: true,
         failOnError: true
       },
@@ -477,19 +479,43 @@ module.exports = function (grunt) {
       targetFilepath = filepath.replace(/.*\/addons/, 'app/addons');
       targetFilepath = targetFilepath.replace(/\.jsx$/, '.js');
 
-      config.shell['build-single-jsx'].command = 'node ./node_modules/react-tools/bin/jsx -x jsx ' + folder + ' ' + targetFolder + ' --no-cache-dir';
-      grunt.task.run(['shell:build-single-jsx']);
-    }
+      //config.shell['build-single-jsx'].command = 'node ./node_modules/react-tools/bin/jsx -x jsx ' + folder + ' ' + targetFolder + ' --no-cache-dir';
+      //grunt.task.run(['shell:build-single-jsx']);
 
+
+      // todo: switch nightwatch to dist/debug?
+      // image loading
+      // font-loading
+      // couchapp
+      // reihenfolge test / jsx / copy
+
+
+      if (/\/assets\/js/.test(filepath)) {
+        return;
+      }
+
+      console.log("-> source", 'dist/debug/' + targetFilepath + ' < ' + filepath);
+
+
+      require('child_process').spawnSync('node_modules/babel/bin/babel.js', [
+        '--out-file', 'dist/debug/' + targetFilepath + ' < ' + filepath
+      ]);
+
+    }
+/*
     // if the JS file that just changed was outside of Fauxton, copy it over
     if (isJS && !(/^app\/addons/.test(filepath))) {
+      console.log("copy it over", {
+        src: filepath,
+        dest: filepath.replace(/.*\/addons/, 'app/addons')
+      });
       config.copy.changedFiles.files = [{
         src: filepath,
         dest: filepath.replace(/.*\/addons/, 'app/addons')
       }];
       grunt.task.run(['copy:changedFiles']);
     }
-
+*/
     // lastly, run jshint + stylecheck the file. Note: this run multiple times when you save a single file because the
     // jsx command above doesn't allow targeting a specific file, just a folder. So any JSX file in the changed file
     // folder or subfolder are copied over, causing every one of the files to be jshinted. Still far faster than before
@@ -542,7 +568,6 @@ module.exports = function (grunt) {
 
   // minify code and css, ready for release.
   grunt.registerTask('minify', ['uglify', 'cssmin:compress']);
-  grunt.registerTask('jsx', ['shell:build-jsx']);
   grunt.registerTask('build', ['less', 'concat:index_css', 'jst', 'requirejs', 'concat:requirejs', 'uglify',
     'cssmin:compress', 'md5:requireJS', 'md5:css', 'template:release']);
 
@@ -553,17 +578,17 @@ module.exports = function (grunt) {
   grunt.registerTask('dev', ['debugDev', 'couchserver']);
 
   // build a debug release
-  grunt.registerTask('debug', ['lint', 'dependencies', "gen_initialize:development", 'jsx', 'concat:requirejs', 'less',
+  grunt.registerTask('debug', ['lint', 'dependencies', "gen_initialize:development", 'shell:build-jsx', 'concat:requirejs', 'less',
     'concat:index_css', 'template:development', 'copy:debug']);
 
-  grunt.registerTask('debugDev', ['clean', 'dependencies', "gen_initialize:development", 'jsx', 'shell:stylecheck',
+  grunt.registerTask('debugDev', ['clean', 'dependencies', "gen_initialize:development", 'shell:build-jsx', 'shell:stylecheck',
     'less', 'concat:index_css', 'template:development', 'copy:debug']);
 
   grunt.registerTask('watchRun', ['clean:watch', 'dependencies', 'shell:stylecheck']);
 
   // build a release
   grunt.registerTask('release_commons_prefix', ['clean', 'dependencies']);
-  grunt.registerTask('release_commons_suffix', ['shell:stylecheck', 'shell:build-jsx', 'build', 'copy:dist', 'copy:ace', 'copy:addonDependencies']);
+  grunt.registerTask('release_commons_suffix', ['shell:stylecheck', 'shell:build-jsx-release', 'build', 'copy:dist', 'copy:ace', 'copy:addonDependencies']);
 
   grunt.registerTask('release', ['release_commons_prefix', 'gen_initialize:release', 'release_commons_suffix']);
   grunt.registerTask('couchapp_release', ['release_commons_prefix', 'gen_initialize:couchapp', 'release_commons_suffix']);
