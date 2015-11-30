@@ -31,6 +31,29 @@ function (FauxtonAPI, ActionTypes) {
     }
   };
 
+  var operators = [
+    {operator: '$eq', text: 'Equals / is'},
+    /*
+    {operator: '$gt', text: 'Greater than'},
+    {operator: '$lt', text: 'Less than'},
+    {operator: '$gte', text: 'Greater than or equal'},
+    {operator: '$lte', text: 'Less than or equal'},
+    {operator: '$ne', text: 'Not equal'},
+
+    {operator: '$exists', text: 'Exists'},
+    {operator: '$type', text: 'Type of'},
+
+    {operator: '$in', text: 'In Array'},
+    {operator: '$nin', text: 'Not in Array'},
+
+    {operator: '$mod', text: 'Devisor / Remainder'},
+    {operator: '$regex', text: 'Regular expression'},
+    */
+  ];
+
+  var emptyQuery = {selector: {}};
+
+
   var Stores = {};
 
   Stores.MangoStore = FauxtonAPI.Store.extend({
@@ -41,6 +64,90 @@ function (FauxtonAPI, ActionTypes) {
       this._queryFindCodeChanged = false;
       this._availableIndexes = [];
       this._getLoadingIndexes = true;
+
+      this._queryParts = [];
+    },
+
+    getPossibleOperators: function () {
+      return operators;
+    },
+
+    getSelectors: function () {
+      return this._queryParts;
+    },
+
+    isSelectorValid: function (selector) {
+      if (!selector.fieldValue) {
+        return false;
+      }
+
+      if (!selector.field) {
+        return false;
+      }
+
+      return true;
+    },
+
+    addSelector: function (selector) {
+      if (!this.isSelectorValid(selector)) {
+        return;
+      }
+
+      this.removeSelector(selector);
+
+      this._queryParts = this._queryParts.concat([selector]);
+
+      return this._queryParts;
+    },
+
+    removeSelector: function (selector) {
+
+      this._queryParts = this._queryParts.reduce(function (acc, el) {
+        if (el.field === selector.field
+          && el.operator === selector.operator
+          && el.fieldValue === selector.fieldValue) {
+
+          return acc;
+        }
+
+        acc.push(el);
+
+        return acc;
+      }, []);
+
+      return this._queryParts;
+    },
+
+    getEmptyQuery: function () {
+      return JSON.parse(JSON.stringify(emptyQuery));
+    },
+
+    getStringifiedQuery: function () {
+      return this.formatCode(this.getQuery());
+    },
+
+    getQuery: function () {
+      if (!this._queryParts.length) {
+        return this.getEmptyQuery();
+      }
+
+      return this.buildQuery(this._queryParts);
+    },
+
+    buildQuery: function (parts) {
+      var wrapper = this.getEmptyQuery();
+
+      var res = parts.reduce(function (acc, el) {
+        if (el.operator === '$eq') {
+          acc[el.field] = el.fieldValue;
+        }
+
+        return acc;
+      }, {});
+
+      wrapper.selector = res;
+
+      return wrapper;
     },
 
     getQueryIndexCode: function () {
@@ -124,39 +231,51 @@ function (FauxtonAPI, ActionTypes) {
       });
     },
 
+    getBuiltQuery: function () {
+      return {
+        "selector": {
+          "_id": {"$gt": null}
+        }
+      };
+    },
+
     dispatch: function (action) {
       switch (action.type) {
 
         case ActionTypes.MANGO_SET_DB:
           this.setDatabase(action.options);
-          this.triggerChange();
         break;
 
         case ActionTypes.MANGO_NEW_QUERY_CREATE_INDEX_CODE:
           this.setQueryIndexCode(action.options);
-          this.triggerChange();
         break;
 
         case ActionTypes.MANGO_NEW_QUERY_FIND_CODE_FROM_FIELDS:
           this.newQueryFindCodeFromFields(action.options);
-          this.triggerChange();
         break;
 
         case ActionTypes.MANGO_NEW_QUERY_FIND_CODE:
           this.setQueryFindCode(action.options);
-          this.triggerChange();
         break;
 
         case ActionTypes.MANGO_NEW_AVAILABLE_INDEXES:
           this.setAvailableIndexes(action.options);
-          this.triggerChange();
+        break;
+
+        case ActionTypes.MANGO_BUILDER_ADD_SELECTOR:
+          this.addSelector(action.options);
+        break;
+
+        case ActionTypes.MANGO_BUILDER_REMOVE_SELECTOR:
+          this.removeSelector(action.options);
         break;
 
         case ActionTypes.MANGO_RESET:
           this.setLoadingIndexes(action.options);
-          this.triggerChange();
         break;
       }
+
+      this.triggerChange();
     }
 
   });

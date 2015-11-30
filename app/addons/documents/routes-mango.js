@@ -52,6 +52,10 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Databases,
         route: 'findUsingIndex',
         roles: ['fx_loggedIn']
       },
+      'database/:database/_query_builder': {
+        route: 'buildQuery',
+        roles: ['fx_loggedIn']
+      },
     },
 
     initialize: function (route, masterLayout, options) {
@@ -67,6 +71,47 @@ function (app, FauxtonAPI, Helpers, BaseRoute, Databases,
       MangoActions.setDatabase({
         database: this.database
       });
+    },
+
+    buildQuery: function (database) {
+      var params = this.createParams(),
+          urlParams = params.urlParams,
+          mangoResultCollection = new Resources.MangoDocumentCollection(null, {
+            database: this.database,
+            paging: {
+              pageSize: IndexResultStores.indexResultsStore.getPerPage()
+            }
+          }),
+          mangoIndexList = new Resources.MangoIndexCollection(null, {
+            database: this.database,
+            params: null,
+            paging: {
+              pageSize: IndexResultStores.indexResultsStore.getPerPage()
+            }
+          });
+
+      SidebarActions.setSelectedTab('mango-query');
+
+      this.setComponent('#react-headerbar', ReactHeader.BulkDocumentHeaderController);
+      this.setComponent('#footer', ReactPagination.Footer);
+
+      IndexResultsActions.newMangoResultsList({
+        collection: mangoResultCollection,
+        textEmptyIndex: 'No Results',
+        bulkCollection: Documents.BulkDeleteDocCollection
+      });
+
+
+      this.setComponent('#dashboard-lower-content', IndexResultsComponents.List);
+
+      this.setComponent('#left-content', MangoComponents.QueryBuilderController);
+
+      this.apiUrl = function () {
+        return [
+          mangoResultCollection.urlRef('query-apiurl', ''),
+          FauxtonAPI.constants.DOC_URLS.MANGO_SEARCH
+        ];
+      };
     },
 
     findUsingIndex: function () {

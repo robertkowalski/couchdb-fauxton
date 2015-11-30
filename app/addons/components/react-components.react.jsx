@@ -27,6 +27,75 @@ function (app, FauxtonAPI, React, Stores, FauxtonComponents, ace, beautifyHelper
   var componentStore = Stores.componentStore;
   var Modal = ReactBootstrap.Modal;
 
+  var BadgeList = React.createClass({
+
+    propTypes: {
+      elements: React.PropTypes.array.isRequired,
+      removeBadge: React.PropTypes.func.isRequired,
+    },
+
+    getDefaultProps: function () {
+      return {
+        getLabel: function (el) {
+          return el;
+        },
+
+        getId: function (el) {
+          return el;
+        }
+
+      };
+    },
+
+    getBadges: function () {
+      return this.props.elements.map(function (el, i) {
+        return <Badge
+          label={this.props.getLabel(el)}
+          key={i}
+          id={el}
+          remove={this.removeBadge} />;
+      }.bind(this));
+    },
+
+    removeBadge: function (label, el) {
+      this.props.removeBadge(label, el);
+    },
+
+    render: function () {
+      return (
+        <ul className="component-badgelist">
+          {this.getBadges()}
+        </ul>
+      );
+    }
+  });
+
+  var Badge = React.createClass({
+    propTypes: {
+      label: React.PropTypes.string.isRequired,
+      remove: React.PropTypes.func.isRequired
+    },
+
+    remove: function (e) {
+      e.preventDefault();
+      this.props.remove(this.props.label, this.props.id);
+    },
+
+    render: function () {
+      return (
+        <li className="component-badge">
+          <span className="label label-info">{this.props.label}</span>
+          <a
+            href="#"
+            className="label label-info js-remove-filter"
+            onClick={this.remove} data-bypass="true"
+          >
+            &times;
+          </a>
+        </li>
+      );
+    }
+  });
 
   var ToggleHeaderButton = React.createClass({
     getDefaultProps: function () {
@@ -161,6 +230,13 @@ function (app, FauxtonAPI, React, Stores, FauxtonComponents, ace, beautifyHelper
   });
 
   var StyledSelect = React.createClass({
+    propTypes: {
+      selectValue: React.PropTypes.string.isRequired,
+      selectId: React.PropTypes.string.isRequired,
+      selectChange: React.PropTypes.func.isRequired,
+      selectContent: React.PropTypes.object.isRequired
+    },
+
     render: function () {
       return (
         <div className="styled-select">
@@ -1264,6 +1340,8 @@ function (app, FauxtonAPI, React, Stores, FauxtonComponents, ace, beautifyHelper
   });
 
   return {
+    BadgeList: BadgeList,
+    Badge: Badge,
     BulkActionComponent: BulkActionComponent,
     ConfirmButton: ConfirmButton,
     ToggleHeaderButton: ToggleHeaderButton,

@@ -31,6 +31,20 @@ function (app, FauxtonAPI, Documents, ActionTypes, Stores, IndexResultsStores, I
       });
     },
 
+    addSelector: function (options) {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.MANGO_BUILDER_ADD_SELECTOR,
+        options: options
+      });
+    },
+
+    removeSelector: function (options) {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.MANGO_BUILDER_REMOVE_SELECTOR,
+        options: options
+      });
+    },
+
     newQueryFindCode: function (options) {
       FauxtonAPI.dispatch({
         type: ActionTypes.MANGO_NEW_QUERY_FIND_CODE,
