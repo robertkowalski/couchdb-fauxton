@@ -49,7 +49,7 @@
   },
   "scripts": {
     "stylecheck": "eslint --ext=js,jsx .",
-    "build:less": "mkdirp ./dist/debug/css && node ./build-helper/less.js",
+    "build:less": "mkdirp ./dist/debug/dashboard.assets/css && node ./build-helper/less.js",
     "test": "grunt test",
     "couchdebug": "grunt couchdebug",
     "couchdb": "grunt couchdb",

@@ -1,7 +1,7 @@
 'use strict';
 
 const root = __dirname + '/../';
-const target = root + 'dist/debug/css/index.css';
+const target = root + 'dist/debug/dashboard.assets/css/index.css';
 
 const fs = require('fs');
 const async = require('async');

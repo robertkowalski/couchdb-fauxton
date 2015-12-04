@@ -300,9 +300,9 @@ module.exports = function (grunt) {
       },
       debug:{
         files:[
-          {src: assets.fonts, dest: "dist/debug/fonts/", flatten: true, expand: true},
-          {src: assets.img, dest: "dist/debug/img/", flatten: true, expand: true},
-          {src: './favicon.ico', dest: "dist/debug/favicon.ico"}
+          {src: assets.fonts, dest: "dist/debug/dashboard.assets/fonts/", flatten: true, expand: true},
+          {src: assets.img, dest: "dist/debug/dashboard.assets/img/", flatten: true, expand: true},
+          {src: './favicon.ico', dest: "dist/debug/dashboard.assets/favicon.ico"}
         ]
       },
 

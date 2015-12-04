@@ -65,7 +65,7 @@ module.exports = function (grunt) {
 
       if (!!url.match(/^\/addons\/.*\/assets\/js/)) {
         filePath = path.join(app_dir, url.replace('/_utils/fauxton/', ''));
-      } else if (!!url.match(/assets/)) {
+      } else if (!!url.match(/assets\/js/)) {
         // serve any javascript or css files from here assets dir
         url = url.replace(/\?.*/, '');
         filePath = path.join('./', url);
