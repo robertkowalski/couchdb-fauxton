@@ -21,7 +21,7 @@
         "dest": "dist/debug/index.html",
         "variables": {
           "requirejs": "/assets/js/libs/require.js",
-          "css": "./css/index.css",
+          "css": "./dashboard.assets/css/index.css",
           "base": null
         },
         "app": {
