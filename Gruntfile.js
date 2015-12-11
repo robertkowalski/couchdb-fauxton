@@ -181,10 +181,8 @@ module.exports = function (grunt) {
     cssmin: {
       compress: {
         files: {
-          "dist/release/css/index.css": [
-            'dist/debug/css/index.css',
-            'assets/css/*.css',
-            "app/addons/**/assets/css/*.css"
+          "dist/release/dashboard.assets/css/index.css": [
+            'dist/debug/dashboard.assets/css/index.css'
           ]
         },
         options: {
@@ -259,30 +257,30 @@ module.exports = function (grunt) {
         files: [
           // this gets built in the template task
           {src: "dist/release/index.html", dest: "../../share/www/index.html"},
-          {src: ["**"], dest: "../../share/www/js/", cwd:'dist/release/js/',  expand: true},
-          {src: ["**"], dest: "../../share/www/img/", cwd:'dist/release/img/', expand: true},
-          {src: ["**"], dest: "../../share/www/fonts/", cwd:'dist/release/fonts/', expand: true},
-          {src: ["**"], dest: "../../share/www/css/", cwd:"dist/release/css/", expand: true}
+          {src: ["**"], dest: "../../share/www/js/", cwd:'dist/release/dashboard.assets/js/',  expand: true},
+          {src: ["**"], dest: "../../share/www/img/", cwd:'dist/release/dashboard.assets/img/', expand: true},
+          {src: ["**"], dest: "../../share/www/fonts/", cwd:'dist/release/dashboard.assets/fonts/', expand: true},
+          {src: ["**"], dest: "../../share/www/css/", cwd:"dist/release/dashboard.assets/css/", expand: true}
         ]
       },
       couchdebug: {
         files: [
           // this gets built in the template task
           {src: "dist/debug/index.html", dest: "../../share/www/index.html"},
-          {src: ["**"], dest: "../../share/www/js/", cwd:"dist/debug/js/",  expand: true},
-          {src: ["**"], dest: "../../share/www/img/", cwd:"dist/debug/img/", expand: true},
-          {src: ["**"], dest: "../../share/www/fonts/", cwd:"dist/debug/fonts/", expand: true},
-          {src: ["**"], dest: "../../share/www/css/", cwd:"dist/debug/css/", expand: true}
+          {src: ["**"], dest: "../../share/www/js/", cwd:"dist/debug/dashboard.assets/js/",  expand: true},
+          {src: ["**"], dest: "../../share/www/img/", cwd:"dist/debug/dashboard.assets/img/", expand: true},
+          {src: ["**"], dest: "../../share/www/fonts/", cwd:"dist/debug/dashboard.assets/fonts/", expand: true},
+          {src: ["**"], dest: "../../share/www/css/", cwd:"dist/debug/dashboard.assets/css/", expand: true}
         ]
       },
       ace: {
         files: [
-          {src: "assets/js/libs/ace/worker-json.js", dest: "dist/release/js/ace/worker-json.js"},
-          {src: "assets/js/libs/ace/mode-json.js", dest: "dist/release/js/ace/mode-json.js"},
-          {src: "assets/js/libs/ace/theme-idle_fingers.js", dest: "dist/release/js/ace/theme-idle_fingers.js"},
-          {src: "assets/js/libs/ace/theme-dawn.js", dest: "dist/release/js/ace/theme-dawn.js"},
-          {src: "assets/js/libs/ace/mode-javascript.js", dest: "dist/release/js/ace/mode-javascript.js"},
-          {src: "assets/js/libs/ace/worker-javascript.js", dest: "dist/release/js/ace/worker-javascript.js"},
+          {src: "assets/js/libs/ace/worker-json.js", dest: "dist/release/dashboard.assets/js/ace/worker-json.js"},
+          {src: "assets/js/libs/ace/mode-json.js", dest: "dist/release/dashboard.assets/js/ace/mode-json.js"},
+          {src: "assets/js/libs/ace/theme-idle_fingers.js", dest: "dist/release/dashboard.assets/js/ace/theme-idle_fingers.js"},
+          {src: "assets/js/libs/ace/theme-dawn.js", dest: "dist/release/dashboard.assets/js/ace/theme-dawn.js"},
+          {src: "assets/js/libs/ace/mode-javascript.js", dest: "dist/release/dashboard.assets/js/ace/mode-javascript.js"},
+          {src: "assets/js/libs/ace/worker-javascript.js", dest: "dist/release/dashboard.assets/js/ace/worker-javascript.js"},
         ]
       },
 
@@ -293,16 +291,16 @@ module.exports = function (grunt) {
       dist:{
         files:[
           {src: 'dist/debug/index.html', dest: 'dist/release/index.html'},
-          {src: assets.img, dest: 'dist/release/img/', flatten: true, expand: true},
-          {src: assets.fonts, dest: 'dist/release/fonts/', flatten: true, expand: true},
-          {src: './favicon.ico', dest: "dist/release/favicon.ico"}
+          {src: assets.img, dest: 'dist/release/dashboard.assets/img/', flatten: true, expand: true},
+          {src: assets.fonts, dest: 'dist/release/dashboard.assets/fonts/', flatten: true, expand: true},
+          {src: './favicon.ico', dest: 'dist/release/dashboard.assets/favicon.ico'}
         ]
       },
       debug:{
         files:[
-          {src: assets.fonts, dest: "dist/debug/dashboard.assets/fonts/", flatten: true, expand: true},
-          {src: assets.img, dest: "dist/debug/dashboard.assets/img/", flatten: true, expand: true},
-          {src: './favicon.ico', dest: "dist/debug/dashboard.assets/favicon.ico"}
+          {src: assets.fonts, dest: 'dist/debug/dashboard.assets/fonts/', flatten: true, expand: true},
+          {src: assets.img, dest: 'dist/debug/dashboard.assets/img/', flatten: true, expand: true},
+          {src: './favicon.ico', dest: 'dist/debug/dashboard.assets/favicon.ico'}
         ]
       },
 
@@ -406,7 +404,7 @@ module.exports = function (grunt) {
       },
 
       css: {
-        files: { "dist/release/css/": 'dist/release/css/index.css' },
+        files: { 'dist/release/dashboard.assets/css/': 'dist/release/dashboard.assets/css/index.css' },
         options: {
           afterEach: function (fileChanges) {
             // replace the CSS_FILE placeholder with the actual filename

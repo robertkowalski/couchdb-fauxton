@@ -11,7 +11,7 @@
 // the License.
 
 define('ace_configuration', ["app", "ace/ace"], function (app, ace) {
-  var path = app.host + app.root + 'js/ace';
+  var path = './dashboard.assets/js/ace';
   var config = require("ace/config");
   config.set("packaged", true);
   config.set("workerPath", path);
