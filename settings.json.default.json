@@ -36,7 +36,7 @@
         "dest": "dist/debug/index.html",
         "variables": {
           "requirejs": "./js/REQUIREJS_FILE",
-          "css": "./css/CSS_FILE",
+          "css": "./dashboard.assets/css/CSS_FILE",
           "base": null
         },
         "app": {
@@ -51,7 +51,7 @@
         "dest": "dist/debug/index.html",
         "variables": {
           "requirejs": "./js/REQUIREJS_FILE",
-          "css": "./css/CSS_FILE",
+          "css": "./dashboard.assets/css/CSS_FILE",
           "base": null
         },
         "app": {
