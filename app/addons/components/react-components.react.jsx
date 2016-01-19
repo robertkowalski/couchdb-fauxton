@@ -14,6 +14,7 @@ define([
   'app',
   'api',
   'react',
+  'react-dom',
   'addons/components/stores',
   'addons/fauxton/components.react',
   'ace/ace',
@@ -21,7 +22,7 @@ define([
   'libs/react-bootstrap'
 ],
 
-function (app, FauxtonAPI, React, Stores, FauxtonComponents, ace, beautifyHelper, ReactBootstrap) {
+function (app, FauxtonAPI, React, ReactDOM, Stores, FauxtonComponents, ace, beautifyHelper, ReactBootstrap) {
 
   var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
   var componentStore = Stores.componentStore;
@@ -373,7 +374,7 @@ function (app, FauxtonAPI, React, Stores, FauxtonComponents, ace, beautifyHelper
     },
 
     setupAce: function (props, shouldUpdateCode) {
-      this.editor = ace.edit(React.findDOMNode(this.refs.ace));
+      this.editor = ace.edit(ReactDOM.findDOMNode(this.refs.ace));
 
       // suppresses an Ace editor error
       this.editor.$blockScrolling = Infinity;
@@ -700,7 +701,7 @@ function (app, FauxtonAPI, React, Stores, FauxtonComponents, ace, beautifyHelper
     },
 
     initEditor: function (val) {
-      this.editor = ace.edit(React.findDOMNode(this.refs.stringEditor));
+      this.editor = ace.edit(ReactDOM.findDOMNode(this.refs.stringEditor));
       this.editor.$blockScrolling = Infinity; // suppresses an Ace editor error
       this.editor.setShowPrintMargin(false);
       this.editor.setOption('highlightActiveLine', true);
@@ -780,8 +781,8 @@ function (app, FauxtonAPI, React, Stores, FauxtonComponents, ace, beautifyHelper
     },
 
     componentDidMount: function () {
-      $(React.findDOMNode(this.refs.exit)).tooltip({ placement: 'left' });
-      $(React.findDOMNode(this.refs.theme)).tooltip({ placement: 'left' });
+      $(ReactDOM.findDOMNode(this.refs.exit)).tooltip({ placement: 'left' });
+      $(ReactDOM.findDOMNode(this.refs.theme)).tooltip({ placement: 'left' });
     },
 
     exitZenMode: function () {
@@ -1093,7 +1094,8 @@ function (app, FauxtonAPI, React, Stores, FauxtonComponents, ace, beautifyHelper
 
     render: function () {
       return (
-        <ReactCSSTransitionGroup transitionName="tray" transitionAppear={true} component="div">
+        <ReactCSSTransitionGroup transitionName="tray" transitionAppear={true} component="div" transitionAppearTimeout={500}
+          transitionEnterTimeout={500} transitionLeaveTimeout={300}>
           {this.getChildren()}
         </ReactCSSTransitionGroup>
       );
@@ -1145,7 +1147,7 @@ function (app, FauxtonAPI, React, Stores, FauxtonComponents, ace, beautifyHelper
 
     renderChildren: function () {
       return React.Children.map(this.props.children, function (child, key) {
-        return React.addons.cloneWithProps(child, {
+        return React.cloneElement(child, {
           trayVisible: this.state.trayVisible,
           selected: this.state.trayVisible,
           toggleCallback: this.toggleTray,
@@ -1164,7 +1166,7 @@ function (app, FauxtonAPI, React, Stores, FauxtonComponents, ace, beautifyHelper
 
     closeIfOpen: function (e) {
       if (!this.state.trayVisible) { return; }
-      var trayEl = $(React.findDOMNode(this));
+      var trayEl = $(ReactDOM.findDOMNode(this));
 
       if (!trayEl.is(e.target) && trayEl.has(e.target).length === 0) {
         this.toggleTray();
