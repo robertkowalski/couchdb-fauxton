@@ -99,7 +99,23 @@ function (app, FauxtonAPI, React, Stores, Actions,
       this.setState({fieldValue: event.target.value});
     },
 
-    addSelector: function (e) {
+    maybeAddSelectorKeyUp: function (e) {
+      if (e.keyCode !== 13) {
+        return;
+      }
+
+      if (!this.state.field) {
+        return;
+      }
+
+      if (!this.state.fieldValue) {
+        return;
+      }
+
+      this.addSelector();
+    },
+
+    addSelector: function () {
       var selector = {
         field: this.state.field,
         operator: this.state.operator,
@@ -119,8 +135,8 @@ function (app, FauxtonAPI, React, Stores, Actions,
       Actions.removeSelector(selector);
     },
 
+    // XXX
     componentWillUpdate: function (nextProps, nextState) {
-      console.log(nextState.query);
       this.refs.field.getEditor().setValue(nextState.query);
     },
 
@@ -136,6 +152,7 @@ function (app, FauxtonAPI, React, Stores, Actions,
                   <td>
                     <input
                       onChange={this.fieldChange}
+                      onKeyUp={this.maybeAddSelectorKeyUp}
                       value={this.state.field}
                       type="text"
                       className="mango-select-value"
@@ -162,6 +179,7 @@ function (app, FauxtonAPI, React, Stores, Actions,
                   <td>
                     <input
                       onChange={this.fieldValueChange}
+                      onKeyUp={this.maybeAddSelectorKeyUp}
                       value={this.state.fieldValue}
                       type="text"
                       className="mango-select-value"
