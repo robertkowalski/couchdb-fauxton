@@ -34,6 +34,8 @@ require.config({
     "velocity": "../assets/js/plugins/velocity",
     "velocity.ui": "../assets/js/plugins/velocity.ui",
     "react-autocomplete": "../assets/js/plugins/react-autocomplete",
+    "react-input-autosize": "../assets/js/plugins/react-input-autosize",
+    "react-select": "../assets/js/plugins/react-select",
     react: "../assets/js/libs/react",
     'react-dom': "../assets/js/libs/react-dom",
     flux: "../assets/js/libs/flux",
@@ -57,6 +59,10 @@ require.config({
     backbone: {
       deps: ["lodash", "jquery"],
       exports: "Backbone"
+    },
+
+    "react-select": {
+      deps: ["react-input-autosize"]
     },
 
     bootstrap: {

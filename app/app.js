@@ -15,6 +15,7 @@ define([
   'initialize',
 
   // libraries
+  'react',
   'jquery',
   'lodash',
   'backbone',
@@ -30,7 +31,9 @@ define([
   'plugins/backbone.layoutmanager'
 ],
 
-function (app, $, _, Backbone, Bootstrap, Helpers, Utils, FauxtonAPI, Couchdb) {
+function (app, react, $, _, Backbone, Bootstrap, Helpers, Utils, FauxtonAPI, Couchdb) {
+  // https://github.com/rackt/react-router/issues/171
+  window.React = react;
 
   // Make sure we have a console.log
   if (_.isUndefined(console)) {

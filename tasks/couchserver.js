@@ -58,7 +58,7 @@ module.exports = function (grunt) {
           headerValue = options.contentSecurityPolicyHeader;
         }
 
-        res.setHeader('Content-Security-Policy', headerValue);
+        //res.setHeader('Content-Security-Policy', headerValue);
       }
 
       if (!!url.match(/^\/addons\/.*\/assets\/js/)) {

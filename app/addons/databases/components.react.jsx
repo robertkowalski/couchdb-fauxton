@@ -20,8 +20,9 @@ define([
   'addons/databases/stores',
   'addons/databases/resources',
   'addons/databases/actions',
-  'helpers'
-], function (app, FauxtonAPI, React, ReactDOM, Components, ComponentsReact, Stores, Resources, Actions, Helpers) {
+  'helpers',
+  'react-select'
+], function (app, FauxtonAPI, React, ReactDOM, Components, ComponentsReact, Stores, Resources, Actions, Helpers, Select) {
 
   var ToggleHeaderButton = Components.ToggleHeaderButton;
   var databasesStore = Stores.databasesStore;
@@ -251,60 +252,22 @@ define([
     }
   });
 
+  var STATES = [
+    { value: 'australian-capital-territory', label: 'Australian Capital Territory'},
+    { value: 'new-south-wales', label: 'New South Wales'},
+    { value: 'victoria', label: 'Victoria'}
+  ];
+
   var JumpToDatabaseWidget = React.createClass({
 
-    getStoreState: function () {
-      return {
-        databaseNames: databasesStore.getDatabaseNames()
-      };
-    },
-
-    getInitialState: function () {
-      return this.getStoreState();
-    },
-
-    componentDidMount: function () {
-      databasesStore.on('change', this.onChange, this);
-    },
-
-    componentDidUpdate: function () {
-      $(ReactDOM.findDOMNode(this.refs.searchDbName)).typeahead({
-        source: this.state.databaseNames,
-        updater: function (item) {
-          this.jumpToDb(item);
-        }.bind(this)
-      });
-    },
-
-    componentWillUnmount: function () {
-      databasesStore.off('change', this.onChange, this);
-    },
-
-    onChange: function () {
-      this.setState(this.getStoreState());
-    },
-
-    jumpToDb: function (databaseName) {
-      databaseName = databaseName || ReactDOM.findDOMNode(this.refs.searchDbName).value;
-      Actions.jumpToDatabase(databaseName);
-    },
-
-    jumpToDbHandler: function (e) {
-      e.preventDefault();
-      this.jumpToDb();
-    },
-
     render: function () {
+      var options = STATES;
       return (
-        <div className="searchbox-wrapper">
-          <div id="header-search" className="js-search searchbox-container">
-            <form onSubmit={this.jumpToDbHandler} id="jump-to-db" className="navbar-form pull-right database-search">
-              <div className="input-append">
-                <input type="text" className="search-autocomplete" ref="searchDbName" name="search-query" placeholder="Database name" autoComplete="off" />
-                <span><button className="btn btn-primary" type="submit"><i className="icon icon-search"></i></button></span>
-              </div>
-            </form>
-          </div>
+        <div>
+          <Select
+            ref="stateSelect"
+            disabled={false}
+            options={options} />
         </div>
       );
     }

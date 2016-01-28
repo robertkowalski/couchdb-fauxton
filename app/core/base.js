@@ -16,6 +16,7 @@ define([
 ],
 
 function (Backbone, LayoutManager) {
+
   var FauxtonAPI = {
     //add default objects
     router: {
