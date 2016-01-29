@@ -265,6 +265,8 @@ define([
       return (
         <div>
           <Select
+            onChange={function () {}}
+            value="blerg"
             ref="stateSelect"
             disabled={false}
             options={options} />
