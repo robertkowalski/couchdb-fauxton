@@ -11,11 +11,11 @@
 // the License.
 
 define([
-  'app',
-  'api',
-  'addons/documents/resources',
-  'addons/documents/index-editor/actiontypes',
-  'addons/documents/index-results/actions'
+  '../../../app',
+  '../../../core/api',
+  '../resources',
+  './actiontypes',
+  '../index-results/actions'
 ],
 function (app, FauxtonAPI, Documents, ActionTypes, IndexResultsActions) {
 

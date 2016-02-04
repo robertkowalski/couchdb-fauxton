@@ -11,16 +11,16 @@
 // the License.
 
 define([
-  'app',
-  'api',
+  '../../../app',
+  '../../../core/api',
   'react',
   'react-dom',
-  'addons/documents/sidebar/stores',
-  'addons/documents/sidebar/actions',
-  'addons/components/react-components.react',
-  'addons/documents/views',
-  'addons/documents/helpers',
-  'plugins/prettify'
+  './stores',
+  './actions',
+  '../../components/react-components.react',
+  '../../documents/views',
+  '../../documents/helpers',
+  '../../../../assets/js/plugins/prettify'
 ],
 
 function (app, FauxtonAPI, React, ReactDOM, Stores, Actions, Components, DocumentViews, DocumentHelper) {
