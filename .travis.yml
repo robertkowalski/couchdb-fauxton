@@ -24,6 +24,7 @@ before_install:
   - ./dev/run --admin=tester:testerpass &
   - haproxy -f rel/haproxy.cfg &
   - cd .. && cd couchdb-fauxton
+  - git reset --hard aa52e40d432ecaeeaf04e31ed2597efd6d51078c
   - npm install
 
   - export DISPLAY=:99.0
@@ -40,4 +41,4 @@ script:
 cache: apt
 
 git:
-  depth: 1
+  depth: 100
