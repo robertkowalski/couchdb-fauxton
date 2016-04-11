@@ -33,7 +33,7 @@ before_script:
   - npm test
   - grunt debugDev
   - ./bin/fauxton &
-  - sleep 30
+  - sleep 120
 script:
   - ./node_modules/grunt-cli/bin/grunt nightwatch
 
