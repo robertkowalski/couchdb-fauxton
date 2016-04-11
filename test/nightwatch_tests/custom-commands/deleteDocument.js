@@ -12,7 +12,7 @@ util.inherits(DeleteDocument, events.EventEmitter);
 
 DeleteDocument.prototype.command = function (databaseName, documentName) {
   var that = this,
-      nano = helpers.getNanoInstance(this.client.options.db_url),
+      nano = helpers.getNanoInstance(),
       database = nano.use(databaseName),
       documentRev;
 

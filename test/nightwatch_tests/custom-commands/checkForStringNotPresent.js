@@ -23,7 +23,8 @@ function CheckForStringNotPresent () {
 util.inherits(CheckForStringNotPresent, events.EventEmitter);
 
 CheckForStringNotPresent.prototype.command = function (path, string, timeout) {
-  var couchUrl = this.client.options.db_url;
+  var couchUrl = helpers.test_settings.db_url,
+      db = helpers.testDatabaseName;
 
   if (!timeout) {
     timeout = helpers.maxWaitTime;

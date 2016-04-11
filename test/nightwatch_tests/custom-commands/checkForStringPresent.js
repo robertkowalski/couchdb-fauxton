@@ -23,7 +23,8 @@ function CheckForStringPresent () {
 util.inherits(CheckForStringPresent, events.EventEmitter);
 
 CheckForStringPresent.prototype.command = function (path, string, timeout) {
-  var couchUrl = this.client.options.db_url;
+  var couchUrl = helpers.test_settings.db_url,
+      db = helpers.testDatabaseName;
 
   if (!timeout) {
     timeout = helpers.maxWaitTime;

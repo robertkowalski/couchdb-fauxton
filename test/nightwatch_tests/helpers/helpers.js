@@ -14,16 +14,15 @@ var nano = require('nano');
 var async = require('async');
 
 module.exports = {
-  asyncHookTimeout: 20000,
   maxWaitTime: 30000,
   testDatabaseName : 'fauxton-selenium-tests',
 
-  getNanoInstance: function (dbURL) {
-    return nano(dbURL);
+  getNanoInstance: function () {
+    return nano(this.test_settings.db_url);
   },
 
   beforeEach: function (browser, done) {
-    var nano = module.exports.getNanoInstance(browser.globals.test_settings.db_url),
+    var nano = module.exports.getNanoInstance(),
         database = module.exports.testDatabaseName;
 
     console.log('nano setting up database');
@@ -45,7 +44,7 @@ module.exports = {
   },
 
   afterEach: function (browser, done) {
-    var nano = module.exports.getNanoInstance(browser.globals.test_settings.db_url),
+    var nano = module.exports.getNanoInstance(),
         database = module.exports.testDatabaseName;
 
     console.log('nano cleaning up');

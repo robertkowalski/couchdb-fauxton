@@ -23,7 +23,7 @@ util.inherits(CreateDatabase, events.EventEmitter);
 
 CreateDatabase.prototype.command = function (databaseName) {
   var that = this,
-      nano = helpers.getNanoInstance(this.client.options.db_url);
+      nano = helpers.getNanoInstance();
 
   nano.db.create(databaseName, function (err, body, header) {
     if (err) {
