@@ -26,7 +26,7 @@ exports.command = function () {
     .setValue('#username', [username])
     .setValue('#password', [password, client.Keys.ENTER])
     .closeNotification()
-    .waitForElementPresent('#jump-to-db', waitTime, false)
+    .waitForElementPresent('#jump-to-db', waitTime)
 
     // important! wait for the db page to fully load. This was the cause of many bugs
     .waitForElementVisible('#dashboard-content table.databases', waitTime, false);
