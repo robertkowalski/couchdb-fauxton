@@ -5,7 +5,7 @@ git:
   depth: 10
 
 addons:
-  firefox: "45.0.2"
+  firefox: "39.0.3"
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq flashplugin-installer
