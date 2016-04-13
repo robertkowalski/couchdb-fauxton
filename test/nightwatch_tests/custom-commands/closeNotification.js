@@ -18,6 +18,10 @@ exports.command = function () {
 
   client
     .waitForElementPresent(dismissSelector, helpers.maxWaitTime, false)
+    .source(function (result) {
+      // Source will be stored in result.value
+      console.log(result.value);
+    })
     .click(dismissSelector);
 
   return this;
