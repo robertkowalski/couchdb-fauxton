@@ -18,8 +18,7 @@ exports.command = function () {
 
   client
     .waitForElementPresent(dismissSelector, helpers.maxWaitTime, false)
-    .source(function (result) {
-      // Source will be stored in result.value
+    .getText('html', function (result) {
       console.log(result.value);
     })
     .click(dismissSelector);
