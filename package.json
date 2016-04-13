@@ -95,7 +95,7 @@
     "webpack:test": "webpack --debug --progress --colors --config ./webpack.config.test.js",
     "webpack:release": "webpack --debug --progress --colors --config ./webpack.config.release.js",
     "test": "grunt test",
-    "phantomjs": "node ./node_modules/phantomjs/bin/phantomjs --debug=false --ssl-protocol=sslv2 --web-security=false --ignore-ssl-errors=true ./node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js ./dist/debug/test/runner.html",
+    "phantomjs": "node ./node_modules/phantomjs/bin/phantomjs --debug=false --ssl-protocol=sslv2 --web-security=false --ignore-ssl-errors=true ./node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js ./test/runner.html",
     "couchdebug": "grunt couchdebug",
     "couchdb": "grunt couchdb",
     "couchapp": "grunt couchapp_deploy",
