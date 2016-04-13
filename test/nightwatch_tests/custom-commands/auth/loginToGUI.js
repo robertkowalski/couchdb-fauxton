@@ -23,6 +23,7 @@ exports.command = function () {
     .waitForElementPresent('a[href="#login"]', waitTime, false)
     .click('a[href="#login"]')
     .waitForElementPresent('#username', waitTime, false)
+    .waitForElementPresent('#password', waitTime, false)
     .setValue('#username', [username])
     .setValue('#password', [password, client.Keys.ENTER])
     .closeNotification()
