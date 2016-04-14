@@ -18,13 +18,24 @@ exports.command = function () {
       username = client.globals.test_settings.fauxton_username,
       password = client.globals.test_settings.password;
 
+  console.log(username, password);
+
   client
     .url(baseUrl + '/#login')
     .waitForElementPresent('a[href="#login"]', waitTime, false)
     .click('a[href="#login"]')
     .waitForElementPresent('#username', waitTime, false)
     .setValue('#username', [username])
-    .setValue('#password', [password, client.Keys.ENTER])
+    .getValue('#username', function (result) {
+      console.log('username ->', result.value);
+    })
+    .waitForElementPresent('#password', waitTime, false)
+    .setValue('#password', [password])
+    .getValue('#password', function (result) {
+      console.log('password ->', result.value);
+    })
+    .clickWhenVisible('#submit')
+
     .closeNotification()
     .waitForElementPresent('#jump-to-db', waitTime)
 
