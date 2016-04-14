@@ -24,14 +24,15 @@ exports.command = function () {
     .url(baseUrl + '/#login')
     .waitForElementPresent('a[href="#login"]', waitTime, false)
     .click('a[href="#login"]')
-    .waitForElementPresent('#username', waitTime, false)
-    .setValue('#username', [username])
-    .getValue('#username', function (result) {
+    .waitForElementVisible('.couch-login-wrapper', waitTime, false)
+    .waitForElementVisible('#username', waitTime, false)
+    .setValue('.couch-login-wrapper #username', [username])
+    .getValue('.couch-login-wrapper #username', function (result) {
       console.log('username ->', result.value);
     })
-    .waitForElementPresent('#password', waitTime, false)
-    .setValue('#password', [password])
-    .getValue('#password', function (result) {
+    .waitForElementVisible('#password', waitTime, false)
+    .setValue('.couch-login-wrapper #password', [password])
+    .getValue('.couch-login-wrapper #password', function (result) {
       console.log('password ->', result.value);
     })
     .clickWhenVisible('#submit')
