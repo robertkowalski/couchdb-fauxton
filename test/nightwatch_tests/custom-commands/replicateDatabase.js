@@ -23,7 +23,7 @@ util.inherits(ReplicateDatabase, events.EventEmitter);
 
 ReplicateDatabase.prototype.command = function (source, target, options, callback) {
   var that = this,
-      nano = helpers.getNanoInstance(this.client.options.db_url),
+      nano = helpers.getNanoInstance(),
       opts = options;
 
 
