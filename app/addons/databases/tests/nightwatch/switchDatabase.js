@@ -19,6 +19,7 @@ module.exports = {
 
     client
       .createDatabase(newDatabaseName)
+      .checkForDatabaseCreated(newDatabaseName, waitTime)
       .loginToGUI()
 
       // wait for the footer bar to appear (not strictly necessary, but ensures it shows up)

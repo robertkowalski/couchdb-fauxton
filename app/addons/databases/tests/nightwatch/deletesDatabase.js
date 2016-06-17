@@ -20,6 +20,7 @@ module.exports = {
 
     client
       .createDatabase(newDatabaseName)
+      .checkForDatabaseCreated(newDatabaseName, waitTime)
       .loginToGUI()
       .url(baseUrl + '/#/database/' + newDatabaseName + '/_all_docs')
       .waitForElementPresent('#header-dropdown-menu a.dropdown-toggle.icon.fonticon-vertical-ellipsis', waitTime, false)
@@ -41,6 +42,8 @@ module.exports = {
 
     client
       .createDatabase(newDatabaseName)
+      .checkForDatabaseCreated(newDatabaseName, waitTime)
+
       .loginToGUI()
       .url(baseUrl + '/#/_all_dbs/')
 
