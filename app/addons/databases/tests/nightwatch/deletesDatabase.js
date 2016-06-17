@@ -22,6 +22,13 @@ module.exports = {
       .createDatabase(newDatabaseName)
       .loginToGUI()
       .url(baseUrl + '/#/database/' + newDatabaseName + '/_all_docs')
+      .pause(5000)
+      .getLogTypes(function(result) {
+        console.log(result);
+      })
+      .getLog('browser', function(result) {
+        console.log(result);
+      })
       .waitForElementPresent('#header-dropdown-menu a.dropdown-toggle.icon.fonticon-vertical-ellipsis', waitTime, false)
       .clickWhenVisible("#header-dropdown-menu a.dropdown-toggle.icon.fonticon-vertical-ellipsis", waitTime, false)
       .waitForElementPresent('#header-dropdown-menu .fonticon-trash', waitTime, false)
