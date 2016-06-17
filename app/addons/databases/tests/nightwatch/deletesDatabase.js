@@ -27,7 +27,12 @@ module.exports = {
         console.log(result);
       })
       .getLog('browser', function(result) {
-        console.log(result);
+
+        result.forEach((r) => {
+          if (r.level !== 'WARNING') {
+            console.log(result);
+          }
+        });
       })
       .waitForElementPresent('#header-dropdown-menu a.dropdown-toggle.icon.fonticon-vertical-ellipsis', waitTime, false)
       .clickWhenVisible("#header-dropdown-menu a.dropdown-toggle.icon.fonticon-vertical-ellipsis", waitTime, false)
