@@ -9,7 +9,10 @@ module.exports = createAnimalDb;
 
 function createAnimalDb (url, cb) {
 
-  deleteDatabase('animaldb', () => {
+  deleteDatabase('animaldb', (err) => {
+    if (err) {
+      return cb(err);
+    }
     createAnimalDb();
   });
 
@@ -23,6 +26,18 @@ function createAnimalDb (url, cb) {
     }, (err, res, body) => {
       if (err) {
         throw err;
+      }
+
+      if (res.statusCode === 401) {
+        const err = new Error('wrong username/password');
+        err.type = 'EACCES';
+        return cb(err);
+      }
+
+      if (res.statusCode === 503) {
+        const err = new Error('couchdb down');
+        err.type = 'ECONN';
+        return cb(err);
       }
 
       cb();

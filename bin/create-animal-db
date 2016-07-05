@@ -4,10 +4,41 @@
 // with conflicts for the zebra doc
 
 
-const url = 'http://localhost:5984/';
+let credentials = '';
+
+const optimist = require('optimist')
+  .usage('Fauxton server \nUsage: $0')
+  .options('admin', {
+    alias : 'a',
+    default : '',
+    describe: 'Credentials to use'
+  });
+
+if (optimist.argv.a) {
+  credentials = optimist.argv.a + '@';
+}
 
 createAnimalDb = require('../test/create-animal-db.js');
 
-createAnimalDb(url, () => {
+
+console.log(`creating animaldb for: http://${credentials}localhost:5984/`);
+
+createAnimalDb(`http://${credentials}localhost:5984/`, (err) => {
+  if (err) {
+    return printError(err);
+  }
   console.log('created :)');
 });
+
+
+function printError (err) {
+  if (err.type === 'EACCES') {
+    console.error('Permissions error, please set username / password');
+    console.error('Example: ./create-animal-db -a tester:testerpass');
+  }
+
+  if (err.type === 'ECONN') {
+    console.error('Backend error');
+    console.error('Please start your CouchDB');
+  }
+}
