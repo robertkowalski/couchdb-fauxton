@@ -109,8 +109,6 @@
     "nightwatch": "grunt nightwatch",
     "start": "node ./bin/fauxton",
     "start-debug": "DIST=./dist/debug node ./bin/fauxton",
-    "preversion": "node version-check.js && grunt release",
-    "test-before-publish": "npm run preversion && npm install . -g",
     "create:animaldb": "./bin/create-animal-db",
     "docker:couchdb-up": "docker-compose -f ./docker/dc.selenium.yml up -d couchdb",
     "docker:selenium-up": "docker-compose -f ./docker/dc.selenium.yml up -d selenium",
@@ -120,7 +118,9 @@
     "docker:up": "docker-compose -f ./docker/dc.selenium.yml up -d",
     "docker:debug-up": "docker-compose -f ./docker/dc.selenium-debug.yml up -d",
     "docker:down": "docker-compose -f ./docker/dc.selenium.yml down",
-    "remove-test-dbs": "node ./bin/remove-test-dbs.js"
+    "remove-test-dbs": "node ./bin/remove-test-dbs.js",
+    "test-before-publish": "node version-check.js && npm install . -g",
+    "prepublish": "npm run test-before-publish && npm run webpack:release"
   },
   "repository": {
     "type": "git",
