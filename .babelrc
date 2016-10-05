@@ -3,5 +3,8 @@
     "react",
     "es2015"
   ],
-  "plugins": ["transform-object-assign"]
+  "plugins": [
+    "transform-object-assign",
+    "array-includes"
+  ]
 }
